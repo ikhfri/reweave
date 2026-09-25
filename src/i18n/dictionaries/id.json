@@ -1,0 +1,96 @@
+{
+  "common": {
+    "continue": "Lanjutkan",
+    "back": "Kembali",
+    "finish": "Selesai",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "loading": "Memuat...",
+    "next": "Berikutnya",
+    "previous": "Sebelumnya"
+  },
+  "brand": {
+    "name": "moodify",
+    "tagline": "Teman untuk memahami emosimu"
+  },
+  "onboarding": {
+    "gettingStarted": "Mari mulai",
+    "step": "Langkah",
+    "of": "dari",
+
+    "step1": {
+      "title": "Sedikit tentang kamu",
+      "description": "Bantu kami menyesuaikan pengalaman Moodify untukmu.",
+      "question": "Apa jenis kelaminmu?",
+      "male": "Laki-laki",
+      "female": "Perempuan",
+      "optional": "Pertanyaan ini opsional."
+    },
+
+    "step2": {
+      "title": "Apa yang membawamu ke sini?",
+      "description": "Pilih hal yang ingin kamu dapatkan dari Moodify.",
+      "understandEmotions": "Memahami emosiku",
+      "manageStress": "Mengelola stres",
+      "emotionalPatterns": "Memahami pola emosiku",
+      "journalingHabit": "Membangun kebiasaan journaling",
+      "dailyWellbeing": "Meningkatkan kesejahteraan sehari-hari",
+      "expressMyself": "Memiliki ruang untuk mengekspresikan diri"
+    },
+
+    "step3": {
+      "title": "Bagaimana perasaanmu akhir-akhir ini?",
+      "description": "Tidak ada jawaban yang benar atau salah.",
+      "mostlyGood": "Sebagian besar baik",
+      "prettyOkay": "Cukup baik",
+      "upAndDown": "Naik turun",
+      "mostlyDifficult": "Sebagian besar terasa sulit",
+      "reallyOverwhelmed": "Benar-benar kewalahan",
+      "notSure": "Aku tidak yakin"
+    },
+
+    "step4": {
+      "title": "Apa yang biasanya memengaruhi perasaanmu?",
+      "description": "Pilih semua yang terasa relevan.",
+      "schoolWork": "Sekolah / Pekerjaan",
+      "family": "Keluarga",
+      "relationship": "Hubungan",
+      "financial": "Keuangan",
+      "sleep": "Tidur",
+      "physicalHealth": "Kesehatan fisik",
+      "social": "Sosial",
+      "lifeChanges": "Perubahan hidup"
+    },
+
+    "step5": {
+      "title": "Bagaimana kamu memproses perasaanmu?",
+      "description": "Pilih cara yang paling nyaman untukmu.",
+      "writing": "Menulis",
+      "talking": "Berbicara",
+      "tracking": "Melacak pola",
+      "calmingActivities": "Aktivitas menenangkan",
+      "everything": "Sedikit dari semuanya"
+    },
+
+    "step6": {
+      "title": "Dukungan seperti apa yang terasa membantu?",
+      "description": "Kami akan menggunakannya untuk menyesuaikan pengalamanmu.",
+      "listen": "Seseorang untuk mendengarkan",
+      "understand": "Membantu memahami apa yang kurasakan",
+      "calmActivity": "Memberikan aktivitas yang menenangkan",
+      "reflection": "Membantu melakukan refleksi",
+      "practicalSteps": "Memberikan langkah praktis",
+      "space": "Memberiku ruang"
+    },
+
+    "step7": {
+      "title": "Bagaimana Moodify sebaiknya berbicara denganmu?",
+      "description": "Pilih gaya komunikasi yang kamu sukai.",
+      "gentle": "Lembut & empatik",
+      "practical": "Praktis & langsung",
+      "balanced": "Seimbang"
+    },
+
+    "privacy": "Jawabanmu digunakan untuk mempersonalisasi pengalaman Moodify."
+  }
+}

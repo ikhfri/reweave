@@ -1,0 +1,96 @@
+{
+  "common": {
+    "continue": "Continue",
+    "back": "Back",
+    "finish": "Finish",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "brand": {
+    "name": "moodify",
+    "tagline": "A companion for understanding your emotions"
+  },
+  "onboarding": {
+    "gettingStarted": "Getting started",
+    "step": "Step",
+    "of": "of",
+
+    "step1": {
+      "title": "A little about you",
+      "description": "Help us personalize your Moodify experience.",
+      "question": "What is your gender?",
+      "male": "Male",
+      "female": "Female",
+      "optional": "This question is optional."
+    },
+
+    "step2": {
+      "title": "What brings you here?",
+      "description": "Choose what you'd like Moodify to help you with.",
+      "understandEmotions": "Understand my emotions",
+      "manageStress": "Manage stress",
+      "emotionalPatterns": "Understand my emotional patterns",
+      "journalingHabit": "Build a journaling habit",
+      "dailyWellbeing": "Improve my daily wellbeing",
+      "expressMyself": "Have a space to express myself"
+    },
+
+    "step3": {
+      "title": "How have you been feeling lately?",
+      "description": "There is no right or wrong answer.",
+      "mostlyGood": "Mostly good",
+      "prettyOkay": "Pretty okay",
+      "upAndDown": "Up and down",
+      "mostlyDifficult": "Mostly difficult",
+      "reallyOverwhelmed": "Really overwhelmed",
+      "notSure": "I'm not sure"
+    },
+
+    "step4": {
+      "title": "What tends to affect how you feel?",
+      "description": "Choose anything that feels relevant.",
+      "schoolWork": "School / Work",
+      "family": "Family",
+      "relationship": "Relationship",
+      "financial": "Financial",
+      "sleep": "Sleep",
+      "physicalHealth": "Physical health",
+      "social": "Social",
+      "lifeChanges": "Life changes"
+    },
+
+    "step5": {
+      "title": "How do you process your feelings?",
+      "description": "Pick the approach that feels most natural to you.",
+      "writing": "Writing",
+      "talking": "Talking",
+      "tracking": "Tracking patterns",
+      "calmingActivities": "Calming activities",
+      "everything": "A little bit of everything"
+    },
+
+    "step6": {
+      "title": "What kind of support feels helpful?",
+      "description": "We'll use this to personalize your experience.",
+      "listen": "Someone to listen",
+      "understand": "Help me understand what I'm feeling",
+      "calmActivity": "Give me something calming to do",
+      "reflection": "Help me reflect",
+      "practicalSteps": "Give me practical steps",
+      "space": "Just give me some space"
+    },
+
+    "step7": {
+      "title": "How should Moodify talk to you?",
+      "description": "Choose the communication style you prefer.",
+      "gentle": "Gentle & empathetic",
+      "practical": "Practical & direct",
+      "balanced": "Balanced"
+    },
+
+    "privacy": "Your answers are used to personalize your Moodify experience."
+  }
+}

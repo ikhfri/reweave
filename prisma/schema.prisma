@@ -1,0 +1,416 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.pdf"
+}
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum CommunicationStyle {
+  GENTLE
+  PRACTICAL
+  BALANCED
+}
+
+enum SupportPreference {
+  LISTEN
+  UNDERSTAND
+  CALM_ACTIVITY
+  REFLECTION
+  PRACTICAL_STEPS
+  SPACE
+}
+
+enum JournalingPreference {
+  WRITING
+  TALKING
+  TRACKING
+  CALMING_ACTIVITIES
+  EVERYTHING
+}
+
+enum DiaryEntryType {
+  TEXT
+  VOICE
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+}
+enum Language {
+  ID
+  EN
+}
+enum ActivityDifficulty {
+  EASY
+  MODERATE
+  ADVANCED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  gender       Gender?
+  dateOfBirth  DateTime?
+  avatarUrl    String?
+
+  onboardingCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions          Session[]
+  preference        UserPreference?
+  onboardingAnswers OnboardingAnswer[]
+
+  checkins     DailyCheckin[]
+  diaryEntries DiaryEntry[]
+  aiAnalyses   AIAnalysis[]
+
+  activityLogs   ActivityLog[]
+  weeklyInsights WeeklyInsight[]
+
+  safetyContacts SafetyContact[]
+  safetyEvents   SafetyEvent[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model UserPreference {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+
+  language             Language @default(ID)
+
+  communicationStyle   CommunicationStyle @default(BALANCED)
+  supportPreference    SupportPreference @default(UNDERSTAND)
+  journalingPreference JournalingPreference @default(WRITING)
+
+  notificationEnabled  Boolean  @default(true)
+  dailyCheckinTime     String?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+}
+
+model OnboardingAnswer {
+  id     String @id @default(cuid())
+  userId String
+
+  questionKey String
+  answerValue String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([questionKey])
+}
+
+model DailyCheckin {
+  id               String   @id @default(cuid())
+  userId           String
+  checkinDate      DateTime
+  overallIntensity Int?
+  note             String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emotions     CheckinEmotion[]
+  contexts     CheckinContext[]
+  diaryEntries DiaryEntry[]
+  aiAnalyses   AIAnalysis[]
+  activityLogs ActivityLog[]
+  safetyEvents SafetyEvent[]
+
+  @@unique([userId, checkinDate])
+  @@index([userId])
+  @@index([checkinDate])
+}
+
+model Emotion {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  category    String
+  emoji       String
+  description String?
+
+  createdAt DateTime @default(now())
+
+  checkins CheckinEmotion[]
+
+  @@index([category])
+}
+
+model CheckinEmotion {
+  id        String @id @default(cuid())
+  checkinId String
+  emotionId String
+  position  Int
+  intensity Int
+  note      String?
+
+  checkin DailyCheckin @relation(fields: [checkinId], references: [id], onDelete: Cascade)
+  emotion Emotion @relation(fields: [emotionId], references: [id], onDelete: Cascade)
+
+  @@index([checkinId])
+  @@index([emotionId])
+}
+
+model CheckinContext {
+  id        String @id @default(cuid())
+  checkinId String
+  contextId String
+
+  createdAt DateTime @default(now())
+
+  checkin DailyCheckin @relation(fields: [checkinId], references: [id], onDelete: Cascade)
+
+  context Context @relation(fields: [contextId], references: [id], onDelete: Restrict)
+
+  @@unique([checkinId, contextId])
+  @@index([checkinId])
+  @@index([contextId])
+}
+
+model DiaryEntry {
+  id        String  @id @default(cuid())
+  userId    String
+  checkinId String?
+
+  content   String?
+  entryType DiaryEntryType @default(TEXT)
+
+  audioUrl        String?
+  durationSeconds Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  checkin DailyCheckin? @relation(fields: [checkinId], references: [id], onDelete: SetNull)
+
+  aiAnalyses AIAnalysis[]
+
+  @@index([userId])
+  @@index([checkinId])
+  @@index([createdAt])
+}
+
+model AIAnalysis {
+  id String @id @default(cuid())
+
+  userId       String
+  checkinId    String?
+  diaryEntryId String?
+
+  summary           String
+  validationMessage String?
+
+  stressScore    Int?
+  sentiment      Sentiment?
+  emotionalState String?
+
+  possibleTriggers Json?
+  thinkingPatterns Json?
+  recommendations  Json?
+
+  riskLevel RiskLevel @default(LOW)
+
+  model     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  checkin DailyCheckin? @relation(fields: [checkinId], references: [id], onDelete: SetNull)
+
+  diaryEntry DiaryEntry? @relation(fields: [diaryEntryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([checkinId])
+  @@index([diaryEntryId])
+  @@index([createdAt])
+}
+
+model Activity {
+  id String @id @default(cuid())
+
+  title       String
+  slug        String @unique
+  description String
+  category    String
+
+  durationMinutes Int
+  difficulty      ActivityDifficulty @default(EASY)
+
+  instructions String
+  isActive     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  logs ActivityLog[]
+}
+
+model ActivityLog {
+  id String @id @default(cuid())
+
+  userId     String
+  activityId String
+  checkinId  String?
+
+  completed    Boolean @default(false)
+  userRating   Int?
+  userFeedback String?
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Restrict)
+
+  checkin DailyCheckin? @relation(fields: [checkinId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([activityId])
+  @@index([checkinId])
+}
+
+model WeeklyInsight {
+  id String @id @default(cuid())
+
+  userId    String
+  weekStart DateTime
+  weekEnd   DateTime
+
+  dominantEmotion String?
+  averageStress   Float?
+  checkinCount    Int     @default(0)
+
+  summary           String
+  patterns          Json?
+  helpfulActivities Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+}
+
+model SafetyContact {
+  id String @id @default(cuid())
+
+  userId       String
+  name         String
+  relationship String
+  phone        String
+  isPrimary    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model SafetyEvent {
+  id String @id @default(cuid())
+
+  userId    String
+  checkinId String?
+
+  riskLevel   RiskLevel
+  triggeredAt DateTime  @default(now())
+  resolvedAt  DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  checkin DailyCheckin? @relation(fields: [checkinId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([checkinId])
+  @@index([riskLevel])
+}
+
+model Context {
+  id   String  @id @default(cuid())
+  name String
+  slug String  @unique
+  icon String?
+
+  createdAt DateTime @default(now())
+
+  checkins CheckinContext[]
+}
+
+model CrisisResource {
+  id String @id @default(cuid())
+
+  country        String
+  name           String
+  description    String?
+  phone          String?
+  website        String?
+  availableHours String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([country])
+  @@index([isActive])
+}
