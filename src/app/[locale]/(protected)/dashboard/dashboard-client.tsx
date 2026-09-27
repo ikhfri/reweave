@@ -260,19 +260,18 @@ export default function DashboardClient({
     }).format(date);
 
   return (
-      <div className="space-y-8">
-        <section>
-          <p className="text-sm font-medium text-indigo-600">
+      <div className="space-y-10 bg-[#fdfbf7] pb-12">
+        {/* Header Section */}
+        <section className="pt-6">
+          <p className="text-sm font-semibold tracking-wide text-[#5c6b9c] uppercase">
             {isEnglish ? "Good to see you" : "Senang melihatmu lagi"}
           </p>
-
-          <h1 className="mt-1 text-3xl font-bold tracking-[-0.035em] text-gray-900">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#4a3f35] sm:text-4xl">
             {isEnglish
-              ? `Good morning, ${userName}`
-              : `Selamat pagi, ${userName}`}
+              ? `Good morning, ${userName}.`
+              : `Selamat pagi, ${userName}.`}
           </h1>
-
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-base text-[#4a3f35]/70">
             {isEnglish
               ? "Take a moment to check in with yourself today."
               : "Luangkan sedikit waktu untuk memahami perasaanmu hari ini."}
@@ -280,93 +279,87 @@ export default function DashboardClient({
         </section>
 
         {error && (
-          <section className="rounded-2xl border border-red-200 bg-red-50 p-4">
-            <p className="text-sm text-red-700">{error}</p>
+          <section className="border-l-4 border-[#e2725b] bg-[#e2725b]/10 p-4">
+            <p className="text-sm font-medium text-[#e2725b]">{error}</p>
           </section>
         )}
 
-        <section className="overflow-hidden rounded-2xl border border-indigo-100 bg-indigo-600 shadow-sm">
-          <div className="relative p-6 sm:p-8">
-            <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-white/[0.06]" />
-            <div className="absolute -bottom-24 right-24 h-40 w-40 rounded-full bg-white/[0.04]" />
-
-            <div className="relative z-10 max-w-2xl">
-              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-                <Heart className="h-5 w-5 text-white" strokeWidth={1.8} />
-              </div>
-
-              <p className="text-sm font-medium text-indigo-100">
+        {/* Hero Check-in Banner */}
+        <section className="bg-[#FDE7DD] p-6 sm:p-8 rounded-lg">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-2 mb-4">
+              <Heart className="h-5 w-5 text-[#4A3F35]" strokeWidth={2} />
+              <p className="text-sm font-semibold text-[#4A3F35]">
                 {isEnglish
                   ? "Daily Emotional Check-in"
                   : "Check-in Emosional Harian"}
               </p>
+            </div>
 
-              <h2 className="mt-2 text-2xl font-bold tracking-[-0.025em] text-white sm:text-3xl">
+            <h2 className="text-2xl font-semibold text-[#4A3F35] sm:text-3xl">
+              {data?.today.hasCheckin
+                ? isEnglish
+                  ? "You've checked in today."
+                  : "Kamu sudah check-in hari ini."
+                : isEnglish
+                  ? "How are you feeling today?"
+                  : "Bagaimana perasaanmu hari ini?"}
+            </h2>
+
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-[#4A3F35]/90">
+              {data?.today.hasCheckin
+                ? isEnglish
+                  ? "Your emotional check-in is saved. You can review the insight or add another reflection."
+                  : "Check-in emosionalmu sudah tersimpan. Kamu bisa melihat insight atau menambahkan refleksi."
+                : isEnglish
+                  ? "A quick check-in can help you notice how you're feeling and build a better understanding of your emotional patterns."
+                  : "Check-in singkat dapat membantu kamu menyadari perasaanmu dan memahami pola emosionalmu dari waktu ke waktu."}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href={`/${locale}/check-in`}
+                className="inline-flex h-10 items-center gap-2 bg-[#e2725b] px-6 text-sm font-semibold text-[#fdfbf7] transition-colors hover:bg-[#c9624d] rounded-md"
+              >
                 {data?.today.hasCheckin
                   ? isEnglish
-                    ? "You've checked in today."
-                    : "Kamu sudah check-in hari ini."
+                    ? "Check in again"
+                    : "Check-in lagi"
                   : isEnglish
-                    ? "How are you feeling today?"
-                    : "Bagaimana perasaanmu hari ini?"}
-              </h2>
+                    ? "Start check-in"
+                    : "Mulai check-in"}
+              </Link>
 
-              <p className="mt-3 max-w-lg text-sm leading-6 text-indigo-100">
-                {data?.today.hasCheckin
-                  ? isEnglish
-                    ? "Your emotional check-in is saved. You can review the insight or add another reflection."
-                    : "Check-in emosionalmu sudah tersimpan. Kamu bisa melihat insight atau menambahkan refleksi."
-                  : isEnglish
-                    ? "A quick check-in can help you notice how you're feeling and build a better understanding of your emotional patterns."
-                    : "Check-in singkat dapat membantu kamu menyadari perasaanmu dan memahami pola emosionalmu dari waktu ke waktu."}
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href={`/${locale}/check-in`}
-                  className="inline-flex h-11 items-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50"
-                >
-                  <Heart className="h-4 w-4" strokeWidth={1.8} />
-                  {data?.today.hasCheckin
-                    ? isEnglish
-                      ? "Check in again"
-                      : "Check-in lagi"
-                    : isEnglish
-                      ? "Start check-in"
-                      : "Mulai check-in"}
-                </Link>
-
-                <Link
-                  href={`/${locale}/diary`}
-                  className="inline-flex h-11 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 text-sm font-medium text-white transition hover:bg-white/15"
-                >
-                  <MessageCircle className="h-4 w-4" strokeWidth={1.8} />
-                  {isEnglish ? "Write a reflection" : "Tulis refleksi"}
-                </Link>
-              </div>
+              <Link
+                href={`/${locale}/diary`}
+                className="inline-flex h-10 items-center gap-2 border border-[#fdfbf7]/30 bg-transparent px-6 text-sm font-semibold text-[#fdfbf7] transition-colors hover:bg-[#fdfbf7]/10 rounded-md"
+              >
+                <MessageCircle className="h-4 w-4" strokeWidth={2} />
+                {isEnglish ? "Write a reflection" : "Tulis refleksi"}
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {/* Stats Grid */}
+        <section className="grid gap-4 sm:grid-cols-3">
           <OverviewCard
-            icon={<CalendarDays className="h-5 w-5" />}
+            icon={<CalendarDays className="h-5 w-5 text-[#5c6b9c]" />}
             title={isEnglish ? "Check-in streak" : "Streak check-in"}
             value={`${streak} ${isEnglish ? "days" : "hari"}`}
             description={
               streak > 0
                 ? isEnglish
-                  ? "Keep checking in to build your rhythm"
-                  : "Lanjutkan check-in untuk menjaga ritmemu"
+                  ? "Keep building your rhythm"
+                  : "Jaga ritmemu"
                 : isEnglish
                   ? "Start your first check-in"
                   : "Mulai check-in pertamamu"
             }
           />
-
           <OverviewCard
-            icon={<Activity className="h-5 w-5" />}
-            title={isEnglish ? "Emotional overview" : "Gambaran emosional"}
+            icon={<Activity className="h-5 w-5 text-[#e2725b]" />}
+            title={isEnglish ? "Dominant emotion" : "Emosi dominan"}
             value={
               weeklyEmotion?.name ??
               (loading ? "..." : "—")
@@ -374,199 +367,173 @@ export default function DashboardClient({
             description={
               weeklyEmotion
                 ? isEnglish
-                  ? `Appeared ${weeklyEmotion.count} time${weeklyEmotion.count > 1 ? "s" : ""} this week`
+                  ? `Appeared ${weeklyEmotion.count} times this week`
                   : `Muncul ${weeklyEmotion.count} kali minggu ini`
                 : isEnglish
-                  ? "Your emotional data will appear here"
-                  : "Data emosionalmu akan muncul di sini"
+                  ? "No data available yet"
+                  : "Belum ada data"
             }
           />
-
           <OverviewCard
-            icon={<TrendingUp className="h-5 w-5" />}
+            icon={<TrendingUp className="h-5 w-5 text-[#c1d5c0]" />}
             title={isEnglish ? "This week" : "Minggu ini"}
-            value={`${weeklyCheckins.length}/7`}
+            value={`${weeklyCheckins.length} / 7`}
             description={
               isEnglish
-                ? "Days with a completed check-in"
-                : "Hari dengan check-in yang selesai"
+                ? "Completed check-ins"
+                : "Check-in selesai"
             }
           />
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50">
-                  <TrendingUp
-                    className="h-4 w-4 text-indigo-600"
-                    strokeWidth={1.8}
-                  />
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900">
-                    {isEnglish
-                      ? "Weekly Emotional Flow"
-                      : "Alur Emosional Mingguan"}
-                  </h3>
-
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    {isEnglish
-                      ? "Your emotional journey this week"
-                      : "Perjalanan emosionalmu minggu ini"}
-                  </p>
-                </div>
+        {/* Main Dashboard Content */}
+        <section className="grid gap-6 lg:grid-cols-3">
+          
+          {/* Weekly Flow Chart - Takes up 2 columns */}
+          <div className="lg:col-span-2 rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
+            <div className="flex items-center justify-between border-b border-[#c1d5c0]/40 pb-4 mb-6">
+              <div>
+                <h3 className="text-base font-bold text-[#4a3f35]">
+                  {isEnglish ? "Weekly Emotional Flow" : "Alur Emosi Mingguan"}
+                </h3>
+                <p className="mt-1 text-sm text-[#4a3f35]/60">
+                  {isEnglish
+                    ? "Your emotional intensity over the last 7 days"
+                    : "Intensitas emosionalmu 7 hari terakhir"}
+                </p>
               </div>
-
               <Link
                 href={`/${locale}/insights`}
-                className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                className="text-sm font-semibold text-[#5c6b9c] hover:underline"
               >
-                {isEnglish ? "View insights" : "Lihat insight"}
+                {isEnglish ? "View all insights" : "Lihat semua insight"}
               </Link>
             </div>
 
-            <div className="mt-8">
-              <div className="flex h-52 items-end gap-3 border-b border-gray-100 px-2">
-                {weeklyBars.map((item) => (
+            <div className="flex h-56 items-end gap-2 sm:gap-4 mt-4">
+              {weeklyBars.map((item) => (
+                <div
+                  key={item.key}
+                  className="group flex h-full flex-1 flex-col items-center justify-end"
+                >
                   <div
-                    key={item.key}
-                    className="group flex h-full flex-1 items-end justify-center"
-                  >
-                    <div
-                      className={`w-full max-w-10 rounded-t-lg transition-all duration-300 ${
-                        item.checkin
-                          ? "bg-indigo-200 group-hover:bg-indigo-300"
-                          : "bg-gray-100"
-                      }`}
-                      style={{ height: `${item.height}%` }}
-                      title={
-                        item.checkin
-                          ? `${item.checkin.emotions
-                              .map((emotion) => emotion.name)
-                              .join(", ")}`
-                          : isEnglish
-                            ? "No check-in"
-                            : "Belum ada check-in"
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-3 grid grid-cols-7 text-center text-[11px] text-gray-400">
-                {weeklyBars.map((item) => (
-                  <span key={item.key}>{dayLabel(item.date)}</span>
-                ))}
-              </div>
+                    className={`w-full max-w-12 transition-all duration-300 rounded-t-sm ${
+                      item.checkin
+                        ? "bg-[#e2725b]/80 hover:bg-[#e2725b]"
+                        : "bg-[#c1d5c0]/30"
+                    }`}
+                    style={{ height: `${item.height}%` }}
+                    title={
+                      item.checkin
+                        ? `${item.checkin.emotions
+                            .map((emotion) => emotion.name)
+                            .join(", ")}`
+                        : isEnglish
+                          ? "No check-in"
+                          : "Belum ada check-in"
+                    }
+                  />
+                  <span className="mt-3 text-xs font-medium text-[#4a3f35]/60">
+                    {dayLabel(item.date)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50">
-              <Sparkles
-                className="h-4 w-4 text-indigo-600"
-                strokeWidth={1.8}
-              />
+          {/* AI Insight Sidebar */}
+          <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-[#5c6b9c]" strokeWidth={2} />
+              <h3 className="text-base font-bold text-[#4a3f35]">
+                {isEnglish ? "AI Insight" : "Insight AI"}
+              </h3>
             </div>
 
-            <h3 className="mt-5 text-sm font-semibold text-gray-900">
-              {isEnglish ? "AI Emotional Insight" : "AI Emotional Insight"}
-            </h3>
-
             {todayAnalysis ? (
-              <>
-                <p className="mt-2 text-sm leading-6 text-gray-600">
+              <div className="flex flex-col h-full">
+                <p className="text-sm leading-relaxed text-[#4a3f35]">
                   {todayAnalysis.summary}
                 </p>
 
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  <InsightMetric
-                    label={isEnglish ? "Stress" : "Stres"}
-                    value={
-                      todayAnalysis.stressScore != null
+                <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[#c1d5c0]/40 pt-6">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-[#4a3f35]/50">
+                      {isEnglish ? "Stress Level" : "Tingkat Stres"}
+                    </p>
+                    <p className="mt-1 text-lg font-bold text-[#4a3f35]">
+                      {todayAnalysis.stressScore != null
                         ? `${todayAnalysis.stressScore}/100`
-                        : "—"
-                    }
-                  />
-                  <InsightMetric
-                    label={isEnglish ? "State" : "Keadaan"}
-                    value={todayAnalysis.emotionalState ?? "—"}
-                  />
+                        : "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-[#4a3f35]/50">
+                      {isEnglish ? "State" : "Kondisi"}
+                    </p>
+                    <p className="mt-1 text-lg font-bold text-[#4a3f35] capitalize">
+                      {todayAnalysis.emotionalState ?? "—"}
+                    </p>
+                  </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="mt-4 rounded-xl bg-gray-50 p-4">
-                <p className="text-sm leading-6 text-gray-500">
+              <div className="mt-4 bg-[#fdfbf7] border border-[#c1d5c0]/30 p-4 rounded-md">
+                <p className="text-sm text-[#4a3f35]/70">
                   {isEnglish
                     ? "Your first AI insight will appear after you complete a check-in."
-                    : "AI insight pertamamu akan muncul setelah kamu menyelesaikan check-in."}
+                    : "Insight AI pertamamu akan muncul setelah kamu menyelesaikan check-in."}
                 </p>
               </div>
             )}
           </div>
         </section>
 
+        {/* Two Column Bottom Layout */}
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100">
-                <MessageCircle
-                  className="h-4 w-4 text-gray-600"
-                  strokeWidth={1.8}
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">
+          {/* Latest Reflection */}
+          <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-[#4a3f35]" />
+                <h3 className="text-base font-bold text-[#4a3f35]">
                   {isEnglish ? "Latest Reflection" : "Refleksi Terakhir"}
                 </h3>
-                <p className="text-xs text-gray-400">
-                  {isEnglish
-                    ? "Your latest diary entry"
-                    : "Catatan diary terakhirmu"}
-                </p>
               </div>
+              {latestDiary && (
+                <Link
+                  href={`/${locale}/diary`}
+                  className="text-sm font-semibold text-[#5c6b9c] hover:underline"
+                >
+                  {isEnglish ? "View diary" : "Lihat diary"}
+                </Link>
+              )}
             </div>
 
             {latestDiary ? (
-              <div className="mt-6 rounded-xl border border-gray-100 bg-gray-50 p-5">
-                <p className="line-clamp-4 text-sm leading-6 text-gray-600">
-                  {latestDiary.content ||
+              <div className="bg-[#fdfbf7] p-4 rounded-md border-l-2 border-[#5c6b9c]">
+                <p className="line-clamp-3 text-sm leading-relaxed text-[#4a3f35]">
+                  &quot;{latestDiary.content ||
                     (latestDiary.entryType === "VOICE"
                       ? isEnglish
                         ? "Voice reflection"
                         : "Refleksi suara"
                       : isEnglish
                         ? "Empty reflection"
-                        : "Refleksi kosong")}
+                        : "Refleksi kosong")}&quot;
                 </p>
-
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-[11px] text-gray-400">
-                    {formatDate(latestDiary.createdAt)}
-                  </span>
-
-                  <Link
-                    href={`/${locale}/diary`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-                  >
-                    {isEnglish ? "View diary" : "Lihat diary"}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
+                <span className="mt-3 block text-xs font-medium text-[#4a3f35]/50">
+                  {formatDate(latestDiary.createdAt)}
+                </span>
               </div>
             ) : (
-              <div className="mt-6 rounded-xl border border-dashed border-gray-200 p-5 text-center">
-                <p className="text-sm text-gray-400">
-                  {isEnglish ? "No reflection yet." : "Belum ada refleksi."}
+              <div className="border border-dashed border-[#c1d5c0] p-6 text-center rounded-md">
+                <p className="text-sm text-[#4a3f35]/60 mb-2">
+                  {isEnglish ? "No reflections yet." : "Belum ada refleksi."}
                 </p>
-
                 <Link
                   href={`/${locale}/diary`}
-                  className="mt-3 inline-block text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                  className="text-sm font-semibold text-[#5c6b9c] hover:underline"
                 >
                   {isEnglish
                     ? "Write your first reflection"
@@ -576,115 +543,88 @@ export default function DashboardClient({
             )}
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50">
-                <Clock3
-                  className="h-4 w-4 text-indigo-600"
-                  strokeWidth={1.8}
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">
-                  {isEnglish
-                    ? "Recommended Activity"
-                    : "Aktivitas Rekomendasi"}
+          {/* Recommended Activity */}
+          <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Clock3 className="h-5 w-5 text-[#4a3f35]" />
+                <h3 className="text-base font-bold text-[#4a3f35]">
+                  {isEnglish ? "Up Next" : "Selanjutnya"}
                 </h3>
-
-                <p className="text-xs text-gray-400">
-                  {isEnglish
-                    ? "Something you can try today"
-                    : "Sesuatu yang bisa kamu coba hari ini"}
-                </p>
               </div>
+              <Link
+                href={`/${locale}/activities`}
+                className="flex items-center gap-1 text-sm font-semibold text-[#5c6b9c] hover:underline"
+              >
+                {isEnglish ? "All activities" : "Semua aktivitas"}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
 
             {recommendedActivity ? (
-              <div className="mt-6 rounded-xl bg-indigo-50/70 p-5">
-                <p className="text-xs font-medium text-indigo-600">
-                  {recommendedActivity.category}
-                </p>
-
-                <h4 className="mt-2 text-base font-semibold text-gray-900">
+              <div className="bg-[#fbc4ab]/20 p-4 rounded-md border border-[#fbc4ab]/40">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#e2725b]">
+                    {recommendedActivity.category}
+                  </span>
+                  <span className="text-xs font-medium text-[#4a3f35]/60">
+                    {recommendedActivity.durationMinutes} {isEnglish ? "min" : "menit"}
+                  </span>
+                </div>
+                <h4 className="text-lg font-bold text-[#4a3f35] mb-1">
                   {recommendedActivity.title}
                 </h4>
-
-                <p className="mt-2 line-clamp-3 text-xs leading-5 text-gray-500">
+                <p className="text-sm text-[#4a3f35]/80 mb-4 line-clamp-2">
                   {recommendedActivity.description}
                 </p>
-
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-[11px] text-gray-500">
-                    {recommendedActivity.durationMinutes}{" "}
-                    {isEnglish ? "minutes" : "menit"}
-                  </span>
-
-                  <Link
-                    href={`/${locale}/activities/${recommendedActivity.slug}`}
-                    className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-                  >
-                    {isEnglish ? "Start activity" : "Mulai aktivitas"}
-                  </Link>
-                </div>
+                <Link
+                  href={`/${locale}/activities/${recommendedActivity.slug}`}
+                  className="inline-flex h-9 items-center justify-center bg-white border border-[#c1d5c0] px-4 text-sm font-semibold text-[#4a3f35] transition-colors hover:bg-gray-50 rounded-md"
+                >
+                  {isEnglish ? "Start activity" : "Mulai aktivitas"}
+                </Link>
               </div>
             ) : (
-              <div className="mt-6 rounded-xl bg-gray-50 p-5">
-                <p className="text-sm text-gray-500">
+              <div className="bg-[#fdfbf7] p-4 rounded-md border border-[#c1d5c0]/30 text-center">
+                <p className="text-sm text-[#4a3f35]/60">
                   {isEnglish
                     ? "No activity recommendation available yet."
                     : "Belum ada rekomendasi aktivitas."}
                 </p>
               </div>
             )}
-
-            <Link
-              href={`/${locale}/activities`}
-              className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-            >
-              {isEnglish ? "Explore all activities" : "Lihat semua aktivitas"}
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100">
-                <CheckCircle2
-                  className="h-5 w-5 text-gray-600"
-                  strokeWidth={1.8}
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">
-                  {isEnglish
-                    ? "Need a little extra support?"
-                    : "Butuh dukungan tambahan?"}
-                </h3>
-
-                <p className="mt-1 max-w-xl text-xs leading-5 text-gray-500">
-                  {isEnglish
-                    ? "Explore Moodify's support resources whenever you need a little more help."
-                    : "Jelajahi sumber dukungan Moodify kapan pun kamu membutuhkan bantuan tambahan."}
-                </p>
-              </div>
+        {/* Support Banner */}
+        <section className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <CheckCircle2 className="h-6 w-6 text-[#5c6b9c] shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-base font-bold text-[#4a3f35]">
+                {isEnglish
+                  ? "Need a little extra support?"
+                  : "Butuh dukungan tambahan?"}
+              </h3>
+              <p className="mt-1 text-sm text-[#4a3f35]/70">
+                {isEnglish
+                  ? "Explore Moodify's support resources whenever you need a little more help."
+                  : "Jelajahi sumber dukungan Moodify kapan pun kamu membutuhkan bantuan."}
+              </p>
             </div>
-
-            <Link
-              href={`/${locale}/support`}
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 px-4 text-xs font-semibold text-gray-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600"
-            >
-              {isEnglish ? "Explore support" : "Lihat dukungan"}
-            </Link>
           </div>
+          <Link
+            href={`/${locale}/support`}
+            className="shrink-0 inline-flex h-10 items-center justify-center bg-[#fdfbf7] border border-[#c1d5c0] px-5 text-sm font-semibold text-[#4a3f35] transition-colors hover:bg-gray-50 rounded-md"
+          >
+            {isEnglish ? "Explore support" : "Lihat dukungan"}
+          </Link>
         </section>
       </div>
   );
 }
 
+// Komponen dipersingkat agar lebih padat
 function OverviewCard({
   icon,
   title,
@@ -697,35 +637,15 @@ function OverviewCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+    <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-5 flex flex-col justify-between">
+      <div className="flex items-center gap-3 mb-4">
         {icon}
+        <h3 className="text-sm font-semibold text-[#4a3f35]">{title}</h3>
       </div>
-
-      <p className="mt-5 text-xs font-medium text-gray-400">{title}</p>
-
-      <p className="mt-1 truncate text-2xl font-bold tracking-tight text-gray-900">
-        {value}
-      </p>
-
-      <p className="mt-1 text-xs text-gray-400">{description}</p>
-    </div>
-  );
-}
-
-function InsightMetric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
- return (
-    <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
-      <p className="text-[11px] text-gray-400">{label}</p>
-      <p className="mt-1 truncate text-sm font-semibold text-gray-800">
-        {value}
-      </p>
+      <div>
+        <p className="text-2xl font-bold text-[#4a3f35]">{value}</p>
+        <p className="mt-1 text-xs text-[#4a3f35]/60">{description}</p>
+      </div>
     </div>
   );
 }

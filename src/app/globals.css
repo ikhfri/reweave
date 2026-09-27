@@ -5,11 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-sans: var(--font-jakarta-sans);
+  --font-sans: var(--font-nunito);
 }
 
 body {
-  font-family: var(--font-jakarta-sans), sans-serif;
+  font-family: var(--font-nunito), sans-serif;
 }
 
 @theme inline {

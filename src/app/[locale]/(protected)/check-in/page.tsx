@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 
+import CheckInForm from "./check-in-form";
 import { getCurrentUser } from "@/lib/auth";
 import { isValidLocale, type Locale } from "@/i18n/config";
-
-import CheckInForm from "./check-in-form";
 
 export default async function CheckInPage({
   params,

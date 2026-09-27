@@ -225,9 +225,9 @@ export default function InsightsClient({
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F8F8FC] px-4 py-8 md:px-8">
+      <main className="min-h-screen bg-[#fdfbf7] px-4 py-8 md:px-8">
         <div className="mx-auto flex min-h-[500px] max-w-6xl items-center justify-center">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-[#4a3f35]/60">
             <Loader2 className="h-5 w-5 animate-spin" />
             {isId
               ? "Menganalisis minggu kamu..."
@@ -240,9 +240,9 @@ export default function InsightsClient({
 
   if (error || !data) {
     return (
-      <main className="min-h-screen bg-[#F8F8FC] px-4 py-8 md:px-8">
+      <main className="min-h-screen bg-[#fdfbf7] px-4 py-8 md:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-600">
+          <div className="rounded-2xl border border-[#e2725b]/25 bg-[#e2725b]/10 p-5 text-sm text-[#e2725b]">
             {error ||
               (isId
                 ? "Data insights belum tersedia."
@@ -288,12 +288,12 @@ export default function InsightsClient({
       : 0;
 
   return (
-    <main className="min-h-screen bg-[#F8F8FC] px-4 py-6 md:px-8 md:py-8">
+    <main className="min-h-screen bg-[#fdfbf7] px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto max-w-6xl">
 
         {/* HEADER */}
         <header className="mb-8">
-          <div className="mb-3 flex items-center gap-2 text-sm text-indigo-500">
+          <div className="mb-3 flex items-center gap-2 text-sm text-[#5c6b9c]">
             <Sparkles className="h-4 w-4" />
             <span>
               {isId
@@ -304,41 +304,41 @@ export default function InsightsClient({
 
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
+              <h1 className="text-2xl font-semibold tracking-tight text-[#4a3f35] md:text-3xl">
                 {isId
                   ? `Perjalanan emosimu, ${userName}`
                   : `Your emotional journey, ${userName}`}
               </h1>
 
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-[#4a3f35]/60">
                 {isId
                   ? "Lihat pola emosimu berdasarkan check-in dan diary selama 7 hari terakhir."
                   : "Understand your emotional patterns based on your check-ins and diary entries from the last 7 days."}
               </p>
             </div>
 
-            <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-600 shadow-sm">
-              <CalendarDays className="h-4 w-4 text-indigo-500" />
+            <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-[#4a3f35]/12 bg-[#fdfbf7] px-4 py-2.5 text-sm text-[#4a3f35]/70">
+              <CalendarDays className="h-4 w-4 text-[#5c6b9c]" />
               {weekLabel}
-              <ChevronDown className="h-4 w-4 text-slate-400" />
+              <ChevronDown className="h-4 w-4 text-[#4a3f35]/45" />
             </div>
           </div>
         </header>
 
         {/* WEEKLY AI SUMMARY */}
-        <section className="mb-6 rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-5 md:p-6">
+        <section className="mb-6 rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/20 p-5 md:p-6">
           <div className="flex gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fdfbf7] text-[#5c6b9c]">
               <Sparkles className="h-5 w-5" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium uppercase tracking-wide text-indigo-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-[#5c6b9c]">
                 Weekly AI Reflection
               </p>
 
               {loadingAI ? (
-                <div className="mt-3 flex items-center gap-2 text-sm text-indigo-700">
+                <div className="mt-3 flex items-center gap-2 text-sm text-[#4a3f35]/75">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {isId
                     ? "Moodify sedang membaca pola minggu ini..."
@@ -346,11 +346,11 @@ export default function InsightsClient({
                 </div>
               ) : weeklyAI ? (
                 <>
-                  <h2 className="mt-2 text-lg font-semibold text-slate-900">
+                  <h2 className="mt-2 text-lg font-semibold text-[#4a3f35]">
                     {weeklyAI.headline}
                   </h2>
 
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[#4a3f35]/70">
                     {weeklyAI.summary}
                   </p>
 
@@ -359,9 +359,9 @@ export default function InsightsClient({
                       {weeklyAI.highlights.map((highlight, index) => (
                         <div
                           key={`${index}-${highlight}`}
-                          className="flex gap-2 text-sm text-slate-600"
+                          className="flex gap-2 text-sm text-[#4a3f35]/70"
                         >
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#fbc4ab]" />
                           <span>{highlight}</span>
                         </div>
                       ))}
@@ -369,29 +369,29 @@ export default function InsightsClient({
                   )}
 
                   {weeklyAI.reflectionPrompt && (
-                    <div className="mt-5 rounded-xl bg-white/70 p-4">
-                      <p className="text-xs font-medium text-indigo-600">
+                    <div className="mt-5 rounded-xl bg-[#fdfbf7]/80 p-4">
+                      <p className="text-xs font-medium text-[#5c6b9c]">
                         {isId ? "Pertanyaan refleksi" : "Reflection prompt"}
                       </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                      <p className="mt-1 text-sm leading-6 text-[#4a3f35]/85">
                         {weeklyAI.reflectionPrompt}
                       </p>
                     </div>
                   )}
 
                   {weeklyAI.gentleSuggestion && (
-                    <div className="mt-3 rounded-xl bg-white/70 p-4">
-                      <p className="text-xs font-medium text-indigo-600">
+                    <div className="mt-3 rounded-xl bg-[#fdfbf7]/80 p-4">
+                      <p className="text-xs font-medium text-[#5c6b9c]">
                         {isId ? "Saran kecil" : "Gentle suggestion"}
                       </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                      <p className="mt-1 text-sm leading-6 text-[#4a3f35]/85">
                         {weeklyAI.gentleSuggestion}
                       </p>
                     </div>
                   )}
                 </>
               ) : (
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-[#4a3f35]/60">
                   {isId
                     ? "Belum cukup data untuk membuat refleksi mingguan."
                     : "There is not enough data for a weekly reflection yet."}
@@ -404,68 +404,68 @@ export default function InsightsClient({
         {/* OVERVIEW CARDS */}
         <section className="mb-6 grid gap-4 md:grid-cols-3">
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fbc4ab]/30 text-[#5c6b9c]">
                 <Activity className="h-5 w-5" />
               </div>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[#4a3f35]/45">
                 {isId ? "7 hari" : "7 days"}
               </span>
             </div>
 
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[#4a3f35]/60">
               {isId
                 ? "Total Check-in"
                 : "Total Check-ins"}
             </p>
 
-            <p className="mt-1 text-2xl font-semibold text-slate-900">
+            <p className="mt-1 text-2xl font-semibold text-[#4a3f35]">
               {summary.totalCheckins}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c1d5c0]/35 text-[#4a3f35]">
                 <BookOpen className="h-5 w-5" />
               </div>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[#4a3f35]/45">
                 {isId ? "Refleksi" : "Reflections"}
               </span>
             </div>
 
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[#4a3f35]/60">
               {isId
                 ? "Diary Ditulis"
                 : "Diary Entries"}
             </p>
 
-            <p className="mt-1 text-2xl font-semibold text-slate-900">
+            <p className="mt-1 text-2xl font-semibold text-[#4a3f35]">
               {summary.totalDiaries}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fbc4ab]/25 text-[#e2725b]">
                 <BarChart3 className="h-5 w-5" />
               </div>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[#4a3f35]/45">
                 {isId ? "Rata-rata" : "Average"}
               </span>
             </div>
 
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[#4a3f35]/60">
               {isId
                 ? "Stress Score"
                 : "Stress Score"}
             </p>
 
-            <p className="mt-1 text-2xl font-semibold text-slate-900">
+            <p className="mt-1 text-2xl font-semibold text-[#4a3f35]">
               {summary.averageStress ?? "—"}
             </p>
           </div>
@@ -476,17 +476,17 @@ export default function InsightsClient({
         <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
 
           {/* EMOTIONAL FLOW */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
 
             <div className="mb-6 flex items-start justify-between">
               <div>
-                <h2 className="font-semibold text-slate-900">
+                <h2 className="font-semibold text-[#4a3f35]">
                   {isId
                     ? "Alur Emosional"
                     : "Emotional Flow"}
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-[#4a3f35]/60">
                   {isId
                     ? "Perubahan stress dan aktivitas emosional selama minggu ini."
                     : "Changes in stress and emotional activity throughout the week."}
@@ -494,14 +494,14 @@ export default function InsightsClient({
               </div>
 
               {stressTrend === "up" && (
-                <div className="flex items-center gap-1 rounded-full bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600">
+                <div className="flex items-center gap-1 rounded-full bg-[#e2725b]/10 px-3 py-1.5 text-xs font-medium text-[#e2725b]">
                   <TrendingUp className="h-3.5 w-3.5" />
                   {isId ? "Naik" : "Rising"}
                 </div>
               )}
 
               {stressTrend === "down" && (
-                <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-600">
+                <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-[#5c6b9c]">
                   <TrendingDown className="h-3.5 w-3.5" />
                   {isId ? "Turun" : "Lower"}
                 </div>
@@ -545,14 +545,14 @@ export default function InsightsClient({
                             ? `Stress: ${day.averageStress}`
                             : "No data"
                         }
-                        className="w-full max-w-10 rounded-t-xl bg-indigo-100 transition-all hover:bg-indigo-200"
+                        className="w-full max-w-10 rounded-t-xl bg-[#fbc4ab]/45 transition-all hover:bg-[#fbc4ab]/70"
                         style={{
                           height: `${height}%`,
                         }}
                       />
                     </div>
 
-                    <span className="text-[11px] font-medium text-slate-400">
+                    <span className="text-[11px] font-medium text-[#4a3f35]/45">
                       {label}
                     </span>
                   </div>
@@ -560,7 +560,7 @@ export default function InsightsClient({
               })}
             </div>
 
-            <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 text-xs text-slate-400">
+            <div className="mt-5 flex items-center justify-between border-t border-[#4a3f35]/8 pt-4 text-xs text-[#4a3f35]/45">
               <span>0</span>
               <span>50</span>
               <span>100</span>
@@ -568,15 +568,15 @@ export default function InsightsClient({
           </div>
 
           {/* DOMINANT EMOTION */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
 
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-[#4a3f35]">
               {isId
                 ? "Emosi yang Paling Sering Muncul"
                 : "Most Frequent Emotion"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Berdasarkan check-in minggu ini."
                 : "Based on this week's check-ins."}
@@ -585,16 +585,16 @@ export default function InsightsClient({
             {summary.dominantEmotion ? (
               <div className="mt-8">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50">
-                    <Activity className="h-7 w-7 text-indigo-600" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fbc4ab]/30">
+                    <Activity className="h-7 w-7 text-[#5c6b9c]" />
                   </div>
 
                   <div>
-                    <p className="text-xl font-semibold text-slate-900">
+                    <p className="text-xl font-semibold text-[#4a3f35]">
                       {summary.dominantEmotion.name}
                     </p>
 
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-[#4a3f35]/60">
                       {summary.dominantEmotion.count}{" "}
                       {isId
                         ? "kali tercatat"
@@ -604,22 +604,22 @@ export default function InsightsClient({
                 </div>
 
                 <div className="mt-8">
-                  <div className="mb-2 flex justify-between text-xs text-slate-500">
+                  <div className="mb-2 flex justify-between text-xs text-[#4a3f35]/60">
                     <span>
                       {isId
                         ? "Intensitas rata-rata"
                         : "Average intensity"}
                     </span>
 
-                    <span className="font-medium text-slate-700">
+                    <span className="font-medium text-[#4a3f35]/85">
                       {summary.dominantEmotion.averageIntensity}
                       /10
                     </span>
                   </div>
 
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 overflow-hidden rounded-full bg-[#c1d5c0]/30">
                     <div
-                      className="h-full rounded-full bg-indigo-500"
+                      className="h-full rounded-full bg-[#e2725b]"
                       style={{
                         width: `${
                           summary.dominantEmotion.averageIntensity *
@@ -631,7 +631,7 @@ export default function InsightsClient({
                 </div>
               </div>
             ) : (
-              <div className="mt-8 rounded-xl bg-slate-50 p-5 text-center text-sm text-slate-500">
+              <div className="mt-8 rounded-xl bg-[#fdfbf7]/80 p-5 text-center text-sm text-[#4a3f35]/60">
                 {isId
                   ? "Belum cukup data emosi."
                   : "Not enough emotion data yet."}
@@ -644,21 +644,21 @@ export default function InsightsClient({
         <section className="mt-6">
           <div className="mb-5">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-indigo-600" />
-              <p className="text-sm font-semibold text-indigo-600">
+              <Sparkles className="h-4 w-4 text-[#5c6b9c]" />
+              <p className="text-sm font-semibold text-[#5c6b9c]">
                 {isId
                   ? "Wellbeing Activities"
                   : "Wellbeing Activities"}
               </p>
             </div>
 
-            <h2 className="mt-1 text-xl font-bold text-slate-900">
+            <h2 className="mt-1 text-xl font-bold text-[#4a3f35]">
               {isId
                 ? "Aktivitas wellbeing kamu"
                 : "Your wellbeing activities"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Ringkasan aktivitas yang kamu lakukan minggu ini."
                 : "A summary of the activities you practiced this week."}
@@ -666,41 +666,41 @@ export default function InsightsClient({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">
+            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
+              <p className="text-sm text-[#4a3f35]/60">
                 {isId ? "Dimulai" : "Started"}
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">
+              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
                 {summary.activity.totalStarted}
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
                 {isId ? "aktivitas" : "activities"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">
+            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
+              <p className="text-sm text-[#4a3f35]/60">
                 {isId ? "Selesai" : "Completed"}
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">
+              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
                 {summary.activity.totalCompleted}
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
                 {isId ? "aktivitas" : "activities"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">
+            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
+              <p className="text-sm text-[#4a3f35]/60">
                 Completion Rate
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">
+              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
                 {summary.activity.completionRate}%
               </p>
 
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#c1d5c0]/30">
                 <div
-                  className="h-full rounded-full bg-indigo-600 transition-all"
+                  className="h-full rounded-full bg-[#e2725b] transition-all"
                   style={{
                     width: `${Math.min(
                       100,
@@ -714,21 +714,21 @@ export default function InsightsClient({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">
+            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
+              <p className="text-sm text-[#4a3f35]/60">
                 {isId ? "Rata-rata Rating" : "Average Rating"}
               </p>
 
-              <p className="mt-2 text-3xl font-bold text-slate-900">
+              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
                 {summary.activity.averageRating ?? "—"}
                 {summary.activity.averageRating !== null && (
-                  <span className="ml-1 text-base font-medium text-slate-400">
+                  <span className="ml-1 text-base font-medium text-[#4a3f35]/45">
                     / 5
                   </span>
                 )}
               </p>
 
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
                 {isId
                   ? "dari aktivitas yang dinilai"
                   : "from rated activities"}
@@ -737,8 +737,8 @@ export default function InsightsClient({
           </div>
 
           {summary.activity.mostUsed && (
-            <div className="mt-4 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+            <div className="mt-4 rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/30/50 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#5c6b9c]">
                 {isId
                   ? "Aktivitas paling sering digunakan"
                   : "Most used activity"}
@@ -746,57 +746,57 @@ export default function InsightsClient({
 
               <div className="mt-2 flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-bold text-slate-900">
+                  <h3 className="font-bold text-[#4a3f35]">
                     {summary.activity.mostUsed.title}
                   </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-[#4a3f35]/60">
                     {summary.activity.mostUsed.count}{" "}
                     {isId ? "kali digunakan" : "times used"}
                   </p>
                 </div>
 
-                <Sparkles className="h-5 w-5 shrink-0 text-indigo-600" />
+                <Sparkles className="h-5 w-5 shrink-0 text-[#5c6b9c]" />
               </div>
             </div>
           )}
         </section>
 
         {/* SENTIMENT */}
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+        <section className="mt-6 rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
 
           <div className="mb-6">
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-[#4a3f35]">
               {isId
                 ? "Distribusi Sentimen"
                 : "Sentiment Distribution"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Ringkasan sentimen dari AI Analysis."
                 : "Sentiment summary from your AI analyses."}
             </p>
           </div>
 
-          <div className="h-4 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-4 overflow-hidden rounded-full bg-[#c1d5c0]/30">
             <div className="flex h-full">
               <div
-                className="bg-emerald-400"
+                className="bg-[#c1d5c0]"
                 style={{
                   width: `${positivePercentage}%`,
                 }}
               />
 
               <div
-                className="bg-slate-300"
+                className="bg-[#c1d5c0]"
                 style={{
                   width: `${neutralPercentage}%`,
                 }}
               />
 
               <div
-                className="bg-rose-400"
+                className="bg-[#e2725b]"
                 style={{
                   width: `${negativePercentage}%`,
                 }}
@@ -808,39 +808,39 @@ export default function InsightsClient({
 
             <div>
               <div className="mb-1 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="text-xs text-slate-500">
+                <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
+                <span className="text-xs text-[#4a3f35]/60">
                   {isId ? "Positif" : "Positive"}
                 </span>
               </div>
 
-              <p className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-[#4a3f35]">
                 {positivePercentage}%
               </p>
             </div>
 
             <div>
               <div className="mb-1 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-slate-300" />
-                <span className="text-xs text-slate-500">
+                <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
+                <span className="text-xs text-[#4a3f35]/60">
                   {isId ? "Netral" : "Neutral"}
                 </span>
               </div>
 
-              <p className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-[#4a3f35]">
                 {neutralPercentage}%
               </p>
             </div>
 
             <div>
               <div className="mb-1 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-rose-400" />
-                <span className="text-xs text-slate-500">
+                <span className="h-2 w-2 rounded-full bg-[#e2725b]" />
+                <span className="text-xs text-[#4a3f35]/60">
                   {isId ? "Negatif" : "Negative"}
                 </span>
               </div>
 
-              <p className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-[#4a3f35]">
                 {negativePercentage}%
               </p>
             </div>
@@ -851,14 +851,14 @@ export default function InsightsClient({
         {/* CONTEXT + TRIGGERS */}
         <section className="mt-6 grid gap-6 md:grid-cols-2">
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-            <h2 className="font-semibold text-slate-900">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
+            <h2 className="font-semibold text-[#4a3f35]">
               {isId
                 ? "Hal yang Sering Muncul"
                 : "Common Contexts"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Konteks yang paling sering kamu pilih."
                 : "Contexts that appeared most often."}
@@ -870,20 +870,20 @@ export default function InsightsClient({
                   (context) => (
                     <div
                       key={context.slug}
-                      className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"
+                      className="flex items-center justify-between rounded-xl bg-[#fdfbf7]/80 px-4 py-3"
                     >
-                      <span className="text-sm font-medium text-slate-700">
+                      <span className="text-sm font-medium text-[#4a3f35]/85">
                         {context.name}
                       </span>
 
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-[#4a3f35]/45">
                         {context.count}x
                       </span>
                     </div>
                   ),
                 )
               ) : (
-                <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+                <p className="rounded-xl bg-[#fdfbf7]/80 p-4 text-sm text-[#4a3f35]/60">
                   {isId
                     ? "Belum ada data."
                     : "No data yet."}
@@ -892,14 +892,14 @@ export default function InsightsClient({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-            <h2 className="font-semibold text-slate-900">
+          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
+            <h2 className="font-semibold text-[#4a3f35]">
               {isId
                 ? "Possible Triggers"
                 : "Possible Triggers"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Pola yang terdeteksi dari AI."
                 : "Patterns identified by AI."}
@@ -911,20 +911,20 @@ export default function InsightsClient({
                   (trigger) => (
                     <div
                       key={trigger.name}
-                      className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"
+                      className="flex items-center justify-between rounded-xl bg-[#fdfbf7]/80 px-4 py-3"
                     >
-                      <span className="text-sm text-slate-700">
+                      <span className="text-sm text-[#4a3f35]/85">
                         {trigger.name}
                       </span>
 
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-[#4a3f35]/45">
                         {trigger.count}x
                       </span>
                     </div>
                   ),
                 )
               ) : (
-                <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+                <p className="rounded-xl bg-[#fdfbf7]/80 p-4 text-sm text-[#4a3f35]/60">
                   {isId
                     ? "Belum ada pola yang cukup kuat."
                     : "No strong pattern yet."}
@@ -936,18 +936,18 @@ export default function InsightsClient({
         </section>
 
         {/* DISCLAIMER */}
-        <div className="mt-6 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-5">
+        <div className="mt-6 rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/30/60 p-5">
           <div className="flex gap-3">
-            <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-indigo-500" />
+            <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-[#5c6b9c]" />
 
             <div>
-              <p className="text-sm font-medium text-indigo-900">
+              <p className="text-sm font-medium text-[#4a3f35]">
                 {isId
                   ? "Tentang Insights"
                   : "About Insights"}
               </p>
 
-              <p className="mt-1 text-xs leading-6 text-indigo-700">
+              <p className="mt-1 text-xs leading-6 text-[#4a3f35]/75">
                 {isId
                   ? "Insights Moodify adalah ringkasan pola dari data check-in, diary, dan analisis AI kamu. Ini bukan diagnosis medis atau psikologis."
                   : "Moodify Insights summarizes patterns from your check-ins, diary entries, and AI analyses. It is not a medical or psychological diagnosis."}

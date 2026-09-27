@@ -221,9 +221,9 @@ export default function ActivitiesClient({
 
   if (loading) {
     return (
-      <main className="min-h-full bg-[#f8f8fb] p-6 lg:p-8">
+      <main className="min-h-full bg-[#fdfbf7] p-6 lg:p-8">
         <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center">
-          <div className="flex items-center gap-3 text-sm text-slate-500">
+          <div className="flex items-center gap-3 text-sm text-[#4a3f35]/60">
             <Loader2 className="h-5 w-5 animate-spin" />
             {isId ? "Memuat aktivitas..." : "Loading activities..."}
           </div>
@@ -233,22 +233,22 @@ export default function ActivitiesClient({
   }
 
   return (
-    <main className="min-h-full bg-[#f8f8fb] p-4 sm:p-6 lg:p-8">
+    <main className="min-h-full bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* Header */}
         <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="mb-2 text-sm font-medium text-indigo-600">
+            <p className="mb-2 text-sm font-medium text-[#5c6b9c]">
               {isId ? "Wellbeing Activities" : "Wellbeing Activities"}
             </p>
 
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-[#4a3f35] sm:text-3xl">
               {isId
                 ? `Aktivitas untuk kamu, ${userName}`
                 : `Activities for you, ${userName}`}
             </h1>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#4a3f35]/60">
               {isId
                 ? "Luangkan beberapa menit untuk melakukan sesuatu yang bisa membantu kamu merasa lebih tenang dan terhubung dengan diri sendiri."
                 : "Take a few minutes to do something that may help you feel calmer and more connected with yourself."}
@@ -257,7 +257,7 @@ export default function ActivitiesClient({
         </section>
 
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="rounded-2xl border border-[#e2725b]/25 bg-[#e2725b]/10 px-4 py-3 text-sm text-[#e2725b]">
             {error}
           </div>
         )}
@@ -268,14 +268,14 @@ export default function ActivitiesClient({
             <div className="mb-4 flex items-end justify-between">
               <div>
                 <div className="mb-1 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-indigo-600" />
+                  <Sparkles className="h-4 w-4 text-[#5c6b9c]" />
 
-                  <p className="text-sm font-semibold text-indigo-600">
+                  <p className="text-sm font-semibold text-[#5c6b9c]">
                     {isId ? "Recommended for You" : "Recommended for You"}
                   </p>
                 </div>
 
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-[#4a3f35]">
                   {isId
                     ? "Aktivitas berdasarkan check-in kamu"
                     : "Activities based on your check-in"}
@@ -299,11 +299,11 @@ export default function ActivitiesClient({
         {/* Explore */}
         <section>
           <div className="mb-5">
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-[#4a3f35]">
               {isId ? "Explore Activities" : "Explore Activities"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Pilih aktivitas yang sesuai dengan kebutuhanmu."
                 : "Choose an activity that fits what you need right now."}
@@ -323,8 +323,8 @@ export default function ActivitiesClient({
                   className={[
                     "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition",
                     selected
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-200 hover:text-indigo-600",
+                      ? "bg-[#e2725b] text-white shadow-[0_1px_3px_rgba(74,63,53,0.06)]"
+                      : "border border-[#4a3f35]/12 bg-[#fdfbf7] text-[#4a3f35]/70 hover:border-[#e2725b]/30 hover:text-[#5c6b9c]",
                   ].join(" ")}
                 >
                   {category === "all"
@@ -338,10 +338,10 @@ export default function ActivitiesClient({
           </div>
 
           {filteredActivities.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center">
-              <Sparkles className="mx-auto h-8 w-8 text-slate-300" />
+            <div className="rounded-2xl border border-dashed border-[#4a3f35]/12 bg-[#fdfbf7] p-10 text-center">
+              <Sparkles className="mx-auto h-8 w-8 text-[#4a3f35]/30" />
 
-              <p className="mt-3 text-sm text-slate-500">
+              <p className="mt-3 text-sm text-[#4a3f35]/60">
                 {isId
                   ? "Belum ada aktivitas pada kategori ini."
                   : "No activities found in this category."}
@@ -363,11 +363,11 @@ export default function ActivitiesClient({
         {/* History */}
         <section>
           <div className="mb-5">
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-[#4a3f35]">
               {isId ? "Recently Completed" : "Recently Completed"}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-[#4a3f35]/60">
               {isId
                 ? "Aktivitas yang baru saja kamu lakukan."
                 : "Activities you recently completed."}
@@ -375,20 +375,20 @@ export default function ActivitiesClient({
           </div>
 
           {history.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-6">
               <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50">
-                  <CheckCircle2 className="h-5 w-5 text-indigo-600" />
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fbc4ab]/30">
+                  <CheckCircle2 className="h-5 w-5 text-[#5c6b9c]" />
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-slate-900">
+                  <h3 className="font-semibold text-[#4a3f35]">
                     {isId
                       ? "Belum ada aktivitas"
                       : "No activity history yet"}
                   </h3>
 
-                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                  <p className="mt-1 text-sm leading-6 text-[#4a3f35]/60">
                     {isId
                       ? "Setelah kamu menyelesaikan aktivitas, riwayatnya akan muncul di sini."
                       : "Once you complete an activity, your history will appear here."}
@@ -397,28 +397,28 @@ export default function ActivitiesClient({
               </div>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="overflow-hidden rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7]">
               {history.slice(0, 5).map((log, index) => (
                 <div
                   key={log.id}
                   className={[
                     "flex items-center justify-between gap-4 p-4",
                     index !== Math.min(history.length, 5) - 1
-                      ? "border-b border-slate-100"
+                      ? "border-b border-[#4a3f35]/8"
                       : "",
                   ].join(" ")}
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#c1d5c0]/40">
+                      <CheckCircle2 className="h-5 w-5 text-[#5c6b9c]" />
                     </div>
 
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">
+                      <p className="truncate text-sm font-semibold text-[#4a3f35]">
                         {log.activity.title}
                       </p>
 
-                      <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                      <div className="mt-1 flex items-center gap-2 text-xs text-[#4a3f35]/60">
                         <Clock3 className="h-3.5 w-3.5" />
                         {log.activity.durationMinutes}{" "}
                         {isId ? "menit" : "min"}
@@ -427,7 +427,7 @@ export default function ActivitiesClient({
                   </div>
 
                   {log.userRating && (
-                    <div className="shrink-0 text-sm font-medium text-slate-600">
+                    <div className="shrink-0 text-sm font-medium text-[#4a3f35]/70">
                       {log.userRating}/5
                     </div>
                   )}
@@ -456,50 +456,50 @@ function ActivityCard({
   return (
     <article
       className={[
-        "group relative overflow-hidden rounded-2xl border bg-white p-5 transition",
+        "group relative overflow-hidden rounded-2xl border bg-[#fdfbf7] p-5 transition",
         recommended
-          ? "border-indigo-100 shadow-sm hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
-          : "border-slate-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm",
+          ? "border-[#e2725b]/20 shadow-[0_1px_3px_rgba(74,63,53,0.06)] hover:-translate-y-0.5 hover:border-[#e2725b]/30 hover:shadow-md"
+          : "border-[#4a3f35]/12 hover:-translate-y-0.5 hover:border-[#4a3f35]/20 hover:shadow-[0_1px_3px_rgba(74,63,53,0.06)]",
       ].join(" ")}
     >
       {recommended && (
-        <div className="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-600">
+        <div className="absolute right-4 top-4 rounded-full bg-[#fbc4ab]/30 px-2.5 py-1 text-[11px] font-semibold text-[#5c6b9c]">
           {isId ? "Untuk kamu" : "For you"}
         </div>
       )}
 
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50">
-        <Icon className="h-5 w-5 text-indigo-600" />
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fbc4ab]/30">
+        <Icon className="h-5 w-5 text-[#5c6b9c]" />
       </div>
 
       <div className="mt-5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+          <span className="rounded-full bg-[#c1d5c0]/35 px-2.5 py-1 text-[11px] font-medium text-[#4a3f35]/70">
             {formatCategory(activity.category, isId)}
           </span>
 
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-[#4a3f35]/45">
             {formatDifficulty(activity.difficulty, isId)}
           </span>
         </div>
 
-        <h3 className="mt-3 text-base font-bold text-slate-900">
+        <h3 className="mt-3 text-base font-bold text-[#4a3f35]">
           {activity.title}
         </h3>
 
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#4a3f35]/60">
           {activity.description}
         </p>
 
         <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-[#4a3f35]/60">
             <Clock3 className="h-3.5 w-3.5" />
             {activity.durationMinutes} {isId ? "menit" : "min"}
           </div>
 
           <Link
             href={`/${locale}/activities/${activity.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 transition hover:text-indigo-700"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#5c6b9c] transition hover:text-[#4a3f35]/75"
           >
             {isId ? "Mulai" : "Start"}
 

@@ -179,18 +179,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[#fdfbf7]">
       <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
         {/* =========================================================
             LEFT BRAND PANEL
         ========================================================== */}
-        <section className="relative hidden overflow-hidden bg-indigo-600 lg:flex">
+        <section className="relative hidden overflow-hidden bg-[#e2725b] lg:flex">
           {/* Decorative background */}
-          <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/[0.06]" />
+          <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#fdfbf7]/[0.06]" />
 
-          <div className="absolute -bottom-40 -right-32 h-[520px] w-[520px] rounded-full bg-indigo-500/30" />
+          <div className="absolute -bottom-40 -right-32 h-[520px] w-[520px] rounded-full bg-[#fbc4ab]/30" />
 
-          <div className="absolute right-20 top-24 h-24 w-24 rounded-full border border-white/10" />
+          <div className="absolute right-20 top-24 h-24 w-24 rounded-full border border-[#fdfbf7]/15" />
 
           <div className="relative z-10 flex w-full flex-col justify-between p-12 xl:p-16">
             {/* Brand */}
@@ -214,8 +214,8 @@ export default function RegisterPage() {
             {/* Main content */}
             <div className="max-w-xl">
               {/* Badge */}
-              <div className="mb-7 inline-flex items-center rounded-full border border-white/15 bg-white/[0.08] px-4 py-2">
-                <span className="text-[11px] font-semibold tracking-[0.18em] text-indigo-50">
+              <div className="mb-7 inline-flex items-center rounded-full border border-[#fdfbf7]/15 bg-[#fdfbf7]/[0.08] px-4 py-2">
+                <span className="text-[11px] font-semibold tracking-[0.18em] text-[#fdfbf7]/90">
                   {t.badge}
                 </span>
               </div>
@@ -224,7 +224,7 @@ export default function RegisterPage() {
                 {t.headline}
               </h1>
 
-              <p className="mt-6 max-w-lg text-[15px] leading-7 text-indigo-100">
+              <p className="mt-6 max-w-lg text-[15px] leading-7 text-[#fdfbf7]/80">
                 {t.description}
               </p>
 
@@ -237,8 +237,8 @@ export default function RegisterPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center gap-3 text-indigo-100">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
+            <div className="flex items-center gap-3 text-[#fdfbf7]/80">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fdfbf7]/10">
                 <ShieldCheck
                   className="h-4 w-4"
                   strokeWidth={1.8}
@@ -255,7 +255,7 @@ export default function RegisterPage() {
         {/* =========================================================
             RIGHT REGISTER PANEL
         ========================================================== */}
-        <section className="flex min-h-screen flex-col bg-white">
+        <section className="flex min-h-screen flex-col bg-[#fdfbf7]">
           {/* Top bar */}
           <div className="flex items-center justify-between px-6 py-5 sm:px-8 lg:px-12">
             {/* Mobile brand */}
@@ -269,7 +269,7 @@ export default function RegisterPage() {
                 className="h-10 w-10 object-contain"
               />
 
-              <span className="text-lg font-bold tracking-tight text-gray-900">
+              <span className="text-lg font-bold tracking-tight text-[#4a3f35]">
                 Moodify
               </span>
             </div>
@@ -285,18 +285,18 @@ export default function RegisterPage() {
             <div className="w-full max-w-md">
               {/* Heading */}
               <div className="mb-8">
-                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#fbc4ab]/35">
                   <UserRound
-                    className="h-5 w-5 text-indigo-600"
+                    className="h-5 w-5 text-[#5c6b9c]"
                     strokeWidth={1.8}
                   />
                 </div>
 
-                <h2 className="text-3xl font-bold tracking-[-0.03em] text-gray-900">
+                <h2 className="text-3xl font-bold tracking-[-0.03em] text-[#4a3f35]">
                   {t.welcome}
                 </h2>
 
-                <p className="mt-2 text-sm leading-6 text-gray-500">
+                <p className="mt-2 text-sm leading-6 text-[#4a3f35]/65">
                   {t.subtitle}
                 </p>
               </div>
@@ -307,14 +307,14 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="name"
-                    className="mb-2 block text-sm font-medium text-gray-800"
+                    className="mb-2 block text-sm font-medium text-[#4a3f35]"
                   >
                     {t.name}
                   </label>
 
                   <div className="relative">
                     <UserRound
-                      className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-400"
+                      className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#4a3f35]/45"
                       strokeWidth={1.8}
                     />
 
@@ -330,19 +330,19 @@ export default function RegisterPage() {
                       disabled={isLoading}
                       className="
                         h-12 w-full rounded-xl
-                        border border-gray-200
-                        bg-white
+                        border border-[#4a3f35]/15
+                        bg-[#fdfbf7]
                         pl-11 pr-4
-                        text-sm text-gray-900
+                        text-sm text-[#4a3f35]
                         outline-none
                         transition
-                        placeholder:text-gray-400
-                        hover:border-gray-300
-                        focus:border-indigo-500
+                        placeholder:text-[#4a3f35]/45
+                        hover:border-[#4a3f35]/30
+                        focus:border-[#e2725b]
                         focus:ring-4
-                        focus:ring-indigo-500/10
+                        focus:ring-[#e2725b]/10
                         disabled:cursor-not-allowed
-                        disabled:bg-gray-50
+                        disabled:bg-[#fdfbf7]
                       "
                     />
                   </div>
@@ -352,14 +352,14 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="mb-2 block text-sm font-medium text-gray-800"
+                    className="mb-2 block text-sm font-medium text-[#4a3f35]"
                   >
                     {t.email}
                   </label>
 
                   <div className="relative">
                     <Mail
-                      className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-400"
+                      className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#4a3f35]/45"
                       strokeWidth={1.8}
                     />
 
@@ -375,19 +375,19 @@ export default function RegisterPage() {
                       disabled={isLoading}
                       className="
                         h-12 w-full rounded-xl
-                        border border-gray-200
-                        bg-white
+                        border border-[#4a3f35]/15
+                        bg-[#fdfbf7]
                         pl-11 pr-4
-                        text-sm text-gray-900
+                        text-sm text-[#4a3f35]
                         outline-none
                         transition
-                        placeholder:text-gray-400
-                        hover:border-gray-300
-                        focus:border-indigo-500
+                        placeholder:text-[#4a3f35]/45
+                        hover:border-[#4a3f35]/30
+                        focus:border-[#e2725b]
                         focus:ring-4
-                        focus:ring-indigo-500/10
+                        focus:ring-[#e2725b]/10
                         disabled:cursor-not-allowed
-                        disabled:bg-gray-50
+                        disabled:bg-[#fdfbf7]
                       "
                     />
                   </div>
@@ -397,14 +397,14 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="mb-2 block text-sm font-medium text-gray-800"
+                    className="mb-2 block text-sm font-medium text-[#4a3f35]"
                   >
                     {t.password}
                   </label>
 
                   <div className="relative">
                     <LockKeyhole
-                      className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-400"
+                      className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#4a3f35]/45"
                       strokeWidth={1.8}
                     />
 
@@ -421,19 +421,19 @@ export default function RegisterPage() {
                       disabled={isLoading}
                       className="
                         h-12 w-full rounded-xl
-                        border border-gray-200
-                        bg-white
+                        border border-[#4a3f35]/15
+                        bg-[#fdfbf7]
                         pl-11 pr-12
-                        text-sm text-gray-900
+                        text-sm text-[#4a3f35]
                         outline-none
                         transition
-                        placeholder:text-gray-400
-                        hover:border-gray-300
-                        focus:border-indigo-500
+                        placeholder:text-[#4a3f35]/45
+                        hover:border-[#4a3f35]/30
+                        focus:border-[#e2725b]
                         focus:ring-4
-                        focus:ring-indigo-500/10
+                        focus:ring-[#e2725b]/10
                         disabled:cursor-not-allowed
-                        disabled:bg-gray-50
+                        disabled:bg-[#fdfbf7]
                       "
                     />
 
@@ -454,10 +454,10 @@ export default function RegisterPage() {
                         -translate-y-1/2
                         items-center justify-center
                         rounded-lg
-                        text-gray-400
+                        text-[#4a3f35]/45
                         transition
-                        hover:bg-gray-100
-                        hover:text-gray-600
+                        hover:bg-[#c1d5c0]/35
+                        hover:text-[#4a3f35]/75
                         disabled:pointer-events-none
                       "
                     >
@@ -475,15 +475,15 @@ export default function RegisterPage() {
                     </button>
                   </div>
 
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-[#4a3f35]/45">
                     {t.passwordRequirement}
                   </p>
                 </div>
 
                 {/* Error */}
                 {error && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-                    <p className="text-sm leading-5 text-red-600">
+                  <div className="rounded-xl border border-[#e2725b]/30 bg-[#e2725b]/10 px-4 py-3">
+                    <p className="text-sm leading-5 text-[#c95f4b]">
                       {error}
                     </p>
                   </div>
@@ -498,16 +498,16 @@ export default function RegisterPage() {
                     flex h-12 w-full
                     items-center justify-center gap-2
                     rounded-xl
-                    bg-indigo-600
+                    bg-[#e2725b]
                     px-5
                     text-sm font-semibold text-white
                     shadow-sm
                     transition-all duration-200
-                    hover:bg-indigo-700
+                    hover:bg-[#c95f4b]
                     hover:shadow-md
                     focus:outline-none
                     focus:ring-4
-                    focus:ring-indigo-500/20
+                    focus:ring-[#e2725b]/20
                     disabled:cursor-not-allowed
                     disabled:opacity-60
                   "
@@ -527,11 +527,11 @@ export default function RegisterPage() {
 
               {/* Login */}
               <div className="mt-7 text-center">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[#4a3f35]/65">
                   {t.alreadyAccount}{" "}
                   <Link
                     href={`/${locale}/login`}
-                    className="font-semibold text-indigo-600 transition hover:text-indigo-700"
+                    className="font-semibold text-[#5c6b9c] transition hover:text-[#4a3f35]"
                   >
                     {t.login}
                   </Link>
@@ -539,14 +539,14 @@ export default function RegisterPage() {
               </div>
 
               {/* Privacy note */}
-              <div className="mt-8 border-t border-gray-100 pt-6">
+              <div className="mt-8 border-t border-[#4a3f35]/10 pt-6">
                 <div className="flex items-start gap-3">
                   <ShieldCheck
-                    className="mt-0.5 h-4 w-4 shrink-0 text-gray-400"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-[#4a3f35]/45"
                     strokeWidth={1.8}
                   />
 
-                  <p className="text-[11px] leading-5 text-gray-400">
+                  <p className="text-[11px] leading-5 text-[#4a3f35]/45">
                     {t.privacyNote}
                   </p>
                 </div>
@@ -565,15 +565,15 @@ export default function RegisterPage() {
 
 function FeatureItem({ text }: { text: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.07] px-4 py-3 backdrop-blur-sm">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10">
+    <div className="flex items-center gap-3 rounded-xl border border-[#fdfbf7]/15 bg-[#fdfbf7]/[0.07] px-4 py-3">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#fdfbf7]/10">
         <Check
-          className="h-3.5 w-3.5 text-indigo-100"
+          className="h-3.5 w-3.5 text-[#fdfbf7]/80"
           strokeWidth={2.2}
         />
       </div>
 
-      <span className="text-sm leading-5 text-indigo-50">
+      <span className="text-sm leading-5 text-[#fdfbf7]/90">
         {text}
       </span>
     </div>

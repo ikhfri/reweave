@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -227,25 +226,25 @@ async function handleCreateDiary() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F8FC] px-4 py-6 md:px-8 md:py-8">
+    <main className="min-h-screen bg-[#fdfbf7] px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="mb-2 flex items-center gap-2 text-sm text-indigo-500">
+            <div className="mb-2 flex items-center gap-2 text-sm text-[#5c6b9c]">
               <BookOpen className="h-4 w-4" />
               <span>
                 {isId ? "Ruang Refleksi" : "Reflection Space"}
               </span>
             </div>
 
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
+            <h1 className="text-2xl font-semibold tracking-tight text-[#4a3f35] md:text-3xl">
               {isId
                 ? `Diary ${userName}`
                 : `${userName}'s Diary`}
             </h1>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#4a3f35]/60">
               {isId
                 ? "Tempat untuk menuliskan apa yang sedang kamu rasakan, pikirkan, atau alami hari ini."
                 : "A private space to write about what you're feeling, thinking, or experiencing today."}
@@ -258,7 +257,7 @@ async function handleCreateDiary() {
               setShowComposer(true);
               setError("");
             }}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#e2725b] px-5 text-sm font-medium text-white shadow-[0_1px_3px_rgba(74,63,53,0.06)] transition hover:bg-[#c95f4c]"
           >
             <Plus className="h-4 w-4" />
             {isId ? "Tulis Diary" : "Write Diary"}
@@ -274,14 +273,14 @@ async function handleCreateDiary() {
 
         {/* Composer */}
         {showComposer && (
-          <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+          <div className="mb-8 rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 shadow-[0_1px_3px_rgba(74,63,53,0.06)] md:p-6">
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <h2 className="font-semibold text-slate-900">
+                <h2 className="font-semibold text-[#4a3f35]">
                   {isId ? "Apa yang ingin kamu ceritakan?" : "What would you like to share?"}
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-[#4a3f35]/60">
                   {isId
                     ? "Tidak perlu sempurna. Tulis apa adanya."
                     : "It doesn't need to be perfect. Just write honestly."}
@@ -295,7 +294,7 @@ async function handleCreateDiary() {
                   setContent("");
                   setError("");
                 }}
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-lg p-2 text-[#4a3f35]/45 transition hover:bg-[#c1d5c0]/35 hover:text-[#4a3f35]/70"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -311,11 +310,11 @@ async function handleCreateDiary() {
               }
               maxLength={10000}
               rows={8}
-              className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-50"
+              className="w-full resize-none rounded-xl border border-[#4a3f35]/12 bg-[#fdfbf7]/80 p-4 text-sm leading-7 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/45 focus:border-[#e2725b] focus:bg-[#fdfbf7] focus:ring-4 focus:ring-[#fbc4ab]/35"
             />
 
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[#4a3f35]/45">
                 {content.length}/10000
               </span>
 
@@ -323,7 +322,7 @@ async function handleCreateDiary() {
                 type="button"
                 onClick={handleCreateDiary}
                 disabled={saving || !content.trim()}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#e2725b] px-5 text-sm font-medium text-white transition hover:bg-[#c95f4c] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saving ? (
                   <>
@@ -344,24 +343,24 @@ async function handleCreateDiary() {
         {/* Diary list */}
         {loading ? (
           <div className="flex min-h-[300px] items-center justify-center">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
+            <div className="flex items-center gap-2 text-sm text-[#4a3f35]/60">
               <Loader2 className="h-5 w-5 animate-spin" />
               {isId ? "Memuat diary..." : "Loading diary..."}
             </div>
           </div>
         ) : diaries.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+          <div className="rounded-2xl border border-dashed border-[#4a3f35]/20 bg-[#fdfbf7] px-6 py-16 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fbc4ab]/35 text-[#5c6b9c]">
               <BookOpen className="h-6 w-6" />
             </div>
 
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-[#4a3f35]">
               {isId
                 ? "Belum ada diary"
                 : "No diary entries yet"}
             </h2>
 
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#4a3f35]/60">
               {isId
                 ? "Mulai dengan menulis apa yang kamu rasakan hari ini."
                 : "Start by writing down how you're feeling today."}
@@ -370,7 +369,7 @@ async function handleCreateDiary() {
             <button
               type="button"
               onClick={() => setShowComposer(true)}
-              className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700"
+              className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-[#e2725b] px-4 text-sm font-medium text-white hover:bg-[#c95f4c]"
             >
               <Plus className="h-4 w-4" />
               {isId ? "Tulis Diary Pertama" : "Write Your First Diary"}
@@ -381,11 +380,11 @@ async function handleCreateDiary() {
             {diaries.filter(Boolean).map((diary) => (
               <article
                 key={diary.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-indigo-200 md:p-6"
+                className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 transition hover:border-[#e2725b]/30 md:p-6"
               >
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <div className="flex items-center gap-2 text-xs text-[#4a3f35]/45">
                       <CalendarDays className="h-4 w-4" />
                       <span>{formatDate(diary.createdAt)}</span>
                       <span>•</span>
@@ -397,7 +396,7 @@ async function handleCreateDiary() {
                         {diary.checkin.emotions.map((item) => (
                           <span
                             key={`${diary.id}-${item.emotion.slug}`}
-                            className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600"
+                            className="rounded-full bg-[#fbc4ab]/35 px-3 py-1 text-xs font-medium text-[#5c6b9c]"
                           >
                             {item.emotion.name}
                           </span>
@@ -407,19 +406,19 @@ async function handleCreateDiary() {
                   </div>
 
                   {diary.aiAnalyses?.length > 0 && (
-                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-600">
+                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#c1d5c0]/35 px-3 py-1.5 text-xs font-medium text-[#4a3f35]">
                       <Sparkles className="h-3.5 w-3.5" />
                       AI Analysis
                     </span>
                   )}
                 </div>
 
-                <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                <p className="whitespace-pre-wrap text-sm leading-7 text-[#4a3f35]/85">
                   {diary.content}
                 </p>
 
                 {analyzingDiaryId === diary.id && (
-                  <div className="mt-5 flex items-center gap-2 rounded-xl bg-violet-50 px-4 py-3 text-sm text-violet-600">
+                  <div className="mt-5 flex items-center gap-2 rounded-xl bg-[#c1d5c0]/35 px-4 py-3 text-sm text-[#4a3f35]">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     {isId
                       ? "Moodify sedang menganalisis diary..."
@@ -428,21 +427,21 @@ async function handleCreateDiary() {
                 )}
 
                 {diary.aiAnalyses?.length > 0 && (
-                  <div className="mt-5 rounded-xl bg-slate-50 p-4">
-                    <div className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-800">
-                      <Sparkles className="h-4 w-4 text-indigo-500" />
+                  <div className="mt-5 rounded-xl bg-[#fdfbf7]/80 p-4">
+                    <div className="mb-2 flex items-center gap-2 text-sm font-medium text-[#4a3f35]">
+                      <Sparkles className="h-4 w-4 text-[#5c6b9c]" />
                       {isId
                         ? "Insight dari Moodify"
                         : "Moodify Insight"}
                     </div>
 
-                    <p className="text-sm leading-6 text-slate-600">
+                    <p className="text-sm leading-6 text-[#4a3f35]/70">
                       {diary.aiAnalyses[0].summary}
                     </p>
 
                     {diary.aiAnalyses[0].emotionalState && (
-                      <div className="mt-3 text-xs text-slate-500">
-                        <span className="font-medium text-slate-700">
+                      <div className="mt-3 text-xs text-[#4a3f35]/60">
+                        <span className="font-medium text-[#4a3f35]/85">
                           {isId ? "Emotional state:" : "Emotional state:"}
                         </span>{" "}
                         {diary.aiAnalyses[0].emotionalState}
@@ -454,7 +453,7 @@ async function handleCreateDiary() {
                 {diary.checkinId && (
                   <Link
                     href={`/${locale}/check-in/result/${diary.checkinId}`}
-                    className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                    className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-[#5c6b9c] hover:text-[#e2725b]"
                   >
                     {isId
                       ? "Lihat hasil check-in"
