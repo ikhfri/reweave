@@ -10,6 +10,16 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "Moodify",
   description: "AI-Powered Emotional Wellbeing Companion",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.png",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
