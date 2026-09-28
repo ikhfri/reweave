@@ -46,7 +46,7 @@ export default async function LandingPage({ params }: PageProps) {
             aria-label="Moodify"
           >
             <Image
-              src="/Moodify-logo.png"
+              src="/moodify-logo.png"
               alt="Moodify"
               width={150}
               height={45}
@@ -725,7 +725,7 @@ export default async function LandingPage({ params }: PageProps) {
       <section>
         <div className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
           <div className="mx-auto flex  items-center justify-center">
-            <Image src="/Moodify-logo.png" alt="Moodify" width={170} height={52} className="h-24 w-auto object-contain" />
+            <Image src="/moodify-logo.png" alt="Moodify" width={170} height={52} className="h-24 w-auto object-contain" />
           </div>
 
           <h2 className="mx-auto mt-7 max-w-3xl text-[36px] font-semibold leading-tight tracking-[-0.05em] sm:text-[50px]">
@@ -782,7 +782,7 @@ export default async function LandingPage({ params }: PageProps) {
                 className="inline-flex items-center"
               >
                 <Image
-                  src="/Moodify-logo.png"
+                  src="/moodify-logo.png"
                   alt="Moodify"
                   width={130}
                   height={40}

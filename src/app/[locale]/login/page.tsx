@@ -185,7 +185,7 @@ export default function LoginPage() {
               aria-label="Moodify"
             >
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.png"
                 alt="Moodify"
                 width={180}
                 height={55}
@@ -267,7 +267,7 @@ export default function LoginPage() {
               aria-label="Moodify"
             >
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.png"
                 alt="Moodify"
                 width={150}
                 height={45}

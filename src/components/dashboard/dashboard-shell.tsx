@@ -242,7 +242,7 @@ export default function DashboardShell({
             aria-label="Moodify Dashboard"
           >
             <Image
-              src="/Moodify-logo.png"
+              src="/moodify-logo.png"
               alt="Moodify"
               width={145}
               height={44}
@@ -592,7 +592,7 @@ export default function DashboardShell({
             aria-label="Moodify Dashboard"
           >
             <Image
-              src="/Moodify-logo.png"
+              src="/moodify-logo.png"
               alt="Moodify"
               width={120}
               height={38}
