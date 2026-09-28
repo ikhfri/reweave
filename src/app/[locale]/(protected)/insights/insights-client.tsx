@@ -6,9 +6,7 @@ import {
   BarChart3,
   BookOpen,
   CalendarDays,
-  ChevronDown,
   Loader2,
-  Sparkles,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
@@ -87,6 +85,31 @@ type Props = {
   userName: string;
 };
 
+type WeeklyAI = {
+  headline: string;
+  summary: string;
+  highlights: string[];
+  reflectionPrompt: string;
+  gentleSuggestion: string;
+};
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
+function getDayLabel(date: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
+    weekday: "short",
+  }).format(new Date(`${date}T00:00:00`));
+}
+
+function getDateLabel(date: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
+    day: "numeric",
+    month: "short",
+  }).format(new Date(`${date}T00:00:00`));
+}
+
 export default function InsightsClient({
   locale,
   userName,
@@ -96,13 +119,8 @@ export default function InsightsClient({
   const [data, setData] = useState<WeeklyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [weeklyAI, setWeeklyAI] = useState<{
-    headline: string;
-    summary: string;
-    highlights: string[];
-    reflectionPrompt: string;
-    gentleSuggestion: string;
-  } | null>(null);
+
+  const [weeklyAI, setWeeklyAI] = useState<WeeklyAI | null>(null);
   const [loadingAI, setLoadingAI] = useState(false);
 
   useEffect(() => {
@@ -223,15 +241,89 @@ export default function InsightsClient({
     return "stable";
   }, [data]);
 
+  const totalSentiment = useMemo(() => {
+    if (!data) return 0;
+
+    return (
+      data.summary.sentiment.POSITIVE +
+      data.summary.sentiment.NEUTRAL +
+      data.summary.sentiment.NEGATIVE
+    );
+  }, [data]);
+
+  const sentimentPercentages = useMemo(() => {
+    if (!data || totalSentiment === 0) {
+      return {
+        positive: 0,
+        neutral: 0,
+        negative: 0,
+      };
+    }
+
+    return {
+      positive: Math.round(
+        (data.summary.sentiment.POSITIVE / totalSentiment) * 100,
+      ),
+      neutral: Math.round(
+        (data.summary.sentiment.NEUTRAL / totalSentiment) * 100,
+      ),
+      negative: Math.round(
+        (data.summary.sentiment.NEGATIVE / totalSentiment) * 100,
+      ),
+    };
+  }, [data, totalSentiment]);
+
+  const highestStress = useMemo(() => {
+    if (!data) return null;
+
+    return data.summary.dailyTrend.reduce<DailyTrend | null>(
+      (highest, current) => {
+        if (current.averageStress === null) {
+          return highest;
+        }
+
+        if (!highest || highest.averageStress === null) {
+          return current;
+        }
+
+        return current.averageStress > highest.averageStress
+          ? current
+          : highest;
+      },
+      null,
+    );
+  }, [data]);
+
+  const activeDays = useMemo(() => {
+    if (!data) return 0;
+
+    return data.summary.dailyTrend.filter(
+      (day) =>
+        day.checkinCount > 0 ||
+        day.diaryCount > 0,
+    ).length;
+  }, [data]);
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#fdfbf7] px-4 py-8 md:px-8">
-        <div className="mx-auto flex min-h-[500px] max-w-6xl items-center justify-center">
-          <div className="flex items-center gap-2 text-sm text-[#4a3f35]/60">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            {isId
-              ? "Menganalisis minggu kamu..."
-              : "Analyzing your week..."}
+        <div className="mx-auto flex min-h-[600px] max-w-6xl items-center justify-center">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">
+              <Loader2 className="h-5 w-5 animate-spin text-[#5c6b9c]" />
+            </div>
+
+            <p className="text-sm font-medium text-[#4a3f35]">
+              {isId
+                ? "Menyusun perjalanan minggumu..."
+                : "Putting your week together..."}
+            </p>
+
+            <p className="mt-1 text-xs text-[#4a3f35]/50">
+              {isId
+                ? "Sebentar, kita lihat polanya."
+                : "Just a moment while we look at the patterns."}
+            </p>
           </div>
         </div>
       </main>
@@ -242,11 +334,19 @@ export default function InsightsClient({
     return (
       <main className="min-h-screen bg-[#fdfbf7] px-4 py-8 md:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-2xl border border-[#e2725b]/25 bg-[#e2725b]/10 p-5 text-sm text-[#e2725b]">
-            {error ||
-              (isId
-                ? "Data insights belum tersedia."
-                : "Insights data is not available.")}
+          <div className="rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/20 p-6">
+            <p className="text-sm font-medium text-[#4a3f35]">
+              {error ||
+                (isId
+                  ? "Data insights belum tersedia."
+                  : "Insights data is not available.")}
+            </p>
+
+            <p className="mt-1 text-sm leading-6 text-[#4a3f35]/60">
+              {isId
+                ? "Coba kembali setelah kamu memiliki beberapa check-in atau diary."
+                : "Try again after you have a few check-ins or diary entries."}
+            </p>
           </div>
         </div>
       </main>
@@ -255,452 +355,642 @@ export default function InsightsClient({
 
   const { summary } = data;
 
-  const totalSentiment =
-    summary.sentiment.POSITIVE +
-    summary.sentiment.NEUTRAL +
-    summary.sentiment.NEGATIVE;
-
-  const positivePercentage =
-    totalSentiment > 0
-      ? Math.round(
-          (summary.sentiment.POSITIVE /
-            totalSentiment) *
-            100,
-        )
-      : 0;
-
-  const neutralPercentage =
-    totalSentiment > 0
-      ? Math.round(
-          (summary.sentiment.NEUTRAL /
-            totalSentiment) *
-            100,
-        )
-      : 0;
-
-  const negativePercentage =
-    totalSentiment > 0
-      ? Math.round(
-          (summary.sentiment.NEGATIVE /
-            totalSentiment) *
-            100,
-        )
-      : 0;
-
   return (
-    <main className="min-h-screen bg-[#fdfbf7] px-4 py-6 md:px-8 md:py-8">
+    <main className="min-h-screen bg-[#fdfbf7] px-4 py-6 md:px-8 md:py-10">
       <div className="mx-auto max-w-6xl">
 
-        {/* HEADER */}
-        <header className="mb-8">
-          <div className="mb-3 flex items-center gap-2 text-sm text-[#5c6b9c]">
-            <Sparkles className="h-4 w-4" />
-            <span>
-              {isId
-                ? "Emotional Insights"
-                : "Emotional Insights"}
-            </span>
-          </div>
+        {/* -------------------------------------------------- */}
+        {/* INTRO                                              */}
+        {/* -------------------------------------------------- */}
 
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-[#4a3f35] md:text-3xl">
+        <header className="mb-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
                 {isId
-                  ? `Perjalanan emosimu, ${userName}`
-                  : `Your emotional journey, ${userName}`}
+                  ? "Perjalanan emosional"
+                  : "Emotional journey"}
+              </p>
+
+              <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#4a3f35] md:text-4xl">
+                {isId
+                  ? `Minggumu bersama dirimu, ${userName}`
+                  : `A look back at your week, ${userName}`}
               </h1>
 
-              <p className="mt-2 text-sm leading-6 text-[#4a3f35]/60">
+              <p className="mt-3 max-w-xl text-sm leading-7 text-[#4a3f35]/60 md:text-[15px]">
                 {isId
-                  ? "Lihat pola emosimu berdasarkan check-in dan diary selama 7 hari terakhir."
-                  : "Understand your emotional patterns based on your check-ins and diary entries from the last 7 days."}
+                  ? "Bukan untuk menilai bagaimana perasaanmu, tapi untuk membantu kamu melihat apa yang mungkin sedang terjadi."
+                  : "Not to judge how you felt, but to help you notice what may have been happening beneath the surface."}
               </p>
             </div>
 
-            <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-[#4a3f35]/12 bg-[#fdfbf7] px-4 py-2.5 text-sm text-[#4a3f35]/70">
+            <div className="flex w-fit items-center gap-2 border-b border-[#4a3f35]/15 pb-2 text-sm text-[#4a3f35]/65">
               <CalendarDays className="h-4 w-4 text-[#5c6b9c]" />
-              {weekLabel}
-              <ChevronDown className="h-4 w-4 text-[#4a3f35]/45" />
+              <span>{weekLabel}</span>
             </div>
           </div>
         </header>
 
-        {/* WEEKLY AI SUMMARY */}
-        <section className="mb-6 rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/20 p-5 md:p-6">
-          <div className="flex gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fdfbf7] text-[#5c6b9c]">
-              <Sparkles className="h-5 w-5" />
-            </div>
+        {/* -------------------------------------------------- */}
+        {/* WEEK IN NUMBERS                                    */}
+        {/* -------------------------------------------------- */}
 
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium uppercase tracking-wide text-[#5c6b9c]">
-                Weekly AI Reflection
+        <section className="mb-12">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                {isId ? "Sekilas" : "At a glance"}
               </p>
 
-              {loadingAI ? (
-                <div className="mt-3 flex items-center gap-2 text-sm text-[#4a3f35]/75">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {isId
-                    ? "Moodify sedang membaca pola minggu ini..."
-                    : "Moodify is reviewing your weekly patterns..."}
-                </div>
-              ) : weeklyAI ? (
-                <>
-                  <h2 className="mt-2 text-lg font-semibold text-[#4a3f35]">
-                    {weeklyAI.headline}
-                  </h2>
+              <h2 className="mt-1 text-xl font-semibold text-[#4a3f35]">
+                {isId
+                  ? "Jejak minggu ini"
+                  : "Your week in a few numbers"}
+              </h2>
+            </div>
 
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[#4a3f35]/70">
-                    {weeklyAI.summary}
-                  </p>
+            <p className="hidden text-xs text-[#4a3f35]/45 sm:block">
+              {activeDays} / 7{" "}
+              {isId ? "hari aktif" : "active days"}
+            </p>
+          </div>
 
-                  {weeklyAI.highlights.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      {weeklyAI.highlights.map((highlight, index) => (
-                        <div
-                          key={`${index}-${highlight}`}
-                          className="flex gap-2 text-sm text-[#4a3f35]/70"
-                        >
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#fbc4ab]" />
-                          <span>{highlight}</span>
+          <div className="grid border-y border-[#4a3f35]/10 md:grid-cols-3">
+            <div className="border-b border-[#4a3f35]/10 py-5 md:border-b-0 md:border-r md:pr-8">
+              <div className="flex items-center gap-3">
+                <Activity className="h-4 w-4 text-[#5c6b9c]" />
+
+                <span className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
+                  {isId ? "Check-in" : "Check-ins"}
+                </span>
+              </div>
+
+              <p className="mt-3 text-3xl font-semibold tracking-tight text-[#4a3f35]">
+                {formatNumber(summary.totalCheckins)}
+              </p>
+
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
+                {isId
+                  ? "momen kamu berhenti sejenak"
+                  : "moments you paused for yourself"}
+              </p>
+            </div>
+
+            <div className="border-b border-[#4a3f35]/10 py-5 md:border-b-0 md:border-r md:px-8">
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-4 w-4 text-[#5c6b9c]" />
+
+                <span className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
+                  {isId ? "Diary" : "Diary"}
+                </span>
+              </div>
+
+              <p className="mt-3 text-3xl font-semibold tracking-tight text-[#4a3f35]">
+                {formatNumber(summary.totalDiaries)}
+              </p>
+
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
+                {isId
+                  ? "cerita yang kamu tulis"
+                  : "stories you put into words"}
+              </p>
+            </div>
+
+            <div className="py-5 md:pl-8">
+              <div className="flex items-center gap-3">
+                <BarChart3 className="h-4 w-4 text-[#5c6b9c]" />
+
+                <span className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
+                  {isId ? "Stress rata-rata" : "Average stress"}
+                </span>
+              </div>
+
+              <p className="mt-3 text-3xl font-semibold tracking-tight text-[#4a3f35]">
+                {summary.averageStress ?? "—"}
+              </p>
+
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
+                {isId
+                  ? "berdasarkan analisis yang tersedia"
+                  : "based on available analyses"}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------- */}
+        {/* AI REFLECTION                                      */}
+        {/* -------------------------------------------------- */}
+
+        <section className="mb-12">
+          <div className="grid gap-8 lg:grid-cols-[0.75fr_1.6fr]">
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                {isId
+                  ? "Teman refleksi"
+                  : "Reflection companion"}
+              </p>
+
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+                {isId
+                  ? "Apa yang terlihat dari minggu ini?"
+                  : "What does this week seem to say?"}
+              </h2>
+
+              <p className="mt-3 text-sm leading-7 text-[#4a3f35]/55">
+                {isId
+                  ? "Moodify membantu merangkum pola yang muncul dari check-in dan diary kamu."
+                  : "Moodify looks across your check-ins and diary entries to help you notice patterns."}
+              </p>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[2rem] bg-[#fbc4ab]/35 p-6 md:p-8">
+              <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#fdfbf7]/50" />
+              <div className="absolute -bottom-20 right-16 h-36 w-36 rounded-full bg-[#c1d5c0]/30" />
+
+              <div className="relative">
+                {loadingAI ? (
+                  <div className="flex min-h-[180px] items-center">
+                    <div>
+                      <div className="mb-4 flex items-center gap-2 text-[#5c6b9c]">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em]">
+                          {isId
+                            ? "Membaca pola"
+                            : "Reading your patterns"}
+                        </span>
+                      </div>
+
+                      <p className="text-sm leading-7 text-[#4a3f35]/65">
+                        {isId
+                          ? "Moodify sedang menyusun refleksi dari aktivitasmu minggu ini."
+                          : "Moodify is putting together a reflection from your week."}
+                      </p>
+                    </div>
+                  </div>
+                ) : weeklyAI ? (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                      {isId
+                        ? "Refleksi mingguan"
+                        : "Weekly reflection"}
+                    </p>
+
+                    <h3 className="mt-3 max-w-2xl text-2xl font-semibold leading-tight tracking-tight text-[#4a3f35] md:text-3xl">
+                      {weeklyAI.headline}
+                    </h3>
+
+                    <p className="mt-4 max-w-2xl text-sm leading-7 text-[#4a3f35]/70">
+                      {weeklyAI.summary}
+                    </p>
+
+                    {weeklyAI.highlights.length > 0 && (
+                      <div className="mt-6 grid gap-3 md:grid-cols-2">
+                        {weeklyAI.highlights.map(
+                          (highlight, index) => (
+                            <div
+                              key={`${index}-${highlight}`}
+                              className="rounded-xl bg-[#fdfbf7]/70 p-4"
+                            >
+                              <span className="mb-2 block text-xs font-semibold text-[#5c6b9c]">
+                                0{index + 1}
+                              </span>
+
+                              <p className="text-sm leading-6 text-[#4a3f35]/75">
+                                {highlight}
+                              </p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    )}
+
+                    <div className="mt-6 grid gap-3 md:grid-cols-2">
+                      {weeklyAI.reflectionPrompt && (
+                        <div className="rounded-xl bg-[#fdfbf7]/75 p-4">
+                          <p className="text-xs font-semibold text-[#5c6b9c]">
+                            {isId
+                              ? "Untuk direnungkan"
+                              : "Something to reflect on"}
+                          </p>
+
+                          <p className="mt-2 text-sm leading-6 text-[#4a3f35]/80">
+                            {weeklyAI.reflectionPrompt}
+                          </p>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      )}
 
-                  {weeklyAI.reflectionPrompt && (
-                    <div className="mt-5 rounded-xl bg-[#fdfbf7]/80 p-4">
-                      <p className="text-xs font-medium text-[#5c6b9c]">
-                        {isId ? "Pertanyaan refleksi" : "Reflection prompt"}
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-[#4a3f35]/85">
-                        {weeklyAI.reflectionPrompt}
-                      </p>
-                    </div>
-                  )}
+                      {weeklyAI.gentleSuggestion && (
+                        <div className="rounded-xl bg-[#fdfbf7]/75 p-4">
+                          <p className="text-xs font-semibold text-[#5c6b9c]">
+                            {isId
+                              ? "Langkah kecil"
+                              : "A gentle next step"}
+                          </p>
 
-                  {weeklyAI.gentleSuggestion && (
-                    <div className="mt-3 rounded-xl bg-[#fdfbf7]/80 p-4">
-                      <p className="text-xs font-medium text-[#5c6b9c]">
-                        {isId ? "Saran kecil" : "Gentle suggestion"}
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-[#4a3f35]/85">
-                        {weeklyAI.gentleSuggestion}
-                      </p>
+                          <p className="mt-2 text-sm leading-6 text-[#4a3f35]/80">
+                            {weeklyAI.gentleSuggestion}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </>
-              ) : (
-                <p className="mt-2 text-sm text-[#4a3f35]/60">
-                  {isId
-                    ? "Belum cukup data untuk membuat refleksi mingguan."
-                    : "There is not enough data for a weekly reflection yet."}
-                </p>
-              )}
+                  </>
+                ) : (
+                  <div className="py-6">
+                    <p className="text-sm leading-7 text-[#4a3f35]/65">
+                      {isId
+                        ? "Belum ada cukup data untuk membuat refleksi mingguan."
+                        : "There is not enough data to create a weekly reflection yet."}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* OVERVIEW CARDS */}
-        <section className="mb-6 grid gap-4 md:grid-cols-3">
+        {/* -------------------------------------------------- */}
+        {/* EMOTIONAL RHYTHM                                   */}
+        {/* -------------------------------------------------- */}
 
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fbc4ab]/30 text-[#5c6b9c]">
-                <Activity className="h-5 w-5" />
-              </div>
+        <section className="mb-12">
+          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                {isId ? "Ritme emosional" : "Emotional rhythm"}
+              </p>
 
-              <span className="text-xs text-[#4a3f35]/45">
-                {isId ? "7 hari" : "7 days"}
-              </span>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+                {isId
+                  ? "Bagaimana minggu ini terasa"
+                  : "How the week moved"}
+              </h2>
+
+              <p className="mt-2 max-w-xl text-sm leading-6 text-[#4a3f35]/55">
+                {isId
+                  ? "Grafik ini menunjukkan perubahan stress yang tercatat setiap hari."
+                  : "This shows how your recorded stress changed across the week."}
+              </p>
             </div>
 
-            <p className="text-sm text-[#4a3f35]/60">
-              {isId
-                ? "Total Check-in"
-                : "Total Check-ins"}
-            </p>
+            {stressTrend === "up" && (
+              <div className="flex items-center gap-2 text-xs font-medium text-[#e2725b]">
+                <TrendingUp className="h-4 w-4" />
 
-            <p className="mt-1 text-2xl font-semibold text-[#4a3f35]">
-              {summary.totalCheckins}
-            </p>
+                {isId
+                  ? "Stress cenderung meningkat"
+                  : "Stress tended upward"}
+              </div>
+            )}
+
+            {stressTrend === "down" && (
+              <div className="flex items-center gap-2 text-xs font-medium text-[#5c6b9c]">
+                <TrendingDown className="h-4 w-4" />
+
+                {isId
+                  ? "Stress cenderung menurun"
+                  : "Stress tended downward"}
+              </div>
+            )}
+
+            {stressTrend === "stable" && (
+              <div className="text-xs font-medium text-[#4a3f35]/45">
+                {isId
+                  ? "Perubahannya relatif stabil"
+                  : "The pattern stayed relatively steady"}
+              </div>
+            )}
           </div>
 
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c1d5c0]/35 text-[#4a3f35]">
-                <BookOpen className="h-5 w-5" />
-              </div>
-
-              <span className="text-xs text-[#4a3f35]/45">
-                {isId ? "Refleksi" : "Reflections"}
-              </span>
-            </div>
-
-            <p className="text-sm text-[#4a3f35]/60">
-              {isId
-                ? "Diary Ditulis"
-                : "Diary Entries"}
-            </p>
-
-            <p className="mt-1 text-2xl font-semibold text-[#4a3f35]">
-              {summary.totalDiaries}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fbc4ab]/25 text-[#e2725b]">
-                <BarChart3 className="h-5 w-5" />
-              </div>
-
-              <span className="text-xs text-[#4a3f35]/45">
-                {isId ? "Rata-rata" : "Average"}
-              </span>
-            </div>
-
-            <p className="text-sm text-[#4a3f35]/60">
-              {isId
-                ? "Stress Score"
-                : "Stress Score"}
-            </p>
-
-            <p className="mt-1 text-2xl font-semibold text-[#4a3f35]">
-              {summary.averageStress ?? "—"}
-            </p>
-          </div>
-
-        </section>
-
-        {/* MAIN GRID */}
-        <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-
-          {/* EMOTIONAL FLOW */}
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
-
-            <div className="mb-6 flex items-start justify-between">
-              <div>
-                <h2 className="font-semibold text-[#4a3f35]">
-                  {isId
-                    ? "Alur Emosional"
-                    : "Emotional Flow"}
-                </h2>
-
-                <p className="mt-1 text-sm text-[#4a3f35]/60">
-                  {isId
-                    ? "Perubahan stress dan aktivitas emosional selama minggu ini."
-                    : "Changes in stress and emotional activity throughout the week."}
-                </p>
-              </div>
-
-              {stressTrend === "up" && (
-                <div className="flex items-center gap-1 rounded-full bg-[#e2725b]/10 px-3 py-1.5 text-xs font-medium text-[#e2725b]">
-                  <TrendingUp className="h-3.5 w-3.5" />
-                  {isId ? "Naik" : "Rising"}
-                </div>
-              )}
-
-              {stressTrend === "down" && (
-                <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-[#5c6b9c]">
-                  <TrendingDown className="h-3.5 w-3.5" />
-                  {isId ? "Turun" : "Lower"}
-                </div>
-              )}
-            </div>
-
-            <div className="flex h-64 items-end gap-2 md:gap-4">
+          <div className="overflow-hidden rounded-[2rem] border border-[#4a3f35]/10 bg-[#fdfbf7]">
+            <div className="grid min-h-[320px] grid-cols-7 gap-2 px-4 pb-5 pt-8 md:px-8">
               {summary.dailyTrend.map((day) => {
-                const stress =
-                  day.averageStress ?? 0;
+                const stress = day.averageStress ?? 0;
 
                 const height =
                   stress > 0
                     ? Math.max(
-                        8,
+                        7,
                         Math.min(100, stress),
                       )
                     : 4;
 
-                const date = new Date(
-                  `${day.date}T00:00:00`,
-                );
-
-                const label =
-                  new Intl.DateTimeFormat(
-                    isId ? "id-ID" : "en-US",
-                    {
-                      weekday: "short",
-                    },
-                  ).format(date);
+                const hasActivity =
+                  day.checkinCount > 0 ||
+                  day.diaryCount > 0;
 
                 return (
                   <div
                     key={day.date}
-                    className="flex h-full flex-1 flex-col items-center justify-end gap-2"
+                    className="group flex min-w-0 flex-col items-center"
                   >
-                    <div className="relative flex h-full w-full items-end justify-center">
+                    <div className="relative flex h-56 w-full items-end justify-center">
+                      <div className="absolute bottom-0 left-1/2 h-full w-px -translate-x-1/2 bg-[#4a3f35]/[0.06]" />
+
                       <div
-                        title={
-                          day.averageStress !== null
-                            ? `Stress: ${day.averageStress}`
-                            : "No data"
-                        }
-                        className="w-full max-w-10 rounded-t-xl bg-[#fbc4ab]/45 transition-all hover:bg-[#fbc4ab]/70"
+                        className={[
+                          "relative z-10 w-[70%] max-w-10 rounded-t-[1rem] transition-all duration-300",
+                          hasActivity
+                            ? "bg-[#fbc4ab]"
+                            : "bg-[#c1d5c0]/45",
+                          "group-hover:bg-[#e2725b]",
+                        ].join(" ")}
                         style={{
                           height: `${height}%`,
                         }}
-                      />
+                        title={
+                          day.averageStress !== null
+                            ? `Stress: ${day.averageStress}`
+                            : isId
+                              ? "Belum ada data"
+                              : "No data"
+                        }
+                      >
+                        {day.averageStress !== null && (
+                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-medium text-[#4a3f35]/0 transition-opacity group-hover:text-[#4a3f35]/60">
+                            {day.averageStress}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <span className="text-[11px] font-medium text-[#4a3f35]/45">
-                      {label}
+                    <span className="mt-4 text-[11px] font-semibold text-[#4a3f35]/50">
+                      {getDayLabel(day.date, locale)}
+                    </span>
+
+                    <span className="mt-1 text-[10px] text-[#4a3f35]/35">
+                      {day.checkinCount + day.diaryCount}
                     </span>
                   </div>
                 );
               })}
             </div>
 
-            <div className="mt-5 flex items-center justify-between border-t border-[#4a3f35]/8 pt-4 text-xs text-[#4a3f35]/45">
+            <div className="flex items-center justify-between border-t border-[#4a3f35]/8 px-5 py-4 text-[10px] uppercase tracking-[0.12em] text-[#4a3f35]/35 md:px-8">
               <span>0</span>
               <span>50</span>
               <span>100</span>
             </div>
           </div>
 
-          {/* DOMINANT EMOTION */}
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
-
-            <h2 className="font-semibold text-[#4a3f35]">
+          {highestStress && (
+            <p className="mt-3 text-xs leading-5 text-[#4a3f35]/45">
               {isId
-                ? "Emosi yang Paling Sering Muncul"
-                : "Most Frequent Emotion"}
+                ? `Titik stress tertinggi tercatat pada ${getDateLabel(
+                    highestStress.date,
+                    locale,
+                  )}.`
+                : `Your highest recorded stress appeared on ${getDateLabel(
+                    highestStress.date,
+                    locale,
+                  )}.`}
+            </p>
+          )}
+        </section>
+
+        {/* -------------------------------------------------- */}
+        {/* EMOTION + SENTIMENT                                */}
+        {/* -------------------------------------------------- */}
+
+        <section className="mb-12 grid gap-10 lg:grid-cols-[1fr_1.15fr]">
+
+          {/* DOMINANT EMOTION */}
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+              {isId ? "Emosi utama" : "Main emotion"}
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+              {isId
+                ? "Yang paling sering hadir"
+                : "What showed up most"}
             </h2>
 
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
+            <p className="mt-2 text-sm leading-6 text-[#4a3f35]/55">
               {isId
-                ? "Berdasarkan check-in minggu ini."
-                : "Based on this week's check-ins."}
+                ? "Bukan berarti ini satu-satunya yang kamu rasakan. Ini hanya emosi yang paling sering muncul dalam check-in."
+                : "This does not mean it was the only thing you felt. It was simply the emotion that appeared most often in your check-ins."}
             </p>
 
             {summary.dominantEmotion ? (
-              <div className="mt-8">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fbc4ab]/30">
-                    <Activity className="h-7 w-7 text-[#5c6b9c]" />
-                  </div>
-
-                  <div>
-                    <p className="text-xl font-semibold text-[#4a3f35]">
-                      {summary.dominantEmotion.name}
-                    </p>
-
-                    <p className="mt-1 text-sm text-[#4a3f35]/60">
-                      {summary.dominantEmotion.count}{" "}
-                      {isId
-                        ? "kali tercatat"
-                        : "times recorded"}
-                    </p>
-                  </div>
+              <div className="mt-7">
+                <div className="flex items-end gap-4">
+                  <span className="text-5xl font-semibold tracking-[-0.05em] text-[#4a3f35]">
+                    {summary.dominantEmotion.name}
+                  </span>
                 </div>
 
-                <div className="mt-8">
-                  <div className="mb-2 flex justify-between text-xs text-[#4a3f35]/60">
-                    <span>
+                <p className="mt-2 text-sm text-[#4a3f35]/50">
+                  {summary.dominantEmotion.count}{" "}
+                  {isId
+                    ? "kali tercatat"
+                    : "times recorded"}
+                </p>
+
+                <div className="mt-7">
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="text-[#4a3f35]/50">
                       {isId
                         ? "Intensitas rata-rata"
                         : "Average intensity"}
                     </span>
 
-                    <span className="font-medium text-[#4a3f35]/85">
+                    <span className="font-semibold text-[#4a3f35]/75">
                       {summary.dominantEmotion.averageIntensity}
                       /10
                     </span>
                   </div>
 
-                  <div className="h-2 overflow-hidden rounded-full bg-[#c1d5c0]/30">
+                  <div className="h-2 overflow-hidden rounded-full bg-[#c1d5c0]/35">
                     <div
                       className="h-full rounded-full bg-[#e2725b]"
                       style={{
-                        width: `${
-                          summary.dominantEmotion.averageIntensity *
-                          10
-                        }%`,
+                        width: `${Math.min(
+                          100,
+                          Math.max(
+                            0,
+                            summary.dominantEmotion
+                              .averageIntensity * 10,
+                          ),
+                        )}%`,
                       }}
                     />
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="mt-8 rounded-xl bg-[#fdfbf7]/80 p-5 text-center text-sm text-[#4a3f35]/60">
-                {isId
-                  ? "Belum cukup data emosi."
-                  : "Not enough emotion data yet."}
+              <div className="mt-7 border-l-2 border-[#fbc4ab] pl-4">
+                <p className="text-sm leading-6 text-[#4a3f35]/55">
+                  {isId
+                    ? "Belum cukup data untuk melihat emosi yang paling sering muncul."
+                    : "There is not enough data to identify your most frequent emotion yet."}
+                </p>
               </div>
             )}
           </div>
-        </section>
 
-        {/* ACTIVITY INSIGHTS */}
-        <section className="mt-6">
-          <div className="mb-5">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[#5c6b9c]" />
-              <p className="text-sm font-semibold text-[#5c6b9c]">
-                {isId
-                  ? "Wellbeing Activities"
-                  : "Wellbeing Activities"}
-              </p>
-            </div>
+          {/* SENTIMENT */}
 
-            <h2 className="mt-1 text-xl font-bold text-[#4a3f35]">
+          <div className="rounded-[2rem] bg-[#c1d5c0]/25 p-6 md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
               {isId
-                ? "Aktivitas wellbeing kamu"
-                : "Your wellbeing activities"}
+                ? "Gambaran sentimen"
+                : "Sentiment picture"}
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+              {isId
+                ? "Apa yang muncul dari analisis"
+                : "What appeared in your analyses"}
             </h2>
 
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
+            <p className="mt-2 max-w-lg text-sm leading-6 text-[#4a3f35]/55">
               {isId
-                ? "Ringkasan aktivitas yang kamu lakukan minggu ini."
-                : "A summary of the activities you practiced this week."}
+                ? "Ringkasan ini berasal dari AI analysis yang tersedia selama periode ini."
+                : "This summary comes from the AI analyses available during this period."}
+            </p>
+
+            <div className="mt-8">
+              <div className="flex h-5 overflow-hidden rounded-full bg-[#fdfbf7]">
+                <div
+                  className="bg-[#5c6b9c]"
+                  style={{
+                    width: `${sentimentPercentages.positive}%`,
+                  }}
+                />
+
+                <div
+                  className="bg-[#c1d5c0]"
+                  style={{
+                    width: `${sentimentPercentages.neutral}%`,
+                  }}
+                />
+
+                <div
+                  className="bg-[#e2725b]"
+                  style={{
+                    width: `${sentimentPercentages.negative}%`,
+                  }}
+                />
+              </div>
+
+              <div className="mt-5 grid grid-cols-3 gap-4">
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#5c6b9c]" />
+
+                    <span className="text-xs text-[#4a3f35]/50">
+                      {isId ? "Positif" : "Positive"}
+                    </span>
+                  </div>
+
+                  <p className="text-2xl font-semibold text-[#4a3f35]">
+                    {sentimentPercentages.positive}%
+                  </p>
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
+
+                    <span className="text-xs text-[#4a3f35]/50">
+                      {isId ? "Netral" : "Neutral"}
+                    </span>
+                  </div>
+
+                  <p className="text-2xl font-semibold text-[#4a3f35]">
+                    {sentimentPercentages.neutral}%
+                  </p>
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#e2725b]" />
+
+                    <span className="text-xs text-[#4a3f35]/50">
+                      {isId ? "Negatif" : "Negative"}
+                    </span>
+                  </div>
+
+                  <p className="text-2xl font-semibold text-[#4a3f35]">
+                    {sentimentPercentages.negative}%
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------------------- */}
+        {/* WELLBEING ACTIVITIES                               */}
+        {/* -------------------------------------------------- */}
+
+        <section className="mb-12">
+          <div className="mb-6 max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+              {isId
+                ? "Hal yang kamu lakukan"
+                : "Things you practiced"}
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+              {isId
+                ? "Aktivitas wellbeing"
+                : "Wellbeing activities"}
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-[#4a3f35]/55">
+              {isId
+                ? "Bukan soal seberapa produktif kamu. Bagian ini hanya mencatat aktivitas yang kamu coba."
+                : "This is not about productivity. It simply keeps track of the activities you tried."}
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-              <p className="text-sm text-[#4a3f35]/60">
+          <div className="grid border-y border-[#4a3f35]/10 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="border-b border-[#4a3f35]/10 py-5 sm:border-r lg:border-b-0 lg:pr-6">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
                 {isId ? "Dimulai" : "Started"}
               </p>
-              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
+
+              <p className="mt-2 text-3xl font-semibold text-[#4a3f35]">
                 {summary.activity.totalStarted}
               </p>
-              <p className="mt-1 text-xs text-[#4a3f35]/45">
+
+              <p className="mt-1 text-xs text-[#4a3f35]/40">
                 {isId ? "aktivitas" : "activities"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-              <p className="text-sm text-[#4a3f35]/60">
+            <div className="border-b border-[#4a3f35]/10 py-5 sm:pl-6 lg:border-b-0 lg:border-r lg:px-6">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
                 {isId ? "Selesai" : "Completed"}
               </p>
-              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
+
+              <p className="mt-2 text-3xl font-semibold text-[#4a3f35]">
                 {summary.activity.totalCompleted}
               </p>
-              <p className="mt-1 text-xs text-[#4a3f35]/45">
+
+              <p className="mt-1 text-xs text-[#4a3f35]/40">
                 {isId ? "aktivitas" : "activities"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-              <p className="text-sm text-[#4a3f35]/60">
-                Completion Rate
+            <div className="border-b border-[#4a3f35]/10 py-5 sm:border-r sm:pl-0 sm:pr-6 lg:border-b-0 lg:border-r lg:px-6">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
+                {isId ? "Completion rate" : "Completion rate"}
               </p>
-              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
+
+              <p className="mt-2 text-3xl font-semibold text-[#4a3f35]">
                 {summary.activity.completionRate}%
               </p>
 
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#c1d5c0]/30">
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#c1d5c0]/35">
                 <div
-                  className="h-full rounded-full bg-[#e2725b] transition-all"
+                  className="h-full rounded-full bg-[#5c6b9c]"
                   style={{
                     width: `${Math.min(
                       100,
@@ -714,21 +1004,24 @@ export default function InsightsClient({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5">
-              <p className="text-sm text-[#4a3f35]/60">
-                {isId ? "Rata-rata Rating" : "Average Rating"}
+            <div className="py-5 sm:pl-6 lg:pl-6">
+              <p className="text-xs uppercase tracking-[0.12em] text-[#4a3f35]/45">
+                {isId
+                  ? "Rata-rata rating"
+                  : "Average rating"}
               </p>
 
-              <p className="mt-2 text-3xl font-bold text-[#4a3f35]">
+              <p className="mt-2 text-3xl font-semibold text-[#4a3f35]">
                 {summary.activity.averageRating ?? "—"}
+
                 {summary.activity.averageRating !== null && (
-                  <span className="ml-1 text-base font-medium text-[#4a3f35]/45">
+                  <span className="ml-1 text-sm font-normal text-[#4a3f35]/40">
                     / 5
                   </span>
                 )}
               </p>
 
-              <p className="mt-1 text-xs text-[#4a3f35]/45">
+              <p className="mt-1 text-xs text-[#4a3f35]/40">
                 {isId
                   ? "dari aktivitas yang dinilai"
                   : "from rated activities"}
@@ -737,224 +1030,165 @@ export default function InsightsClient({
           </div>
 
           {summary.activity.mostUsed && (
-            <div className="mt-4 rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/30/50 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#5c6b9c]">
-                {isId
-                  ? "Aktivitas paling sering digunakan"
-                  : "Most used activity"}
-              </p>
+            <div className="mt-5 flex flex-col gap-3 border-l-2 border-[#fbc4ab] pl-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                  {isId
+                    ? "Yang paling sering kamu pilih"
+                    : "Your most-used activity"}
+                </p>
 
-              <div className="mt-2 flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-bold text-[#4a3f35]">
-                    {summary.activity.mostUsed.title}
-                  </h3>
-
-                  <p className="mt-1 text-sm text-[#4a3f35]/60">
-                    {summary.activity.mostUsed.count}{" "}
-                    {isId ? "kali digunakan" : "times used"}
-                  </p>
-                </div>
-
-                <Sparkles className="h-5 w-5 shrink-0 text-[#5c6b9c]" />
+                <h3 className="mt-1 text-lg font-semibold text-[#4a3f35]">
+                  {summary.activity.mostUsed.title}
+                </h3>
               </div>
+
+              <p className="text-sm text-[#4a3f35]/50">
+                {summary.activity.mostUsed.count}{" "}
+                {isId ? "kali digunakan" : "times used"}
+              </p>
             </div>
           )}
         </section>
 
-        {/* SENTIMENT */}
-        <section className="mt-6 rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
+        {/* -------------------------------------------------- */}
+        {/* CONTEXT + TRIGGERS                                 */}
+        {/* -------------------------------------------------- */}
 
-          <div className="mb-6">
-            <h2 className="font-semibold text-[#4a3f35]">
+        <section className="mb-12">
+          <div className="mb-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+              {isId ? "Pola yang muncul" : "Patterns"}
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
               {isId
-                ? "Distribusi Sentimen"
-                : "Sentiment Distribution"}
+                ? "Hal-hal yang sering hadir bersamaan"
+                : "Things that tended to show up together"}
             </h2>
 
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#4a3f35]/55">
               {isId
-                ? "Ringkasan sentimen dari AI Analysis."
-                : "Sentiment summary from your AI analyses."}
+                ? "Gunakan bagian ini sebagai petunjuk untuk mengenali kebiasaan atau konteks yang mungkin berhubungan dengan perasaanmu."
+                : "Use these as clues for noticing contexts or patterns that may be connected to how you felt."}
             </p>
           </div>
 
-          <div className="h-4 overflow-hidden rounded-full bg-[#c1d5c0]/30">
-            <div className="flex h-full">
-              <div
-                className="bg-[#c1d5c0]"
-                style={{
-                  width: `${positivePercentage}%`,
-                }}
-              />
+          <div className="grid gap-10 md:grid-cols-2">
 
-              <div
-                className="bg-[#c1d5c0]"
-                style={{
-                  width: `${neutralPercentage}%`,
-                }}
-              />
-
-              <div
-                className="bg-[#e2725b]"
-                style={{
-                  width: `${negativePercentage}%`,
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-3 gap-4">
+            {/* CONTEXT */}
 
             <div>
-              <div className="mb-1 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
-                <span className="text-xs text-[#4a3f35]/60">
-                  {isId ? "Positif" : "Positive"}
-                </span>
-              </div>
+              <h3 className="text-sm font-semibold text-[#4a3f35]">
+                {isId
+                  ? "Konteks yang sering dipilih"
+                  : "Common contexts"}
+              </h3>
 
-              <p className="text-lg font-semibold text-[#4a3f35]">
-                {positivePercentage}%
-              </p>
+              <div className="mt-4">
+                {summary.commonContexts.length > 0 ? (
+                  <div className="divide-y divide-[#4a3f35]/8">
+                    {summary.commonContexts.map(
+                      (context) => (
+                        <div
+                          key={context.slug}
+                          className="flex items-center justify-between py-3.5"
+                        >
+                          <span className="text-sm text-[#4a3f35]/75">
+                            {context.name}
+                          </span>
+
+                          <span className="rounded-full bg-[#c1d5c0]/30 px-2.5 py-1 text-[11px] font-medium text-[#4a3f35]/55">
+                            {context.count}x
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  <div className="border-l-2 border-[#c1d5c0] pl-4">
+                    <p className="text-sm leading-6 text-[#4a3f35]/50">
+                      {isId
+                        ? "Belum ada konteks yang cukup untuk dilihat."
+                        : "There are not enough context entries yet."}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* TRIGGERS */}
 
             <div>
-              <div className="mb-1 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
-                <span className="text-xs text-[#4a3f35]/60">
-                  {isId ? "Netral" : "Neutral"}
-                </span>
-              </div>
+              <h3 className="text-sm font-semibold text-[#4a3f35]">
+                {isId
+                  ? "Possible triggers"
+                  : "Possible triggers"}
+              </h3>
 
-              <p className="text-lg font-semibold text-[#4a3f35]">
-                {neutralPercentage}%
+              <p className="mt-1 text-xs text-[#4a3f35]/45">
+                {isId
+                  ? "Pola yang terdeteksi dari AI, bukan diagnosis."
+                  : "Patterns identified by AI, not a diagnosis."}
               </p>
-            </div>
 
-            <div>
-              <div className="mb-1 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#e2725b]" />
-                <span className="text-xs text-[#4a3f35]/60">
-                  {isId ? "Negatif" : "Negative"}
-                </span>
+              <div className="mt-4">
+                {summary.possibleTriggers.length > 0 ? (
+                  <div className="divide-y divide-[#4a3f35]/8">
+                    {summary.possibleTriggers.map(
+                      (trigger) => (
+                        <div
+                          key={trigger.name}
+                          className="flex items-center justify-between py-3.5"
+                        >
+                          <span className="text-sm text-[#4a3f35]/75">
+                            {trigger.name}
+                          </span>
+
+                          <span className="rounded-full bg-[#fbc4ab]/35 px-2.5 py-1 text-[11px] font-medium text-[#4a3f35]/55">
+                            {trigger.count}x
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  <div className="border-l-2 border-[#fbc4ab] pl-4">
+                    <p className="text-sm leading-6 text-[#4a3f35]/50">
+                      {isId
+                        ? "Belum ada pola yang cukup kuat untuk ditampilkan."
+                        : "There is not enough evidence for a strong pattern yet."}
+                    </p>
+                  </div>
+                )}
               </div>
-
-              <p className="text-lg font-semibold text-[#4a3f35]">
-                {negativePercentage}%
-              </p>
             </div>
-
           </div>
         </section>
 
-        {/* CONTEXT + TRIGGERS */}
-        <section className="mt-6 grid gap-6 md:grid-cols-2">
+        {/* -------------------------------------------------- */}
+        {/* ABOUT INSIGHTS                                     */}
+        {/* -------------------------------------------------- */}
 
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
-            <h2 className="font-semibold text-[#4a3f35]">
-              {isId
-                ? "Hal yang Sering Muncul"
-                : "Common Contexts"}
-            </h2>
-
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
-              {isId
-                ? "Konteks yang paling sering kamu pilih."
-                : "Contexts that appeared most often."}
+        <section className="border-t border-[#4a3f35]/10 pt-7">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+              {isId ? "Catatan kecil" : "A small note"}
             </p>
 
-            <div className="mt-5 space-y-3">
-              {summary.commonContexts.length > 0 ? (
-                summary.commonContexts.map(
-                  (context) => (
-                    <div
-                      key={context.slug}
-                      className="flex items-center justify-between rounded-xl bg-[#fdfbf7]/80 px-4 py-3"
-                    >
-                      <span className="text-sm font-medium text-[#4a3f35]/85">
-                        {context.name}
-                      </span>
-
-                      <span className="text-xs text-[#4a3f35]/45">
-                        {context.count}x
-                      </span>
-                    </div>
-                  ),
-                )
-              ) : (
-                <p className="rounded-xl bg-[#fdfbf7]/80 p-4 text-sm text-[#4a3f35]/60">
-                  {isId
-                    ? "Belum ada data."
-                    : "No data yet."}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-5 md:p-6">
-            <h2 className="font-semibold text-[#4a3f35]">
+            <h2 className="mt-2 text-lg font-semibold text-[#4a3f35]">
               {isId
-                ? "Possible Triggers"
-                : "Possible Triggers"}
+                ? "Tentang Insights Moodify"
+                : "About Moodify Insights"}
             </h2>
 
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
+            <p className="mt-2 text-xs leading-6 text-[#4a3f35]/55">
               {isId
-                ? "Pola yang terdeteksi dari AI."
-                : "Patterns identified by AI."}
+                ? "Insights Moodify adalah ringkasan pola dari data check-in, diary, aktivitas, dan analisis AI kamu. Hasil ini dimaksudkan untuk membantu refleksi pribadi dan bukan merupakan diagnosis medis atau psikologis."
+                : "Moodify Insights summarizes patterns from your check-ins, diary entries, activities, and AI analyses. It is intended to support personal reflection and is not a medical or psychological diagnosis."}
             </p>
-
-            <div className="mt-5 space-y-3">
-              {summary.possibleTriggers.length > 0 ? (
-                summary.possibleTriggers.map(
-                  (trigger) => (
-                    <div
-                      key={trigger.name}
-                      className="flex items-center justify-between rounded-xl bg-[#fdfbf7]/80 px-4 py-3"
-                    >
-                      <span className="text-sm text-[#4a3f35]/85">
-                        {trigger.name}
-                      </span>
-
-                      <span className="text-xs text-[#4a3f35]/45">
-                        {trigger.count}x
-                      </span>
-                    </div>
-                  ),
-                )
-              ) : (
-                <p className="rounded-xl bg-[#fdfbf7]/80 p-4 text-sm text-[#4a3f35]/60">
-                  {isId
-                    ? "Belum ada pola yang cukup kuat."
-                    : "No strong pattern yet."}
-                </p>
-              )}
-            </div>
           </div>
-
         </section>
-
-        {/* DISCLAIMER */}
-        <div className="mt-6 rounded-2xl border border-[#e2725b]/20 bg-[#fbc4ab]/30/60 p-5">
-          <div className="flex gap-3">
-            <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-[#5c6b9c]" />
-
-            <div>
-              <p className="text-sm font-medium text-[#4a3f35]">
-                {isId
-                  ? "Tentang Insights"
-                  : "About Insights"}
-              </p>
-
-              <p className="mt-1 text-xs leading-6 text-[#4a3f35]/75">
-                {isId
-                  ? "Insights Moodify adalah ringkasan pola dari data check-in, diary, dan analisis AI kamu. Ini bukan diagnosis medis atau psikologis."
-                  : "Moodify Insights summarizes patterns from your check-ins, diary entries, and AI analyses. It is not a medical or psychological diagnosis."}
-              </p>
-            </div>
-          </div>
-        </div>
 
       </div>
     </main>

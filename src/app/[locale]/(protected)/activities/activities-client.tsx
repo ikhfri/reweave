@@ -80,7 +80,7 @@ function formatCategory(category: string, isId: boolean) {
   }
 
   if (value.includes("ground")) {
-    return isId ? "Grounding" : "Grounding";
+    return "Grounding";
   }
 
   if (value.includes("movement")) {
@@ -111,6 +111,47 @@ function formatDifficulty(
   return labels[difficulty];
 }
 
+function getActivityMood(
+  activity: Activity,
+  isId: boolean,
+) {
+  const category = activity.category.toLowerCase();
+
+  if (
+    category.includes("breath") ||
+    category.includes("relax")
+  ) {
+    return isId
+      ? "Untuk menenangkan diri"
+      : "For slowing down";
+  }
+
+  if (
+    category.includes("ground") ||
+    category.includes("grounding")
+  ) {
+    return isId
+      ? "Untuk kembali ke saat ini"
+      : "For coming back to the present";
+  }
+
+  if (category.includes("movement")) {
+    return isId
+      ? "Untuk menggerakkan tubuh"
+      : "For getting your body moving";
+  }
+
+  if (category.includes("reflection")) {
+    return isId
+      ? "Untuk memahami perasaan"
+      : "For understanding yourself";
+  }
+
+  return isId
+    ? "Untuk dirimu hari ini"
+    : "For where you are today";
+}
+
 export default function ActivitiesClient({
   locale,
   userName,
@@ -127,9 +168,14 @@ export default function ActivitiesClient({
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = useMemo(() => {
-    const values = activities.map((activity) => activity.category);
+    const values = activities.map(
+      (activity) => activity.category,
+    );
 
-    return ["all", ...Array.from(new Set(values))];
+    return [
+      "all",
+      ...Array.from(new Set(values)),
+    ];
   }, [activities]);
 
   const filteredActivities = useMemo(() => {
@@ -138,9 +184,15 @@ export default function ActivitiesClient({
     }
 
     return activities.filter(
-      (activity) => activity.category === activeCategory,
+      (activity) =>
+        activity.category === activeCategory,
     );
   }, [activities, activeCategory]);
+
+  const featuredActivity =
+    recommended[0] ?? activities[0] ?? null;
+
+  const otherRecommended = recommended.slice(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -150,42 +202,57 @@ export default function ActivitiesClient({
         setLoading(true);
         setError("");
 
-        const [activitiesResponse, recommendedResponse, historyResponse] =
-          await Promise.all([
-            fetch("/api/activities", {
-              credentials: "include",
-            }),
-            fetch("/api/activities/recommended", {
-              credentials: "include",
-            }),
-            fetch("/api/activities/history", {
-              credentials: "include",
-            }),
-          ]);
+        const [
+          activitiesResponse,
+          recommendedResponse,
+          historyResponse,
+        ] = await Promise.all([
+          fetch("/api/activities", {
+            credentials: "include",
+          }),
+
+          fetch("/api/activities/recommended", {
+            credentials: "include",
+          }),
+
+          fetch("/api/activities/history", {
+            credentials: "include",
+          }),
+        ]);
 
         if (!activitiesResponse.ok) {
-          throw new Error("Failed to load activities");
+          throw new Error(
+            "Failed to load activities",
+          );
         }
 
-        const activitiesData = await activitiesResponse.json();
-        const recommendedData = recommendedResponse.ok
-          ? await recommendedResponse.json()
-          : { activities: [] };
+        const activitiesData =
+          await activitiesResponse.json();
 
-        const historyData = historyResponse.ok
-          ? await historyResponse.json()
-          : { logs: [] };
+        const recommendedData =
+          recommendedResponse.ok
+            ? await recommendedResponse.json()
+            : { activities: [] };
+
+        const historyData =
+          historyResponse.ok
+            ? await historyResponse.json()
+            : { logs: [] };
 
         if (cancelled) return;
 
         setActivities(
-          Array.isArray(activitiesData.activities)
+          Array.isArray(
+            activitiesData.activities,
+          )
             ? activitiesData.activities
             : [],
         );
 
         setRecommended(
-          Array.isArray(recommendedData.activities)
+          Array.isArray(
+            recommendedData.activities,
+          )
             ? recommendedData.activities
             : [],
         );
@@ -221,11 +288,24 @@ export default function ActivitiesClient({
 
   if (loading) {
     return (
-      <main className="min-h-full bg-[#fdfbf7] p-6 lg:p-8">
-        <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center">
-          <div className="flex items-center gap-3 text-sm text-[#4a3f35]/60">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            {isId ? "Memuat aktivitas..." : "Loading activities..."}
+      <main className="min-h-full bg-[#fdfbf7] px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[65vh] max-w-6xl items-center justify-center">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">
+              <Loader2 className="h-5 w-5 animate-spin text-[#5c6b9c]" />
+            </div>
+
+            <p className="text-sm font-medium text-[#4a3f35]">
+              {isId
+                ? "Menyiapkan ruang untukmu..."
+                : "Preparing something for you..."}
+            </p>
+
+            <p className="mt-1 text-xs text-[#4a3f35]/45">
+              {isId
+                ? "Sebentar."
+                : "Just a moment."}
+            </p>
           </div>
         </div>
       </main>
@@ -233,206 +313,319 @@ export default function ActivitiesClient({
   }
 
   return (
-    <main className="min-h-full bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-7xl space-y-8">
-        {/* Header */}
-        <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="mb-2 text-sm font-medium text-[#5c6b9c]">
-              {isId ? "Wellbeing Activities" : "Wellbeing Activities"}
+    <main className="min-h-full bg-[#fdfbf7] px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto max-w-6xl">
+
+        {/* ================================================= */}
+        {/* INTRO                                             */}
+        {/* ================================================= */}
+
+        <header className="mb-12">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
+              {isId
+                ? "Ruang untuk dirimu"
+                : "A space for you"}
             </p>
 
-            <h1 className="text-2xl font-bold tracking-tight text-[#4a3f35] sm:text-3xl">
+            <h1 className="text-3xl font-semibold tracking-[-0.035em] text-[#4a3f35] sm:text-4xl">
               {isId
-                ? `Aktivitas untuk kamu, ${userName}`
-                : `Activities for you, ${userName}`}
+                ? `Pelan-pelan juga tetap bergerak, ${userName}.`
+                : `You don't have to rush, ${userName}.`}
             </h1>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#4a3f35]/60">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[#4a3f35]/60 sm:text-[15px]">
               {isId
-                ? "Luangkan beberapa menit untuk melakukan sesuatu yang bisa membantu kamu merasa lebih tenang dan terhubung dengan diri sendiri."
-                : "Take a few minutes to do something that may help you feel calmer and more connected with yourself."}
+                ? "Pilih satu hal kecil yang terasa cocok dengan keadaanmu sekarang. Tidak perlu menyelesaikan semuanya."
+                : "Choose one small thing that feels right for where you are right now. You don't have to do everything."}
             </p>
           </div>
-        </section>
+        </header>
+
+        {/* ================================================= */}
+        {/* ERROR                                             */}
+        {/* ================================================= */}
 
         {error && (
-          <div className="rounded-2xl border border-[#e2725b]/25 bg-[#e2725b]/10 px-4 py-3 text-sm text-[#e2725b]">
-            {error}
+          <div className="mb-8 border-l-2 border-[#e2725b] bg-[#fbc4ab]/15 px-4 py-3">
+            <p className="text-sm text-[#4a3f35]/75">
+              {error}
+            </p>
           </div>
         )}
 
-        {/* Recommended */}
-        {recommended.length > 0 && (
-          <section>
-            <div className="mb-4 flex items-end justify-between">
-              <div>
-                <div className="mb-1 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-[#5c6b9c]" />
+        {/* ================================================= */}
+        {/* FEATURED                                          */}
+        {/* ================================================= */}
 
-                  <p className="text-sm font-semibold text-[#5c6b9c]">
-                    {isId ? "Recommended for You" : "Recommended for You"}
-                  </p>
-                </div>
+        {featuredActivity && (
+          <section className="mb-14">
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                {recommended.length > 0
+                  ? isId
+                    ? "Pilihan untukmu"
+                    : "A thought for you"
+                  : isId
+                    ? "Mulai dari sini"
+                    : "Start here"}
+              </p>
 
-                <h2 className="text-xl font-bold text-[#4a3f35]">
-                  {isId
-                    ? "Aktivitas berdasarkan check-in kamu"
-                    : "Activities based on your check-in"}
-                </h2>
-              </div>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+                {isId
+                  ? "Satu aktivitas kecil"
+                  : "One small thing"}
+              </h2>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-3">
-              {recommended.map((activity) => (
-                <ActivityCard
-                  key={activity.id}
-                  activity={activity}
-                  locale={locale}
-                  recommended
-                />
-              ))}
+            <article className="relative overflow-hidden rounded-[2rem] bg-[#fbc4ab]/35 p-6 sm:p-8 lg:p-10">
+              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#fdfbf7]/40" />
+
+              <div className="absolute -bottom-20 right-24 h-40 w-40 rounded-full bg-[#c1d5c0]/30" />
+
+              <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+                <div className="max-w-2xl">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#fdfbf7]/80">
+                      {(() => {
+                        const Icon = getCategoryIcon(
+                          featuredActivity.category,
+                        );
+
+                        return (
+                          <Icon className="h-5 w-5 text-[#5c6b9c]" />
+                        );
+                      })()}
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                        {formatCategory(
+                          featuredActivity.category,
+                          isId,
+                        )}
+                      </p>
+
+                      <p className="mt-0.5 text-xs text-[#4a3f35]/50">
+                        {getActivityMood(
+                          featuredActivity,
+                          isId,
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <h3 className="mt-7 text-2xl font-semibold tracking-tight text-[#4a3f35] sm:text-3xl">
+                    {featuredActivity.title}
+                  </h3>
+
+                  <p className="mt-3 max-w-xl text-sm leading-7 text-[#4a3f35]/65">
+                    {featuredActivity.description}
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#4a3f35]/55">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Clock3 className="h-3.5 w-3.5" />
+                      {featuredActivity.durationMinutes}{" "}
+                      {isId ? "menit" : "min"}
+                    </span>
+
+                    <span>
+                      {formatDifficulty(
+                        featuredActivity.difficulty,
+                        isId,
+                      )}
+                    </span>
+                  </div>
+                </div>
+
+                <Link
+                  href={`/${locale}/activities/${featuredActivity.slug}`}
+                  className="group inline-flex w-fit items-center gap-2 rounded-full bg-[#4a3f35] px-5 py-3 text-sm font-medium text-[#fdfbf7] transition hover:bg-[#5c6b9c]"
+                >
+                  {isId ? "Mulai sekarang" : "Begin"}
+
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </article>
+          </section>
+        )}
+
+        {/* ================================================= */}
+        {/* OTHER RECOMMENDATIONS                             */}
+        {/* ================================================= */}
+
+        {otherRecommended.length > 0 && (
+          <section className="mb-14">
+            <div className="mb-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                {isId
+                  ? "Pilihan lainnya"
+                  : "A few more"}
+              </p>
+
+              <h2 className="mt-2 text-xl font-semibold text-[#4a3f35]">
+                {isId
+                  ? "Kalau kamu ingin mencoba sesuatu yang lain"
+                  : "If you'd like to try something else"}
+              </h2>
+            </div>
+
+            <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
+              {otherRecommended.slice(0, 4).map(
+                (activity, index) => (
+                  <RecommendedRow
+                    key={activity.id}
+                    activity={activity}
+                    locale={locale}
+                    index={index}
+                  />
+                ),
+              )}
             </div>
           </section>
         )}
 
-        {/* Explore */}
-        <section>
-          <div className="mb-5">
-            <h2 className="text-xl font-bold text-[#4a3f35]">
-              {isId ? "Explore Activities" : "Explore Activities"}
+        {/* ================================================= */}
+        {/* EXPLORE                                          */}
+        {/* ================================================= */}
+
+        <section className="mb-14">
+          <div className="mb-7 max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+              {isId
+                ? "Jelajahi"
+                : "Explore"}
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
+              {isId
+                ? "Temukan yang terasa pas"
+                : "Find what feels right"}
             </h2>
 
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
+            <p className="mt-2 text-sm leading-6 text-[#4a3f35]/55">
               {isId
-                ? "Pilih aktivitas yang sesuai dengan kebutuhanmu."
-                : "Choose an activity that fits what you need right now."}
+                ? "Tidak ada pilihan yang paling benar. Pilih berdasarkan apa yang kamu butuhkan sekarang."
+                : "There is no perfect choice. Pick based on what you need right now."}
             </p>
           </div>
 
-          {/* Category filters */}
-          <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
+          {/* CATEGORY FILTER */}
+
+          <div className="mb-8 flex gap-5 overflow-x-auto border-b border-[#4a3f35]/10 pb-3">
             {categories.map((category) => {
-              const selected = activeCategory === category;
+              const selected =
+                activeCategory === category;
 
               return (
                 <button
                   key={category}
                   type="button"
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() =>
+                    setActiveCategory(category)
+                  }
                   className={[
-                    "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition",
+                    "relative shrink-0 pb-2 text-sm transition",
                     selected
-                      ? "bg-[#e2725b] text-white shadow-[0_1px_3px_rgba(74,63,53,0.06)]"
-                      : "border border-[#4a3f35]/12 bg-[#fdfbf7] text-[#4a3f35]/70 hover:border-[#e2725b]/30 hover:text-[#5c6b9c]",
+                      ? "font-semibold text-[#4a3f35]"
+                      : "text-[#4a3f35]/45 hover:text-[#4a3f35]/75",
                   ].join(" ")}
                 >
                   {category === "all"
                     ? isId
                       ? "Semua"
                       : "All"
-                    : formatCategory(category, isId)}
+                    : formatCategory(
+                        category,
+                        isId,
+                      )}
+
+                  {selected && (
+                    <span className="absolute bottom-[-13px] left-0 right-0 h-0.5 rounded-full bg-[#e2725b]" />
+                  )}
                 </button>
               );
             })}
           </div>
 
           {filteredActivities.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#4a3f35]/12 bg-[#fdfbf7] p-10 text-center">
-              <Sparkles className="mx-auto h-8 w-8 text-[#4a3f35]/30" />
-
-              <p className="mt-3 text-sm text-[#4a3f35]/60">
+            <div className="border-l-2 border-[#c1d5c0] py-4 pl-5">
+              <p className="text-sm text-[#4a3f35]/55">
                 {isId
                   ? "Belum ada aktivitas pada kategori ini."
                   : "No activities found in this category."}
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredActivities.map((activity) => (
-                <ActivityCard
-                  key={activity.id}
-                  activity={activity}
-                  locale={locale}
-                />
-              ))}
+            <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
+              {filteredActivities.map(
+                (activity, index) => (
+                  <ExploreActivityRow
+                    key={activity.id}
+                    activity={activity}
+                    locale={locale}
+                    index={index}
+                  />
+                ),
+              )}
             </div>
           )}
         </section>
 
-        {/* History */}
-        <section>
-          <div className="mb-5">
-            <h2 className="text-xl font-bold text-[#4a3f35]">
-              {isId ? "Recently Completed" : "Recently Completed"}
-            </h2>
+        {/* ================================================= */}
+        {/* HISTORY                                           */}
+        {/* ================================================= */}
 
-            <p className="mt-1 text-sm text-[#4a3f35]/60">
+        <section className="border-t border-[#4a3f35]/10 pt-10">
+          <div className="mb-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
               {isId
-                ? "Aktivitas yang baru saja kamu lakukan."
-                : "Activities you recently completed."}
+                ? "Jejakmu"
+                : "Your little record"}
             </p>
+
+            <h2 className="mt-2 text-xl font-semibold text-[#4a3f35]">
+              {isId
+                ? "Yang sudah kamu lakukan"
+                : "What you've already tried"}
+            </h2>
           </div>
 
           {history.length === 0 ? (
-            <div className="rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7] p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fbc4ab]/30">
-                  <CheckCircle2 className="h-5 w-5 text-[#5c6b9c]" />
-                </div>
+            <div className="max-w-2xl border-l-2 border-[#fbc4ab] pl-5">
+              <div className="flex items-center gap-2 text-[#5c6b9c]">
+                <CheckCircle2 className="h-4 w-4" />
 
-                <div>
-                  <h3 className="font-semibold text-[#4a3f35]">
-                    {isId
-                      ? "Belum ada aktivitas"
-                      : "No activity history yet"}
-                  </h3>
-
-                  <p className="mt-1 text-sm leading-6 text-[#4a3f35]/60">
-                    {isId
-                      ? "Setelah kamu menyelesaikan aktivitas, riwayatnya akan muncul di sini."
-                      : "Once you complete an activity, your history will appear here."}
-                  </p>
-                </div>
+                <span className="text-sm font-medium">
+                  {isId
+                    ? "Belum ada riwayat"
+                    : "No history yet"}
+                </span>
               </div>
+
+              <p className="mt-2 text-sm leading-6 text-[#4a3f35]/50">
+                {isId
+                  ? "Setelah kamu menyelesaikan aktivitas, ceritanya akan muncul di sini."
+                  : "Once you complete an activity, your little record will appear here."}
+              </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-[#4a3f35]/12 bg-[#fdfbf7]">
-              {history.slice(0, 5).map((log, index) => (
-                <div
-                  key={log.id}
-                  className={[
-                    "flex items-center justify-between gap-4 p-4",
-                    index !== Math.min(history.length, 5) - 1
-                      ? "border-b border-[#4a3f35]/8"
-                      : "",
-                  ].join(" ")}
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#c1d5c0]/40">
-                      <CheckCircle2 className="h-5 w-5 text-[#5c6b9c]" />
-                    </div>
-
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-[#4a3f35]">
-                        {log.activity.title}
-                      </p>
-
-                      <div className="mt-1 flex items-center gap-2 text-xs text-[#4a3f35]/60">
-                        <Clock3 className="h-3.5 w-3.5" />
-                        {log.activity.durationMinutes}{" "}
-                        {isId ? "menit" : "min"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {log.userRating && (
-                    <div className="shrink-0 text-sm font-medium text-[#4a3f35]/70">
-                      {log.userRating}/5
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div className="max-w-3xl">
+              {history
+                .slice(0, 5)
+                .map((log, index) => (
+                  <HistoryItem
+                    key={log.id}
+                    log={log}
+                    locale={locale}
+                    last={
+                      index ===
+                      Math.min(history.length, 5) - 1
+                    }
+                  />
+                ))}
             </div>
           )}
         </section>
@@ -441,72 +634,210 @@ export default function ActivitiesClient({
   );
 }
 
-function ActivityCard({
+/* ========================================================= */
+/* RECOMMENDED ROW                                           */
+/* ========================================================= */
+
+function RecommendedRow({
   activity,
   locale,
-  recommended = false,
+  index,
 }: {
   activity: Activity;
   locale: Locale;
-  recommended?: boolean;
+  index: number;
 }) {
   const isId = locale === "id";
-  const Icon = getCategoryIcon(activity.category);
+  const Icon = getCategoryIcon(
+    activity.category,
+  );
 
   return (
-    <article
-      className={[
-        "group relative overflow-hidden rounded-2xl border bg-[#fdfbf7] p-5 transition",
-        recommended
-          ? "border-[#e2725b]/20 shadow-[0_1px_3px_rgba(74,63,53,0.06)] hover:-translate-y-0.5 hover:border-[#e2725b]/30 hover:shadow-md"
-          : "border-[#4a3f35]/12 hover:-translate-y-0.5 hover:border-[#4a3f35]/20 hover:shadow-[0_1px_3px_rgba(74,63,53,0.06)]",
-      ].join(" ")}
+    <Link
+      href={`/${locale}/activities/${activity.slug}`}
+      className="group flex gap-4 border-b border-[#4a3f35]/10 py-5 transition hover:bg-[#fbc4ab]/10 md:px-3"
     >
-      {recommended && (
-        <div className="absolute right-4 top-4 rounded-full bg-[#fbc4ab]/30 px-2.5 py-1 text-[11px] font-semibold text-[#5c6b9c]">
-          {isId ? "Untuk kamu" : "For you"}
-        </div>
-      )}
-
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fbc4ab]/30">
-        <Icon className="h-5 w-5 text-[#5c6b9c]" />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#c1d5c0]/35">
+        <Icon className="h-4 w-4 text-[#5c6b9c]" />
       </div>
 
-      <div className="mt-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-[#c1d5c0]/35 px-2.5 py-1 text-[11px] font-medium text-[#4a3f35]/70">
-            {formatCategory(activity.category, isId)}
-          </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+              0{index + 2}
+            </span>
 
-          <span className="text-xs text-[#4a3f35]/45">
-            {formatDifficulty(activity.difficulty, isId)}
-          </span>
+            <h3 className="mt-1 text-sm font-semibold text-[#4a3f35]">
+              {activity.title}
+            </h3>
+          </div>
+
+          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[#4a3f35]/30 transition group-hover:translate-x-1 group-hover:text-[#5c6b9c]" />
         </div>
 
-        <h3 className="mt-3 text-base font-bold text-[#4a3f35]">
-          {activity.title}
-        </h3>
-
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#4a3f35]/60">
+        <p className="mt-1 line-clamp-1 text-xs leading-5 text-[#4a3f35]/50">
           {activity.description}
         </p>
 
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-[#4a3f35]/60">
-            <Clock3 className="h-3.5 w-3.5" />
-            {activity.durationMinutes} {isId ? "menit" : "min"}
-          </div>
+        <div className="mt-2 flex items-center gap-3 text-[11px] text-[#4a3f35]/40">
+          <span>
+            {formatCategory(
+              activity.category,
+              isId,
+            )}
+          </span>
 
-          <Link
-            href={`/${locale}/activities/${activity.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#5c6b9c] transition hover:text-[#4a3f35]/75"
-          >
-            {isId ? "Mulai" : "Start"}
+          <span>·</span>
 
-            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-          </Link>
+          <span>
+            {activity.durationMinutes}{" "}
+            {isId ? "menit" : "min"}
+          </span>
         </div>
       </div>
-    </article>
+    </Link>
+  );
+}
+
+/* ========================================================= */
+/* EXPLORE ROW                                               */
+/* ========================================================= */
+
+function ExploreActivityRow({
+  activity,
+  locale,
+  index,
+}: {
+  activity: Activity;
+  locale: Locale;
+  index: number;
+}) {
+  const isId = locale === "id";
+  const Icon = getCategoryIcon(
+    activity.category,
+  );
+
+  return (
+    <Link
+      href={`/${locale}/activities/${activity.slug}`}
+      className="group flex gap-4 border-b border-[#4a3f35]/10 py-6 transition hover:bg-[#fbc4ab]/10 md:px-3"
+    >
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fbc4ab]/25 transition group-hover:bg-[#fbc4ab]/45">
+        <Icon className="h-5 w-5 text-[#5c6b9c]" />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4a3f35]/30">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+
+            <h3 className="mt-1 text-base font-semibold text-[#4a3f35]">
+              {activity.title}
+            </h3>
+          </div>
+
+          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[#4a3f35]/25 transition group-hover:translate-x-1 group-hover:text-[#5c6b9c]" />
+        </div>
+
+        <p className="mt-2 line-clamp-2 max-w-xl text-sm leading-6 text-[#4a3f35]/55">
+          {activity.description}
+        </p>
+
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#4a3f35]/45">
+          <span>
+            {formatCategory(
+              activity.category,
+              isId,
+            )}
+          </span>
+
+          <span>
+            {formatDifficulty(
+              activity.difficulty,
+              isId,
+            )}
+          </span>
+
+          <span className="inline-flex items-center gap-1">
+            <Clock3 className="h-3 w-3" />
+
+            {activity.durationMinutes}{" "}
+            {isId ? "menit" : "min"}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+/* ========================================================= */
+/* HISTORY ITEM                                              */
+/* ========================================================= */
+
+function HistoryItem({
+  log,
+  locale,
+  last,
+}: {
+  log: ActivityLog;
+  locale: Locale;
+  last: boolean;
+}) {
+  const isId = locale === "id";
+
+  return (
+    <div
+      className={[
+        "relative flex gap-4 pb-7",
+        !last ? "border-l border-[#4a3f35]/10 ml-[7px]" : "ml-[7px]",
+      ].join(" ")}
+    >
+      <div className="-ml-[8px] mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#fdfbf7]">
+        <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="text-sm font-semibold text-[#4a3f35]">
+              {log.activity.title}
+            </h3>
+
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#4a3f35]/45">
+              <span>
+                {formatCategory(
+                  log.activity.category,
+                  isId,
+                )}
+              </span>
+
+              <span>·</span>
+
+              <span className="inline-flex items-center gap-1">
+                <Clock3 className="h-3 w-3" />
+
+                {log.activity.durationMinutes}{" "}
+                {isId ? "menit" : "min"}
+              </span>
+            </div>
+          </div>
+
+          {log.userRating !== null && (
+            <span className="text-xs font-medium text-[#5c6b9c]">
+              {log.userRating}/5
+            </span>
+          )}
+        </div>
+
+        {log.userFeedback && (
+          <p className="mt-3 max-w-xl text-xs leading-5 text-[#4a3f35]/50">
+            “{log.userFeedback}”
+          </p>
+        )}
+      </div>
+    </div>
   );
 }

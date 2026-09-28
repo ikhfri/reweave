@@ -96,6 +96,7 @@ model User {
 
   safetyContacts SafetyContact[]
   safetyEvents   SafetyEvent[]
+  emotionDescriptions EmotionDescription[]
 }
 
 model Session {
@@ -151,6 +152,7 @@ model DailyCheckin {
   checkinDate      DateTime
   overallIntensity Int?
   note             String?
+  
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -163,6 +165,7 @@ model DailyCheckin {
   aiAnalyses   AIAnalysis[]
   activityLogs ActivityLog[]
   safetyEvents SafetyEvent[]
+  emotionDescriptions EmotionDescription[]
 
   @@unique([userId, checkinDate])
   @@index([userId])
@@ -413,4 +416,20 @@ model CrisisResource {
 
   @@index([country])
   @@index([isActive])
+}
+
+model EmotionDescription {
+  id          String   @id @default(cuid())
+  userId      String
+  checkinId   String?
+  description String   @db.Text
+
+  aiEmotion       String?
+  aiEmotionReason String? @db.Text
+  confidence      Float?
+
+  createdAt DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkin DailyCheckin? @relation(fields: [checkinId], references: [id], onDelete: Cascade)
 }

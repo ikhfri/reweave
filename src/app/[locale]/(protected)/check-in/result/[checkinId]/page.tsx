@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
 import {
   isValidLocale,
   type Locale,
@@ -47,6 +48,7 @@ export default async function CheckInResultPage({
       id: checkinId,
       userId: user.id,
     },
+
     include: {
       emotions: {
         select: {
@@ -54,6 +56,7 @@ export default async function CheckInResultPage({
           intensity: true,
           note: true,
           position: true,
+
           emotion: {
             select: {
               name: true,
@@ -61,6 +64,7 @@ export default async function CheckInResultPage({
             },
           },
         },
+
         orderBy: {
           position: "asc",
         },
@@ -69,6 +73,7 @@ export default async function CheckInResultPage({
       contexts: {
         select: {
           id: true,
+
           context: {
             select: {
               name: true,
@@ -85,9 +90,11 @@ export default async function CheckInResultPage({
           entryType: true,
           createdAt: true,
         },
+
         orderBy: {
           createdAt: "desc",
         },
+
         take: 1,
       },
     },
@@ -107,55 +114,47 @@ export default async function CheckInResultPage({
       userId: user.id,
       checkinId: checkin.id,
     },
+
     orderBy: {
       createdAt: "desc",
     },
   });
 
   // --------------------------------------------------
-  // IMPORTANT:
-  // Don't redirect to /check-in when AI analysis
-  // doesn't exist.
+  // AI analysis doesn't exist yet
   // --------------------------------------------------
 
   if (!analysis) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-          <h1 className="text-lg font-semibold text-amber-900">
-            {locale === "id"
-              ? "Analisis AI belum tersedia"
-              : "AI analysis is not available yet"}
-          </h1>
+      <main className="min-h-screen bg-[#FDFBF7] px-5 py-16 text-[#4A3F35] sm:px-7 lg:px-10">
+        <div className="mx-auto max-w-2xl">
+          <div className="border-y border-[#C1D5C0]/60 py-10 sm:py-12">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
+              {locale === "id"
+                ? "Sedikit menunggu"
+                : "A little pause"}
+            </p>
 
-          <p className="mt-2 text-sm leading-6 text-amber-800">
-            {locale === "id"
-              ? "Check-in kamu sudah tersimpan, tetapi analisis AI belum berhasil dibuat."
-              : "Your check-in has been saved, but the AI analysis has not been generated yet."}
-          </p>
+            <h1 className="mt-5 text-[30px] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[38px]">
+              {locale === "id"
+                ? "Refleksimu belum tersedia."
+                : "Your reflection isn't ready yet."}
+            </h1>
 
-          <p className="mt-2 text-sm leading-6 text-amber-700">
-            {locale === "id"
-              ? "Kamu bisa kembali ke halaman check-in dan mencoba analisis lagi."
-              : "You can return to the check-in page and try the analysis again."}
-          </p>
+            <p className="mt-5 max-w-xl text-[15px] leading-8 text-[#4A3F35]/55">
+              {locale === "id"
+                ? "Check-in kamu sudah tersimpan. Namun, refleksi untukmu belum berhasil dibuat."
+                : "Your check-in has been saved, but your reflection hasn't been generated yet."}
+            </p>
 
-          <a
-            href={`/${locale}/check-in`}
-            className="
-              mt-5 inline-flex h-10 items-center
-              justify-center rounded-xl
-              bg-indigo-600 px-4
-              text-sm font-semibold text-white
-              transition hover:bg-indigo-700
-            "
-          >
-            {locale === "id"
-              ? "Kembali ke Check-in"
-              : "Back to Check-in"}
-          </a>
+            <p className="mt-3 max-w-xl text-[13px] leading-7 text-[#4A3F35]/40">
+              {locale === "id"
+                ? "Kamu bisa mencoba lagi nanti ketika analisis sudah tersedia."
+                : "You can try again later when the analysis becomes available."}
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
     );
   }
 

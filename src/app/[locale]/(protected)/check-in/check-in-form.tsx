@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import {
   ArrowRight,
   Check,
@@ -11,7 +10,6 @@ import {
   MessageCircle,
   Minus,
   Plus,
-  Smile,
   Sparkles,
 } from "lucide-react";
 
@@ -71,8 +69,13 @@ export default function CheckInForm({
   const [selectedContexts, setSelectedContexts] =
     useState<string[]>([]);
 
-  // Daily Story
   const [note, setNote] = useState("");
+
+  const [emotionDescription, setEmotionDescription] =
+    useState("");
+
+  const [unknownEmotionMode, setUnknownEmotionMode] =
+    useState(false);
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -233,15 +236,29 @@ export default function CheckInForm({
   }
 
   // =========================================================
+  // UNKNOWN EMOTION MODE
+  // =========================================================
+
+  function enableUnknownEmotionMode() {
+    setUnknownEmotionMode(true);
+    setSelectedEmotions([]);
+    setError("");
+  }
+
+  function disableUnknownEmotionMode() {
+    setUnknownEmotionMode(false);
+    setEmotionDescription("");
+    setError("");
+  }
+
+  // =========================================================
   // CONTEXT HELPERS
   // =========================================================
 
   function toggleContext(slug: string) {
     setSelectedContexts((current) =>
       current.includes(slug)
-        ? current.filter(
-            (item) => item !== slug,
-          )
+        ? current.filter((item) => item !== slug)
         : [...current, slug],
     );
   }
@@ -332,11 +349,27 @@ export default function CheckInForm({
     setError("");
     setAiError("");
 
-    if (selectedEmotions.length === 0) {
+    if (
+      !unknownEmotionMode &&
+      selectedEmotions.length === 0
+    ) {
       setError(
         isEnglish
           ? "Please select at least one emotion."
           : "Pilih setidaknya satu emosi.",
+      );
+
+      return;
+    }
+
+    if (
+      unknownEmotionMode &&
+      emotionDescription.trim().length === 0
+    ) {
+      setError(
+        isEnglish
+          ? "Please describe what you are feeling."
+          : "Ceritakan apa yang sedang kamu rasakan.",
       );
 
       return;
@@ -355,16 +388,21 @@ export default function CheckInForm({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            emotions: selectedEmotions.map(
-              (emotion) => ({
-                name: emotion.slug,
-                intensity: emotion.intensity,
-                note:
-                  emotion.note.trim() || null,
-              }),
-            ),
+            emotions: unknownEmotionMode
+              ? []
+              : selectedEmotions.map(
+                  (emotion) => ({
+                    name: emotion.slug,
+                    intensity: emotion.intensity,
+                    note:
+                      emotion.note.trim() || null,
+                  }),
+                ),
             contexts: selectedContexts,
             note: note.trim() || null,
+            emotionDescription: unknownEmotionMode
+              ? emotionDescription.trim()
+              : null,
           }),
         },
       );
@@ -473,20 +511,20 @@ export default function CheckInForm({
 
   if (isLoadingOptions) {
     return (
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-5xl">
         <div className="flex min-h-[500px] items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fbc4ab]/35">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">
               <Loader2
                 className="h-5 w-5 animate-spin text-[#5c6b9c]"
                 strokeWidth={1.8}
               />
             </div>
 
-            <p className="text-sm text-[#4a3f35]/65">
+            <p className="text-sm text-[#4a3f35]/55">
               {isEnglish
-                ? "Loading check-in..."
-                : "Memuat check-in..."}
+                ? "Preparing your check-in..."
+                : "Menyiapkan check-in..."}
             </p>
           </div>
         </div>
@@ -499,87 +537,76 @@ export default function CheckInForm({
   // =========================================================
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <main className="mx-auto max-w-5xl pb-16 text-[#4a3f35]">
+      {/* =====================================================
+          INTRO
+      ====================================================== */}
 
-      {/* HEADER
-          Back button sengaja tidak ada di sini.
-          Tombol Kembali sudah disediakan oleh
-          DashboardShell / anti-slop navigation.
-      */}
+      <header className="mb-12 max-w-3xl">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="h-px w-8 bg-[#e2725b]" />
 
-      <div className="mb-8">
-        <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fbc4ab]/35">
-            <Heart
-              className="h-5 w-5 text-[#5c6b9c]"
-              strokeWidth={1.8}
-            />
-          </div>
-
-          <div>
-            <p className="text-sm font-medium text-[#5c6b9c]">
-              {isEnglish
-                ? `Hi, ${userName}`
-                : `Hai, ${userName}`}
-            </p>
-
-            <h1 className="mt-1 text-3xl font-bold tracking-[-0.035em] text-[#4a3f35]">
-              {isEnglish
-                ? "How are you feeling today?"
-                : "Bagaimana perasaanmu hari ini?"}
-            </h1>
-
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[#4a3f35]/65">
-              {isEnglish
-                ? "There are no right or wrong answers. Just choose what feels closest to how you're feeling."
-                : "Tidak ada jawaban benar atau salah. Pilih saja yang paling menggambarkan perasaanmu saat ini."}
-            </p>
-          </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
+            {isEnglish
+              ? "Daily check-in"
+              : "Check-in harian"}
+          </p>
         </div>
-      </div>
 
-      <div className="space-y-6">
+        <h1 className="text-4xl font-semibold tracking-[-0.045em] text-[#4a3f35] sm:text-5xl">
+          {isEnglish
+            ? `How are you feeling today, ${userName}?`
+            : `Bagaimana perasaanmu hari ini, ${userName}?`}
+        </h1>
 
-        {/* EMOTIONS */}
+        <p className="mt-5 max-w-2xl text-sm leading-7 text-[#4a3f35]/60 sm:text-[15px]">
+          {isEnglish
+            ? "Take a quiet moment to notice what is happening inside you. There is nothing you need to get right."
+            : "Ambil sedikit waktu untuk memperhatikan apa yang sedang terjadi di dalam dirimu. Tidak ada jawaban yang harus dibuat sempurna."}
+        </p>
+      </header>
 
-        <section className="rounded-2xl border border-[#e7ddd5] bg-[#fdfbf7] p-6 shadow-sm sm:p-7">
-          <div className="flex items-center justify-between gap-4">
+      <div className="space-y-16">
+
+        {/* ===================================================
+            EMOTIONS
+        ==================================================== */}
+
+        <section>
+          <div className="mb-7 flex items-end justify-between gap-5 border-b border-[#4a3f35]/10 pb-5">
             <div>
-              <div className="flex items-center gap-2">
-                <Smile
-                  className="h-4 w-4 text-[#5c6b9c]"
-                  strokeWidth={1.8}
-                />
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                01
+              </p>
 
-                <h2 className="text-sm font-semibold text-[#4a3f35]">
-                  {isEnglish
-                    ? "Choose your emotions"
-                    : "Pilih emosimu"}
-                </h2>
-              </div>
-
-              <p className="mt-1 text-xs text-[#4a3f35]/45">
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
                 {isEnglish
-                  ? "Choose up to 3 emotions."
-                  : "Pilih maksimal 3 emosi."}
+                  ? "What are you feeling?"
+                  : "Apa yang sedang kamu rasakan?"}
+              </h2>
+
+              <p className="mt-2 max-w-xl text-sm leading-6 text-[#4a3f35]/50">
+                {isEnglish
+                  ? "Choose up to three emotions that feel closest to your experience."
+                  : "Pilih maksimal tiga emosi yang paling mendekati apa yang sedang kamu rasakan."}
               </p>
             </div>
 
-            <span className="rounded-full bg-[#c1d5c0]/45 px-3 py-1 text-xs font-medium text-[#4a3f35]/65">
+            <span className="hidden text-xs font-medium text-[#4a3f35]/35 sm:block">
               {selectedEmotions.length}/3
             </span>
           </div>
 
-          {emotions.length === 0 ? (
-            <div className="mt-6 rounded-xl border border-dashed border-[#c1d5c0] bg-[#fdfbf7] p-6 text-center">
-              <p className="text-sm text-[#4a3f35]/65">
+          {unknownEmotionMode ? null : emotions.length === 0 ? (
+            <div className="border-y border-dashed border-[#c1d5c0] py-10 text-center">
+              <p className="text-sm text-[#4a3f35]/60">
                 {isEnglish
                   ? "No emotions are available right now."
                   : "Belum ada pilihan emosi yang tersedia."}
               </p>
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 border-l border-t border-[#4a3f35]/10 sm:grid-cols-3 lg:grid-cols-4">
               {emotions.map((emotion) => {
                 const selected = Boolean(
                   getSelectedEmotion(
@@ -602,45 +629,49 @@ export default function CheckInForm({
                       )
                     }
                     disabled={disabled}
-                    className={`
-                      relative flex min-h-[72px]
-                      items-center justify-between
-                      rounded-xl border px-4
-                      text-left transition-all
-                      ${
-                        selected
-                          ? "border-[#e2725b] bg-[#fbc4ab]/45 text-[#4a3f35]"
-                          : "border-[#e7ddd5] bg-[#fdfbf7] text-[#4a3f35]/85 hover:border-[#fbc4ab] hover:bg-[#fdfbf7]"
-                      }
-                      ${
-                        disabled
-                          ? "cursor-not-allowed opacity-40"
-                          : ""
-                      }
-                    `}
+                    className={[
+                      "group relative min-h-[105px] border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
+                      selected
+                        ? "bg-[#fbc4ab]/40"
+                        : "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10",
+                      disabled
+                        ? "cursor-not-allowed opacity-30"
+                        : "",
+                    ].join(" ")}
                   >
-                    <div className="min-w-0">
-                      <span className="block truncate text-sm font-medium">
+                    {selected && (
+                      <span className="absolute left-0 top-0 h-full w-1 bg-[#e2725b]" />
+                    )}
+
+                    <div className="flex h-full flex-col justify-between gap-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <span
+                          className={[
+                            "text-[10px] font-semibold uppercase tracking-[0.12em]",
+                            selected
+                              ? "text-[#e2725b]"
+                              : "text-[#4a3f35]/25",
+                          ].join(" ")}
+                        >
+                          {emotion.category}
+                        </span>
+
+                        {selected && (
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e2725b]">
+                            <Check
+                              className="h-3 w-3 text-white"
+                              strokeWidth={2.5}
+                            />
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="text-sm font-medium text-[#4a3f35]">
                         {getEmotionLabel(
                           emotion,
                         )}
                       </span>
-
-                      {emotion.category && (
-                        <span className="mt-1 block text-[10px] capitalize text-[#4a3f35]/45">
-                          {emotion.category}
-                        </span>
-                      )}
                     </div>
-
-                    {selected && (
-                      <span className="ml-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#e2725b]">
-                        <Check
-                          className="h-3 w-3 text-white"
-                          strokeWidth={2.5}
-                        />
-                      </span>
-                    )}
                   </button>
                 );
               })}
@@ -650,22 +681,21 @@ export default function CheckInForm({
           {/* SELECTED EMOTIONS */}
 
           {selectedEmotions.length > 0 && (
-            <div className="mt-7 border-t border-[#eee6df] pt-6">
-              <div>
-                <h3 className="text-sm font-semibold text-[#4a3f35]">
-                  {isEnglish
-                    ? "Tell us more about each emotion"
-                    : "Ceritakan lebih banyak tentang setiap emosi"}
-                </h3>
+            <div className="mt-10">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#4a3f35]/10" />
 
-                <p className="mt-1 text-xs text-[#4a3f35]/45">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#4a3f35]/35">
                   {isEnglish
-                    ? "Rate the intensity and optionally tell us why you feel this way."
-                    : "Nilai intensitasnya dan ceritakan secara singkat kenapa kamu merasa seperti ini."}
-                </p>
+                    ? "A little deeper"
+                    : "Sedikit lebih dalam"}
+
+                </span>
+
+                <div className="h-px flex-1 bg-[#4a3f35]/10" />
               </div>
 
-              <div className="mt-5 space-y-5">
+              <div className="space-y-8">
                 {selectedEmotions.map(
                   (selectedEmotion) => {
                     const emotion =
@@ -680,161 +710,145 @@ export default function CheckInForm({
                     }
 
                     return (
-                      <div
+                      <article
                         key={
                           selectedEmotion.slug
                         }
-                        className="rounded-xl border border-[#e7ddd5] bg-[#fdfbf7]/75 p-4"
+                        className="grid gap-6 border-b border-[#4a3f35]/10 pb-8 lg:grid-cols-[0.7fr_1.3fr]"
                       >
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-sm font-semibold text-[#4a3f35]">
-                            {getEmotionLabel(
-                              emotion,
-                            )}
-                          </span>
+                        {/* EMOTION INFO */}
 
-                          <span className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-[#fbc4ab]/55 px-2 text-sm font-bold text-[#4a3f35]">
-                            {
-                              selectedEmotion.intensity
-                            }
-                          </span>
-                        </div>
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <span className="h-2 w-2 rounded-full bg-[#e2725b]" />
 
-                        {/* INTENSITY */}
-
-                        <div className="mt-4 flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateIntensity(
-                                selectedEmotion.slug,
-                                selectedEmotion.intensity -
-                                  1,
-                              )
-                            }
-                            disabled={
-                              selectedEmotion.intensity <=
-                              1
-                            }
-                            className="
-                              flex h-9 w-9 shrink-0
-                              items-center justify-center
-                              rounded-lg border border-[#e7ddd5]
-                              bg-[#fdfbf7] text-[#4a3f35]/65
-                              transition
-                              hover:border-[#fbc4ab]
-                              hover:text-[#5c6b9c]
-                              disabled:cursor-not-allowed
-                              disabled:opacity-40
-                            "
-                            aria-label={
-                              isEnglish
-                                ? "Decrease intensity"
-                                : "Kurangi intensitas"
-                            }
-                          >
-                            <Minus
-                              className="h-4 w-4"
-                              strokeWidth={2}
-                            />
-                          </button>
-
-                          <div className="flex flex-1 items-center gap-1.5">
-                            {[1, 2, 3, 4, 5].map(
-                              (level) => (
-                                <button
-                                  key={level}
-                                  type="button"
-                                  onClick={() =>
-                                    updateIntensity(
-                                      selectedEmotion.slug,
-                                      level,
-                                    )
-                                  }
-                                  className={`
-                                    h-2.5 flex-1 rounded-full
-                                    transition-all
-                                    ${
-                                      level <=
-                                      selectedEmotion.intensity
-                                        ? "bg-[#fbc4ab]/350"
-                                        : "bg-gray-200"
-                                    }
-                                  `}
-                                  aria-label={`Intensity ${level}`}
-                                />
-                              ),
-                            )}
+                            <h3 className="text-lg font-semibold">
+                              {getEmotionLabel(
+                                emotion,
+                              )}
+                            </h3>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateIntensity(
-                                selectedEmotion.slug,
-                                selectedEmotion.intensity +
-                                  1,
-                              )
-                            }
-                            disabled={
-                              selectedEmotion.intensity >=
-                              5
-                            }
-                            className="
-                              flex h-9 w-9 shrink-0
-                              items-center justify-center
-                              rounded-lg border border-[#e7ddd5]
-                              bg-[#fdfbf7] text-[#4a3f35]/65
-                              transition
-                              hover:border-[#fbc4ab]
-                              hover:text-[#5c6b9c]
-                              disabled:cursor-not-allowed
-                              disabled:opacity-40
-                            "
-                            aria-label={
-                              isEnglish
-                                ? "Increase intensity"
-                                : "Tambah intensitas"
-                            }
-                          >
-                            <Plus
-                              className="h-4 w-4"
-                              strokeWidth={2}
-                            />
-                          </button>
+                          {emotion.description && (
+                            <p className="mt-3 max-w-sm text-sm leading-6 text-[#4a3f35]/50">
+                              {emotion.description}
+                            </p>
+                          )}
                         </div>
 
-                        <div className="mt-2 flex justify-between text-[11px] text-[#4a3f35]/45">
-                          <span>
-                            {isEnglish
-                              ? "Very low"
-                              : "Sangat rendah"}
-                          </span>
+                        {/* INTENSITY + NOTE */}
 
-                          <span>
-                            {isEnglish
-                              ? "Very high"
-                              : "Sangat tinggi"}
-                          </span>
-                        </div>
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                              {isEnglish
+                                ? "Intensity"
+                                : "Intensitas"}
+                            </span>
 
-                        {/* EMOTION NOTE */}
+                            <span className="text-sm font-semibold text-[#e2725b]">
+                              {
+                                selectedEmotion.intensity
+                              }
+                              /5
+                            </span>
+                          </div>
 
-                        <div className="mt-5 border-t border-[#e7ddd5] pt-4">
+                          <div className="mt-4 flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateIntensity(
+                                  selectedEmotion.slug,
+                                  selectedEmotion.intensity -
+                                    1,
+                                )
+                              }
+                              disabled={
+                                selectedEmotion.intensity <=
+                                1
+                              }
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
+                              aria-label={
+                                isEnglish
+                                  ? "Decrease intensity"
+                                  : "Kurangi intensitas"
+                              }
+                            >
+                              <Minus className="h-3.5 w-3.5" />
+                            </button>
+
+                            <div className="flex flex-1 gap-1.5">
+                              {[1, 2, 3, 4, 5].map(
+                                (level) => (
+                                  <button
+                                    key={level}
+                                    type="button"
+                                    onClick={() =>
+                                      updateIntensity(
+                                        selectedEmotion.slug,
+                                        level,
+                                      )
+                                    }
+                                    className={[
+                                      "h-2 flex-1 rounded-full transition-all",
+                                      level <=
+                                      selectedEmotion.intensity
+                                        ? "bg-[#e2725b]"
+                                        : "bg-[#4a3f35]/10",
+                                    ].join(" ")}
+                                    aria-label={`Intensity ${level}`}
+                                  />
+                                ),
+                              )}
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateIntensity(
+                                  selectedEmotion.slug,
+                                  selectedEmotion.intensity +
+                                    1,
+                                )
+                              }
+                              disabled={
+                                selectedEmotion.intensity >=
+                                5
+                              }
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
+                              aria-label={
+                                isEnglish
+                                  ? "Increase intensity"
+                                  : "Tambah intensitas"
+                              }
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+
+                          <div className="mt-2 flex justify-between text-[10px] text-[#4a3f35]/35">
+                            <span>
+                              {isEnglish
+                                ? "Very low"
+                                : "Sangat rendah"}
+                            </span>
+
+                            <span>
+                              {isEnglish
+                                ? "Very high"
+                                : "Sangat tinggi"}
+                            </span>
+                          </div>
+
                           <label
                             htmlFor={`emotion-note-${selectedEmotion.slug}`}
-                            className="text-xs font-medium text-[#4a3f35]/85"
+                            className="mt-7 block text-xs font-semibold uppercase tracking-[0.1em] text-[#5c6b9c]"
                           >
                             {isEnglish
-                              ? "Why do you feel this way?"
-                              : "Kenapa kamu merasa seperti ini?"}
+                              ? "What is behind it?"
+                              : "Apa yang ada di baliknya?"}
                           </label>
-
-                          <p className="mt-1 text-[11px] leading-5 text-[#4a3f35]/45">
-                            {isEnglish
-                              ? "Optional. A short note helps Moodify understand this emotion."
-                              : "Opsional. Catatan singkat membantu Moodify memahami emosi ini."}
-                          </p>
 
                           <textarea
                             id={`emotion-note-${selectedEmotion.slug}`}
@@ -854,73 +868,140 @@ export default function CheckInForm({
                                 ? "What made you feel this way?"
                                 : "Apa yang membuatmu merasa seperti ini?"
                             }
-                            className="
-                              mt-3 w-full resize-none
-                              rounded-lg border border-[#e7ddd5]
-                              bg-[#fdfbf7] px-3 py-2.5
-                              text-sm leading-5 text-[#4a3f35]
-                              outline-none transition
-                              placeholder:text-[#4a3f35]/45
-                              hover:border-[#c1d5c0]
-                              focus:border-[#e2725b]
-                              focus:ring-4
-                              focus:ring-[#e2725b]/15
-                            "
+                            className="mt-3 w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-6 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
                           />
 
-                          <div className="mt-1 text-right">
-                            <span className="text-[10px] text-[#4a3f35]/45">
-                              {
-                                selectedEmotion.note
-                                  .length
-                              }
-                              /500
-                            </span>
+                          <div className="mt-1 text-right text-[10px] text-[#4a3f35]/30">
+                            {
+                              selectedEmotion.note
+                                .length
+                            }
+                            /500
                           </div>
                         </div>
-                      </div>
+                      </article>
                     );
                   },
                 )}
               </div>
             </div>
           )}
-        </section>
 
-        {/* CONTEXT */}
+          {/* UNKNOWN EMOTION MODE */}
 
-        <section className="rounded-2xl border border-[#e7ddd5] bg-[#fdfbf7] p-6 shadow-sm sm:p-7">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles
-                className="h-4 w-4 text-[#5c6b9c]"
+          <div className="mt-7">
+            <button
+              type="button"
+              onClick={
+                unknownEmotionMode
+                  ? disableUnknownEmotionMode
+                  : enableUnknownEmotionMode
+              }
+              className="inline-flex items-center gap-2 border-b border-[#5c6b9c]/40 pb-1 text-sm font-medium text-[#5c6b9c] transition hover:border-[#e2725b] hover:text-[#e2725b]"
+            >
+              <MessageCircle
+                className="h-4 w-4"
                 strokeWidth={1.8}
               />
 
-              <h2 className="text-sm font-semibold text-[#4a3f35]">
-                {isEnglish
-                  ? "What may be affecting you?"
-                  : "Apa yang mungkin memengaruhimu?"}
-              </h2>
-            </div>
+              {unknownEmotionMode
+                ? isEnglish
+                  ? "I know my emotion"
+                  : "Saya tahu emosinya"
+                : isEnglish
+                  ? "I'm not sure what emotion this is"
+                  : "Saya tidak yakin ini emosi apa"}
+            </button>
 
-            <p className="mt-1 text-xs text-[#4a3f35]/45">
+            {unknownEmotionMode && (
+              <div className="mt-8 bg-[#fbc4ab]/20 p-6 sm:p-8">
+                <div className="max-w-2xl">
+                  <div className="flex items-center gap-3">
+                    <MessageCircle
+                      className="h-5 w-5 text-[#e2725b]"
+                      strokeWidth={1.8}
+                    />
+
+                    <h3 className="text-lg font-semibold">
+                      {isEnglish
+                        ? "Tell us what you are feeling"
+                        : "Ceritakan apa yang sedang kamu rasakan"}
+                    </h3>
+                  </div>
+
+                  <p className="mt-2 text-sm leading-6 text-[#4a3f35]/55">
+                    {isEnglish
+                      ? "You don't need to know the name of the emotion. Just describe what is happening inside you."
+                      : "Kamu tidak perlu tahu nama emosinya. Cukup ceritakan apa yang sedang terjadi di dalam dirimu."}
+                  </p>
+
+                  <textarea
+                    value={emotionDescription}
+                    onChange={(event) =>
+                      setEmotionDescription(
+                        event.target.value,
+                      )
+                    }
+                    maxLength={2000}
+                    rows={7}
+                    placeholder={
+                      isEnglish
+                        ? "For example: I don't know exactly what I'm feeling. Since this morning everything feels heavy, I don't feel like talking, and I just want some time alone..."
+                        : "Contoh: Aku nggak tahu sebenarnya aku merasa apa. Dari pagi rasanya berat, nggak terlalu sedih tapi juga nggak punya energi buat ngobrol dan pengen sendiri..."
+                    }
+                    className="mt-6 min-h-[180px] w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-7 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
+                  />
+
+                  <div className="mt-2 flex justify-between gap-4 text-[10px] text-[#4a3f35]/35">
+                    <span>
+                      {isEnglish
+                        ? "Write naturally. There is no right or wrong answer."
+                        : "Tulis dengan cara yang natural. Tidak ada jawaban benar atau salah."}
+                    </span>
+
+                    <span className="shrink-0">
+                      {emotionDescription.length}/2000
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ===================================================
+            CONTEXT
+        ==================================================== */}
+
+        <section>
+          <div className="mb-7 max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+              02
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">
               {isEnglish
-                ? "Optional. Choose anything that feels relevant."
-                : "Opsional. Pilih hal yang terasa relevan."}
+                ? "What has been around you?"
+                : "Apa yang sedang ada di sekitarmu?"}
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-[#4a3f35]/50">
+              {isEnglish
+                ? "Optional. Choose anything that may have shaped how today feels."
+                : "Opsional. Pilih hal yang mungkin ikut memengaruhi bagaimana harimu terasa."}
             </p>
           </div>
 
           {contexts.length === 0 ? (
-            <div className="mt-6 rounded-xl border border-dashed border-[#c1d5c0] bg-[#fdfbf7] p-6 text-center">
-              <p className="text-sm text-[#4a3f35]/65">
+            <div className="border-y border-dashed border-[#c1d5c0] py-10 text-center">
+              <p className="text-sm text-[#4a3f35]/60">
                 {isEnglish
                   ? "No contexts are available right now."
                   : "Belum ada konteks yang tersedia."}
               </p>
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="flex flex-wrap gap-x-7 gap-y-5 border-y border-[#4a3f35]/10 py-7">
               {contexts.map((context) => {
                 const selected =
                   selectedContexts.includes(
@@ -936,19 +1017,32 @@ export default function CheckInForm({
                         context.slug,
                       )
                     }
-                    className={`
-                      flex min-h-[62px]
-                      items-center justify-center
-                      rounded-xl border px-3
-                      text-center transition
-                      ${
-                        selected
-                          ? "border-[#e2725b] bg-[#fbc4ab]/45 text-[#4a3f35]"
-                          : "border-[#e7ddd5] bg-[#fdfbf7] text-[#4a3f35]/75 hover:border-[#fbc4ab] hover:bg-[#fdfbf7]"
-                      }
-                    `}
+                    className="group inline-flex items-center gap-3 text-left"
                   >
-                    <span className="text-xs font-medium">
+                    <span
+                      className={[
+                        "flex h-5 w-5 items-center justify-center rounded-full border transition-all",
+                        selected
+                          ? "border-[#e2725b] bg-[#e2725b]"
+                          : "border-[#4a3f35]/20 group-hover:border-[#e2725b]",
+                      ].join(" ")}
+                    >
+                      {selected && (
+                        <Check
+                          className="h-3 w-3 text-white"
+                          strokeWidth={2.5}
+                        />
+                      )}
+                    </span>
+
+                    <span
+                      className={[
+                        "text-sm transition-colors",
+                        selected
+                          ? "font-medium text-[#4a3f35]"
+                          : "text-[#4a3f35]/55 group-hover:text-[#4a3f35]",
+                      ].join(" ")}
+                    >
                       {getContextLabel(
                         context,
                       )}
@@ -960,77 +1054,91 @@ export default function CheckInForm({
           )}
         </section>
 
-        {/* DAILY STORY */}
+        {/* ===================================================
+            DAILY STORY
+        ==================================================== */}
 
-        <section className="rounded-2xl border border-[#e7ddd5] bg-[#fdfbf7] p-6 shadow-sm sm:p-7">
-          <div>
-            <div className="flex items-center gap-2">
-              <MessageCircle
-                className="h-4 w-4 text-[#5c6b9c]"
-                strokeWidth={1.8}
-              />
+        <section>
+          <div className="mb-7 grid gap-5 sm:grid-cols-[0.7fr_1.3fr] sm:items-end">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
+                03
+              </p>
 
-              <h2 className="text-sm font-semibold text-[#4a3f35]">
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
                 {isEnglish
-                  ? "Your Daily Story"
-                  : "Cerita Harianmu"}
+                  ? "Tell your story"
+                  : "Ceritakan harimu"}
               </h2>
             </div>
 
-            <p className="mt-1 text-xs text-[#4a3f35]/45">
+            <p className="max-w-xl text-sm leading-6 text-[#4a3f35]/50">
               {isEnglish
-                ? "Tell Moodify what happened today or what has been on your mind."
-                : "Ceritakan apa yang terjadi hari ini atau apa yang sedang ada di pikiranmu."}
+                ? "What happened today? What has been on your mind? Write as much or as little as feels right."
+                : "Apa yang terjadi hari ini? Apa yang sedang memenuhi pikiranmu? Tulis sebanyak atau sesedikit yang terasa nyaman."}
             </p>
           </div>
 
-          <textarea
-            value={note}
-            onChange={(event) =>
-              setNote(event.target.value)
-            }
-            maxLength={2000}
-            rows={5}
-            placeholder={
-              isEnglish
-                ? "Tell us about your day..."
-                : "Ceritakan tentang harimu..."
-            }
-            className="
-              mt-6 w-full resize-none
-              rounded-xl border border-[#e7ddd5]
-              bg-[#fdfbf7]/80
-              px-4 py-3
-              text-sm leading-6 text-[#4a3f35]
-              outline-none
-              transition
-              placeholder:text-[#4a3f35]/45
-              hover:border-[#c1d5c0]
-              focus:border-[#e2725b]
-              focus:bg-[#fdfbf7]
-              focus:ring-4
-              focus:ring-[#e2725b]/15
-            "
-          />
+          <div className="relative overflow-hidden bg-[#fbc4ab]/25 p-6 sm:p-8 lg:p-10">
+            <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#fdfbf7]/50" />
 
-          <div className="mt-2 text-right">
-            <span className="text-[11px] text-[#4a3f35]/45">
-              {note.length}/2000
-            </span>
+            <div className="relative">
+              <div className="flex items-center gap-3">
+                <MessageCircle
+                  className="h-5 w-5 text-[#e2725b]"
+                  strokeWidth={1.7}
+                />
+
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                  {isEnglish
+                    ? "Your daily story"
+                    : "Cerita harianmu"}
+                </span>
+              </div>
+
+              <textarea
+                value={note}
+                onChange={(event) =>
+                  setNote(event.target.value)
+                }
+                maxLength={2000}
+                rows={8}
+                placeholder={
+                  isEnglish
+                    ? "Start wherever feels natural..."
+                    : "Mulai dari mana pun yang terasa natural..."
+                }
+                className="mt-7 min-h-[220px] w-full resize-none border-0 bg-transparent px-0 py-0 text-base leading-8 text-[#4a3f35] outline-none placeholder:text-[#4a3f35]/35"
+              />
+
+              <div className="mt-6 flex items-center justify-between border-t border-[#4a3f35]/10 pt-4">
+                <span className="text-xs text-[#4a3f35]/40">
+                  {isEnglish
+                    ? "Only share what feels comfortable."
+                    : "Bagikan hanya hal yang terasa nyaman untukmu."}
+                </span>
+
+                <span className="text-[10px] text-[#4a3f35]/35">
+                  {note.length}/2000
+                </span>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* AI ERROR */}
+        {/* ===================================================
+            AI ERROR
+        ==================================================== */}
 
         {aiError && savedCheckinId && (
-          <div className="rounded-xl border border-[#fbc4ab] bg-[#fbc4ab]/30 px-4 py-4">
+          <section className="border-l-2 border-[#e2725b] bg-[#fbc4ab]/20 px-5 py-5 sm:px-6">
             <p className="text-sm font-semibold text-[#4a3f35]">
               {isEnglish
                 ? "Your check-in has been saved"
                 : "Check-in kamu sudah tersimpan"}
             </p>
 
-            <p className="mt-1 text-sm leading-5 text-[#4a3f35]/80">
+            <p className="mt-2 text-sm leading-6 text-[#4a3f35]/65">
               {aiError}
             </p>
 
@@ -1058,16 +1166,7 @@ export default function CheckInForm({
                 }
               }}
               disabled={isAnalyzing}
-              className="
-                mt-3 inline-flex h-10
-                items-center justify-center gap-2
-                rounded-lg bg-[#e2725b]
-                px-4 text-sm font-semibold
-                text-white transition
-                hover:bg-[#4a3f35]
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
+              className="mt-5 inline-flex h-10 items-center gap-2 border-b border-[#e2725b] text-sm font-medium text-[#4a3f35] transition hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isAnalyzing ? (
                 <>
@@ -1084,105 +1183,104 @@ export default function CheckInForm({
                 <>
                   <Sparkles
                     className="h-4 w-4"
-                    strokeWidth={2}
+                    strokeWidth={1.8}
                   />
 
                   {isEnglish
-                    ? "Try AI Analysis Again"
-                    : "Coba Analisis Lagi"}
+                    ? "Try AI analysis again"
+                    : "Coba analisis lagi"}
                 </>
               )}
             </button>
-          </div>
+          </section>
         )}
 
-        {/* ERROR */}
+        {/* ===================================================
+            ERROR
+        ==================================================== */}
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-            <p className="text-sm leading-5 text-red-600">
+          <div className="border-l-2 border-red-400 bg-red-50/70 px-5 py-4">
+            <p className="text-sm leading-6 text-red-600">
               {error}
             </p>
           </div>
         )}
 
-        {/* SUBMIT */}
+        {/* ===================================================
+            SUBMIT
+        ==================================================== */}
 
-        <div className="flex items-center justify-between gap-4 border-t border-[#e7ddd5] pt-6">
-          <div className="hidden items-center gap-2 sm:flex">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#c1d5c0]/45">
-              <Heart
-                className="h-4 w-4 text-[#4a3f35]/65"
-                strokeWidth={1.8}
-              />
+        <section className="border-t border-[#4a3f35]/10 pt-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-md">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c1d5c0]/45">
+                  <Heart
+                    className="h-4 w-4 text-[#5c6b9c]"
+                    strokeWidth={1.7}
+                  />
+                </div>
+
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                  {isEnglish
+                    ? "A moment for yourself"
+                    : "Sebentar untuk dirimu"}
+                </span>
+              </div>
+
+              <p className="mt-3 text-xs leading-5 text-[#4a3f35]/45">
+                {isEnglish
+                  ? "Your entries are private. Once saved, Moodify will create a reflection based on what you shared."
+                  : "Catatanmu bersifat pribadi. Setelah disimpan, Moodify akan membuat refleksi berdasarkan apa yang kamu bagikan."}
+              </p>
             </div>
 
-            <p className="text-xs text-[#4a3f35]/45">
-              {isEnglish
-                ? "Your entries are private."
-                : "Catatanmu bersifat pribadi."}
-            </p>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={
+                isSubmitting ||
+                isAnalyzing ||
+                (!unknownEmotionMode &&
+                  selectedEmotions.length === 0) ||
+                (unknownEmotionMode &&
+                  emotionDescription.trim().length === 0)
+              }
+              className="group inline-flex h-12 w-full items-center justify-center gap-3 bg-[#e2725b] px-7 text-sm font-semibold text-white transition-all hover:bg-[#4a3f35] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {isSubmitting || isAnalyzing ? (
+                <>
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    strokeWidth={2}
+                  />
+
+                  {isAnalyzing
+                    ? isEnglish
+                      ? "Analyzing..."
+                      : "Menganalisis..."
+                    : isEnglish
+                      ? "Saving..."
+                      : "Menyimpan..."}
+                </>
+              ) : (
+                <>
+                  {isEnglish
+                    ? "Save check-in"
+                    : "Simpan check-in"}
+
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                    strokeWidth={2}
+                  />
+                </>
+              )}
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={
-              isSubmitting ||
-              isAnalyzing ||
-              selectedEmotions.length === 0
-            }
-            className="
-              group
-              ml-auto inline-flex h-12
-              min-w-[160px]
-              items-center justify-center gap-2
-              rounded-xl
-              bg-[#e2725b]
-              px-6
-              text-sm font-semibold text-white
-              shadow-sm
-              transition-all
-              hover:bg-[#4a3f35]
-              hover:shadow-md
-              focus:outline-none
-              focus:ring-4
-              focus:ring-[#e2725b]/20
-              disabled:cursor-not-allowed
-              disabled:opacity-60
-            "
-          >
-            {isSubmitting || isAnalyzing ? (
-              <>
-                <Loader2
-                  className="h-4 w-4 animate-spin"
-                  strokeWidth={2}
-                />
-
-                {isAnalyzing
-                  ? isEnglish
-                    ? "Analyzing..."
-                    : "Menganalisis..."
-                  : isEnglish
-                    ? "Saving..."
-                    : "Menyimpan..."}
-              </>
-            ) : (
-              <>
-                {isEnglish
-                  ? "Save check-in"
-                  : "Simpan check-in"}
-
-                <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-                  strokeWidth={2}
-                />
-              </>
-            )}
-          </button>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
 

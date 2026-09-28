@@ -4,33 +4,56 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const checkInSchema = z.object({
-  emotions: z
-    .array(
-      z.object({
-        name: z.string().min(1, "Emotion is required"),
-        intensity: z.number().int().min(1).max(5),
-        note: z
-          .string()
-          .max(500, "Emotion note is too long")
-          .nullable()
-          .optional(),
-      }),
-    )
-    .min(1)
-    .max(3),
+const checkInSchema = z
+  .object({
+    emotions: z
+      .array(
+        z.object({
+          name: z.string().min(1, "Emotion is required"),
+          intensity: z.number().int().min(1).max(5),
+          note: z
+            .string()
+            .max(500, "Emotion note is too long")
+            .nullable()
+            .optional(),
+        }),
+      )
+      .max(3)
+      .default([]),
 
-  contexts: z
-    .array(z.string().min(1, "Context is required"))
-    .default([]),
+    contexts: z
+      .array(z.string().min(1, "Context is required"))
+      .default([]),
 
-  // Daily Story
-  note: z
-    .string()
-    .max(2000, "Daily story is too long")
-    .nullable()
-    .optional(),
-});
+    // Daily Story
+    note: z
+      .string()
+      .max(2000, "Daily story is too long")
+      .nullable()
+      .optional(),
+
+    // User does not know what emotion they are feeling
+    emotionDescription: z
+      .string()
+      .max(2000, "Emotion description is too long")
+      .nullable()
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    const hasEmotions = data.emotions.length > 0;
+    const hasDescription =
+      typeof data.emotionDescription === "string" &&
+      data.emotionDescription.trim().length > 0;
+
+    if (!hasEmotions && !hasDescription) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["emotions"],
+        message:
+          "Select at least one emotion or describe how you are feeling.",
+      });
+    }
+  });
 
 export async function POST(request: Request) {
   try {
@@ -73,7 +96,13 @@ export async function POST(request: Request) {
       emotions,
       contexts,
       note,
+      emotionDescription,
     } = parsed.data;
+
+    const cleanedEmotionDescription =
+      emotionDescription?.trim() || null;
+
+    const cleanedNote = note?.trim() || null;
 
     // --------------------------------------------------
     // 3. Validate duplicate emotions
@@ -83,10 +112,13 @@ export async function POST(request: Request) {
       (emotion) => emotion.name,
     );
 
-    const uniqueEmotionSlugs = new Set(emotionSlugs);
+    const uniqueEmotionSlugs = new Set(
+      emotionSlugs,
+    );
 
     if (
-      uniqueEmotionSlugs.size !== emotionSlugs.length
+      uniqueEmotionSlugs.size !==
+      emotionSlugs.length
     ) {
       return NextResponse.json(
         {
@@ -103,18 +135,20 @@ export async function POST(request: Request) {
     // --------------------------------------------------
 
     const emotionRecords =
-      await prisma.emotion.findMany({
-        where: {
-          slug: {
-            in: emotionSlugs,
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      });
+      emotionSlugs.length > 0
+        ? await prisma.emotion.findMany({
+            where: {
+              slug: {
+                in: emotionSlugs,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          })
+        : [];
 
     const foundEmotionSlugs = new Set(
       emotionRecords.map(
@@ -122,9 +156,11 @@ export async function POST(request: Request) {
       ),
     );
 
-    const missingEmotions = emotionSlugs.filter(
-      (slug) => !foundEmotionSlugs.has(slug),
-    );
+    const missingEmotions =
+      emotionSlugs.filter(
+        (slug) =>
+          !foundEmotionSlugs.has(slug),
+      );
 
     if (missingEmotions.length > 0) {
       return NextResponse.json(
@@ -142,10 +178,13 @@ export async function POST(request: Request) {
     // 5. Validate duplicate contexts
     // --------------------------------------------------
 
-    const uniqueContextSlugs = new Set(contexts);
+    const uniqueContextSlugs = new Set(
+      contexts,
+    );
 
     if (
-      uniqueContextSlugs.size !== contexts.length
+      uniqueContextSlugs.size !==
+      contexts.length
     ) {
       return NextResponse.json(
         {
@@ -162,18 +201,20 @@ export async function POST(request: Request) {
     // --------------------------------------------------
 
     const contextRecords =
-      await prisma.context.findMany({
-        where: {
-          slug: {
-            in: contexts,
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      });
+      contexts.length > 0
+        ? await prisma.context.findMany({
+            where: {
+              slug: {
+                in: contexts,
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          })
+        : [];
 
     const foundContextSlugs = new Set(
       contextRecords.map(
@@ -181,9 +222,11 @@ export async function POST(request: Request) {
       ),
     );
 
-    const missingContexts = contexts.filter(
-      (slug) => !foundContextSlugs.has(slug),
-    );
+    const missingContexts =
+      contexts.filter(
+        (slug) =>
+          !foundContextSlugs.has(slug),
+      );
 
     if (missingContexts.length > 0) {
       return NextResponse.json(
@@ -239,15 +282,29 @@ export async function POST(request: Request) {
     // 8. Calculate overall intensity
     // --------------------------------------------------
 
+    /*
+     * Normal mode:
+     * average intensity from selected emotions.
+     *
+     * Unknown-emotion mode:
+     * there are no selected emotions yet,
+     * so we temporarily use 0.
+     *
+     * The AI analysis can later interpret the
+     * EmotionDescription and provide the emotional insight.
+     */
     const totalIntensity = emotions.reduce(
       (total, emotion) =>
         total + emotion.intensity,
       0,
     );
 
-    const overallIntensity = Math.round(
-      totalIntensity / emotions.length,
-    );
+    const overallIntensity =
+      emotions.length > 0
+        ? Math.round(
+            totalIntensity / emotions.length,
+          )
+        : 0;
 
     // --------------------------------------------------
     // 9. Create transaction
@@ -255,13 +312,17 @@ export async function POST(request: Request) {
 
     const result = await prisma.$transaction(
       async (tx) => {
+        // ----------------------------------------------
+        // Daily Check-in
+        // ----------------------------------------------
+
         const checkin =
           await tx.dailyCheckin.create({
             data: {
               userId: user.id,
               checkinDate: now,
               overallIntensity,
-              note: note?.trim() || null,
+              note: cleanedNote,
             },
           });
 
@@ -280,26 +341,34 @@ export async function POST(request: Request) {
         // Check-in emotions
         // ----------------------------------------------
 
-        await tx.checkinEmotion.createMany({
-          data: emotions.map(
-            (emotion, index) => ({
-              checkinId: checkin.id,
+        if (emotions.length > 0) {
+          await tx.checkinEmotion.createMany({
+            data: emotions.map(
+              (emotion, index) => {
+                const emotionRecord =
+                  emotionRecordMap.get(
+                    emotion.name,
+                  );
 
-              emotionId:
-                emotionRecordMap.get(
-                  emotion.name,
-                )!.id,
+                if (!emotionRecord) {
+                  throw new Error(
+                    `Emotion not found: ${emotion.name}`,
+                  );
+                }
 
-              position: index + 1,
-
-              intensity:
-                emotion.intensity,
-
-              note:
-                emotion.note?.trim() || null,
-            }),
-          ),
-        });
+                return {
+                  checkinId: checkin.id,
+                  emotionId: emotionRecord.id,
+                  position: index + 1,
+                  intensity: emotion.intensity,
+                  note:
+                    emotion.note?.trim() ||
+                    null,
+                };
+              },
+            ),
+          });
+        }
 
         // ----------------------------------------------
         // Check-in contexts
@@ -317,12 +386,31 @@ export async function POST(request: Request) {
         }
 
         // ----------------------------------------------
+        // Emotion Description
+        //
+        // Used when the user does not know
+        // what emotion they are experiencing.
+        // ----------------------------------------------
+
+        let emotionDescriptionRecord = null;
+
+        if (cleanedEmotionDescription) {
+          emotionDescriptionRecord =
+            await tx.emotionDescription.create({
+              data: {
+                userId: user.id,
+                checkinId: checkin.id,
+                description:
+                  cleanedEmotionDescription,
+              },
+            });
+        }
+
+        // ----------------------------------------------
         // Daily Story → DiaryEntry
         // ----------------------------------------------
 
         let diaryEntry = null;
-
-        const cleanedNote = note?.trim();
 
         if (cleanedNote) {
           diaryEntry =
@@ -339,6 +427,8 @@ export async function POST(request: Request) {
         return {
           checkin,
           diaryEntry,
+          emotionDescription:
+            emotionDescriptionRecord,
         };
       },
     );
@@ -352,11 +442,10 @@ export async function POST(request: Request) {
         success: true,
         message:
           "Check-in saved successfully.",
-
         checkin: result.checkin,
-
-        diaryEntry:
-          result.diaryEntry,
+        diaryEntry: result.diaryEntry,
+        emotionDescription:
+          result.emotionDescription,
       },
       { status: 201 },
     );

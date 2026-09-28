@@ -1,18 +1,6 @@
-"use client"
-
 /* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
-import {
-  Activity,
-  ArrowRight,
-  CalendarDays,
-  CheckCircle2,
-  Clock3,
-  Heart,
-  MessageCircle,
-  Sparkles,
-  TrendingUp,
-} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -80,18 +68,24 @@ type DashboardData = {
     id: string;
     name: string;
   };
+
   today: {
     hasCheckin: boolean;
+
     checkin: {
       id: string;
       emotions: Emotion[];
       diaryEntries?: Diary[];
     } | null;
+
     analysis: Analysis | null;
   };
+
   latestDiary: Diary | null;
   latestAnalysis: Analysis | null;
+
   recommendedActivities: ActivityItem[];
+
   weekly: {
     startDate: string;
     endDate: string;
@@ -108,9 +102,18 @@ export default function DashboardClient({
 }) {
   const isEnglish = locale === "en";
 
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [data, setData] =
+    useState<DashboardData | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  // =========================================================
+  // LOAD DASHBOARD
+  // =========================================================
 
   useEffect(() => {
     let cancelled = false;
@@ -120,12 +123,16 @@ export default function DashboardClient({
         setLoading(true);
         setError("");
 
-        const response = await fetch("/api/dashboard", {
-          method: "GET",
-          cache: "no-store",
-        });
+        const response = await fetch(
+          "/api/dashboard",
+          {
+            method: "GET",
+            cache: "no-store",
+          },
+        );
 
-        const result = await response.json();
+        const result =
+          await response.json();
 
         if (!response.ok) {
           throw new Error(
@@ -140,7 +147,10 @@ export default function DashboardClient({
           setData(result);
         }
       } catch (err) {
-        console.error("Dashboard load error:", err);
+        console.error(
+          "Dashboard load error:",
+          err,
+        );
 
         if (!cancelled) {
           setError(
@@ -165,29 +175,51 @@ export default function DashboardClient({
     };
   }, [isEnglish]);
 
-  const weeklyCheckins = data?.weekly.checkins ?? [];
+  // =========================================================
+  // WEEKLY DATA
+  // =========================================================
+
+  const weeklyCheckins =
+    data?.weekly.checkins ?? [];
 
   const streak = useMemo(() => {
-    if (!weeklyCheckins.length) return 0;
+    if (!weeklyCheckins.length) {
+      return 0;
+    }
 
     const dates = new Set(
       weeklyCheckins.map((item) =>
-        new Date(item.date).toISOString().slice(0, 10),
+        new Date(item.date)
+          .toISOString()
+          .slice(0, 10),
       ),
     );
 
     const cursor = new Date();
-    cursor.setHours(0, 0, 0, 0);
+
+    cursor.setHours(
+      0,
+      0,
+      0,
+      0,
+    );
 
     let count = 0;
 
     for (let i = 0; i < 30; i++) {
-      const key = cursor.toISOString().slice(0, 10);
+      const key = cursor
+        .toISOString()
+        .slice(0, 10);
 
-      if (!dates.has(key)) break;
+      if (!dates.has(key)) {
+        break;
+      }
 
       count += 1;
-      cursor.setDate(cursor.getDate() - 1);
+
+      cursor.setDate(
+        cursor.getDate() - 1,
+      );
     }
 
     return count;
@@ -195,131 +227,289 @@ export default function DashboardClient({
 
   const weeklyBars = useMemo(() => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(today);
-      date.setDate(today.getDate() - (6 - index));
+    today.setHours(
+      0,
+      0,
+      0,
+      0,
+    );
 
-      const key = date.toISOString().slice(0, 10);
-      const checkin = weeklyCheckins.find(
-        (item) =>
-          new Date(item.date).toISOString().slice(0, 10) === key,
-      );
+    return Array.from(
+      { length: 7 },
+      (_, index) => {
+        const date = new Date(today);
 
-      const intensity =
-        checkin?.overallIntensity ??
-        checkin?.emotions?.[0]?.intensity ??
-        0;
+        date.setDate(
+          today.getDate() -
+            (6 - index),
+        );
 
-      const height = intensity
-        ? Math.max(14, Math.min(100, intensity * 10))
-        : 8;
+        const key = date
+          .toISOString()
+          .slice(0, 10);
 
-      return {
-        key,
-        date,
-        checkin,
-        height,
-      };
-    });
+        const checkin =
+          weeklyCheckins.find(
+            (item) =>
+              new Date(item.date)
+                .toISOString()
+                .slice(0, 10) === key,
+          );
+
+        const emotions = [
+          ...(checkin?.emotions ?? []),
+        ]
+          .filter(
+            (emotion) =>
+              typeof emotion.intensity ===
+                "number" &&
+              emotion.intensity > 0,
+          )
+          .sort(
+            (a, b) =>
+              (a.intensity ?? 0) -
+              (b.intensity ?? 0),
+          )
+          .slice(0, 3);
+
+        return {
+          key,
+          date,
+          checkin,
+          emotions,
+        };
+      },
+    );
   }, [weeklyCheckins]);
 
   const weeklyEmotion = useMemo(() => {
-    const emotions = weeklyCheckins.flatMap((checkin) => checkin.emotions);
-    if (!emotions.length) return null;
+    const emotions =
+      weeklyCheckins.flatMap(
+        (checkin) =>
+          checkin.emotions,
+      );
 
-    const counts = new Map<string, { name: string; count: number }>();
-
-    for (const emotion of emotions) {
-      const current = counts.get(emotion.slug);
-
-      counts.set(emotion.slug, {
-        name: emotion.name,
-        count: (current?.count ?? 0) + 1,
-      });
+    if (!emotions.length) {
+      return null;
     }
 
-    return [...counts.values()].sort((a, b) => b.count - a.count)[0];
+    const counts = new Map<
+      string,
+      {
+        name: string;
+        count: number;
+      }
+    >();
+
+    for (const emotion of emotions) {
+      const current =
+        counts.get(
+          emotion.slug,
+        );
+
+      counts.set(
+        emotion.slug,
+        {
+          name: emotion.name,
+          count:
+            (current?.count ?? 0) +
+            1,
+        },
+      );
+    }
+
+    return [
+      ...counts.values(),
+    ].sort(
+      (a, b) =>
+        b.count - a.count,
+    )[0];
   }, [weeklyCheckins]);
 
-  const todayAnalysis = data?.today.analysis;
-  const latestDiary = data?.latestDiary;
-  const recommendedActivity = data?.recommendedActivities?.[0];
+  // =========================================================
+  // DERIVED DATA
+  // =========================================================
 
-  const formatDate = (value: string) =>
-    new Intl.DateTimeFormat(isEnglish ? "en-US" : "id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(new Date(value));
+  const todayAnalysis =
+    data?.today.analysis;
 
-  const dayLabel = (date: Date) =>
-    new Intl.DateTimeFormat(isEnglish ? "en-US" : "id-ID", {
-      weekday: "short",
-    }).format(date);
+  const latestDiary =
+    data?.latestDiary;
+
+  const recommendedActivity =
+    data?.recommendedActivities?.[0];
+
+  // =========================================================
+  // FORMATTERS
+  // =========================================================
+
+  const formatDate = (
+    value: string,
+  ) =>
+    new Intl.DateTimeFormat(
+      isEnglish
+        ? "en-US"
+        : "id-ID",
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      },
+    ).format(
+      new Date(value),
+    );
+
+  const dayLabel = (
+    date: Date,
+  ) =>
+    new Intl.DateTimeFormat(
+      isEnglish
+        ? "en-US"
+        : "id-ID",
+      {
+        weekday: "short",
+      },
+    ).format(date);
+
+  // =========================================================
+// =========================================================
+// EMOTION EMOJI
+// =========================================================
+
+const emotionEmoji: Record<string, string> = {
+  happy: "😊",
+  sad: "😢",
+  angry: "😠",
+  anxious: "😰",
+  stressed: "😣",
+  calm: "😌",
+  tired: "😴",
+  excited: "🤩",
+  lonely: "🥺",
+  grateful: "😊",
+  frustrated: "😤",
+  overwhelmed: "😵‍💫",
+};
+
+function getEmotionEmoji(emotion: Emotion) {
+  const slug = emotion.slug
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-");
+
+  return emotionEmoji[slug] ?? "•";
+}
+
+  // RENDER
+  // =========================================================
 
   return (
-      <div className="space-y-10 bg-[#fdfbf7] pb-12">
-        {/* Header Section */}
-        <section className="pt-6">
-          <p className="text-sm font-semibold tracking-wide text-[#5c6b9c] uppercase">
-            {isEnglish ? "Good to see you" : "Senang melihatmu lagi"}
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#4a3f35] sm:text-4xl">
-            {isEnglish
-              ? `Good morning, ${userName}.`
-              : `Selamat pagi, ${userName}.`}
-          </h1>
-          <p className="mt-2 text-base text-[#4a3f35]/70">
-            {isEnglish
-              ? "Take a moment to check in with yourself today."
-              : "Luangkan sedikit waktu untuk memahami perasaanmu hari ini."}
-          </p>
-        </section>
+    <main className="min-h-full bg-[#FDFBF7] pb-16 text-[#4A3F35]">
+      <div className="mx-auto max-w-6xl space-y-16 px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
 
-        {error && (
-          <section className="border-l-4 border-[#e2725b] bg-[#e2725b]/10 p-4">
-            <p className="text-sm font-medium text-[#e2725b]">{error}</p>
-          </section>
-        )}
+        {/* ===================================================
+            INTRO
+        ==================================================== */}
 
-        {/* Hero Check-in Banner */}
-        <section className="bg-[#FDE7DD] p-6 sm:p-8 rounded-lg">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Heart className="h-5 w-5 text-[#4A3F35]" strokeWidth={2} />
-              <p className="text-sm font-semibold text-[#4A3F35]">
+        <section>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
                 {isEnglish
-                  ? "Daily Emotional Check-in"
-                  : "Check-in Emosional Harian"}
+                  ? "A moment for yourself"
+                  : "Sebentar untuk dirimu"}
+              </p>
+
+              <h1 className="mt-3 text-[34px] font-semibold leading-[1.12] tracking-[-0.045em] text-[#4A3F35] sm:text-[46px]">
+                {getGreeting(isEnglish)},{" "}
+                {userName}.
+              </h1>
+
+              <p className="mt-4 max-w-xl text-[14px] leading-7 text-[#4A3F35]/55 sm:text-[15px]">
+                {isEnglish
+                  ? "Notice what is happening inside you, without needing to judge it."
+                  : "Perhatikan apa yang sedang kamu rasakan, tanpa harus menghakiminya."}
               </p>
             </div>
 
-            <h2 className="text-2xl font-semibold text-[#4A3F35] sm:text-3xl">
+            <div className="hidden border-l border-[#4A3F35]/10 pl-5 md:block">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4A3F35]/30">
+                {isEnglish
+                  ? "Today"
+                  : "Hari ini"}
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-[#4A3F35]/65">
+                {new Intl.DateTimeFormat(
+                  isEnglish
+                    ? "en-US"
+                    : "id-ID",
+                  {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  },
+                ).format(
+                  new Date(),
+                )}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================
+            ERROR
+        ==================================================== */}
+
+        {error && (
+          <section className="border-l-2 border-[#E2725B] bg-[#E2725B]/10 px-5 py-4">
+            <p className="text-sm leading-6 text-[#4A3F35]">
+              {error}
+            </p>
+          </section>
+        )}
+
+        {/* ===================================================
+            CHECK-IN HERO
+        ==================================================== */}
+
+        <section className="relative overflow-hidden rounded-[28px] bg-[#FBC4AB]/40 px-6 py-8 sm:px-9 sm:py-10 lg:px-11 lg:py-12">
+          <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#FDFBF7]/50" />
+
+          <div className="absolute -bottom-24 right-[20%] h-48 w-48 rounded-full bg-[#C1D5C0]/30" />
+
+          <div className="relative max-w-3xl">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5C6B9C]">
+              {isEnglish
+                ? "Daily check-in"
+                : "Check-in harian"}
+            </p>
+
+            <h2 className="mt-5 max-w-2xl text-[28px] font-semibold leading-[1.2] tracking-[-0.035em] text-[#4A3F35] sm:text-[36px]">
               {data?.today.hasCheckin
                 ? isEnglish
-                  ? "You've checked in today."
+                  ? "You have already checked in today."
                   : "Kamu sudah check-in hari ini."
                 : isEnglish
-                  ? "How are you feeling today?"
-                  : "Bagaimana perasaanmu hari ini?"}
+                  ? "How are you feeling right now?"
+                  : "Bagaimana perasaanmu sekarang?"}
             </h2>
 
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-[#4A3F35]/90">
+            <p className="mt-4 max-w-xl text-[14px] leading-7 text-[#4A3F35]/65">
               {data?.today.hasCheckin
                 ? isEnglish
-                  ? "Your emotional check-in is saved. You can review the insight or add another reflection."
-                  : "Check-in emosionalmu sudah tersimpan. Kamu bisa melihat insight atau menambahkan refleksi."
+                  ? "Your thoughts are here whenever you want to look back, reflect, or add something new."
+                  : "Catatanmu ada di sini kapan pun kamu ingin melihat kembali, berefleksi, atau menambahkan sesuatu."
                 : isEnglish
-                  ? "A quick check-in can help you notice how you're feeling and build a better understanding of your emotional patterns."
-                  : "Check-in singkat dapat membantu kamu menyadari perasaanmu dan memahami pola emosionalmu dari waktu ke waktu."}
+                  ? "There is no right answer. Choose whatever feels closest to what you are experiencing."
+                  : "Tidak ada jawaban yang benar. Pilih saja yang paling dekat dengan apa yang sedang kamu rasakan."}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href={`/${locale}/check-in`}
-                className="inline-flex h-10 items-center gap-2 bg-[#e2725b] px-6 text-sm font-semibold text-[#fdfbf7] transition-colors hover:bg-[#c9624d] rounded-md"
+                className="inline-flex h-11 items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
               >
                 {data?.today.hasCheckin
                   ? isEnglish
@@ -328,265 +518,485 @@ export default function DashboardClient({
                   : isEnglish
                     ? "Start check-in"
                     : "Mulai check-in"}
+
+                <span
+                  aria-hidden="true"
+                  className="ml-3 transition-transform group-hover:translate-x-1"
+                >
+                  →
+                </span>
               </Link>
 
               <Link
                 href={`/${locale}/diary`}
-                className="inline-flex h-10 items-center gap-2 border border-[#fdfbf7]/30 bg-transparent px-6 text-sm font-semibold text-[#fdfbf7] transition-colors hover:bg-[#fdfbf7]/10 rounded-md"
+                className="inline-flex h-11 items-center justify-center border border-[#4A3F35]/15 bg-[#FDFBF7]/45 px-6 text-sm font-medium text-[#4A3F35] transition-colors hover:bg-[#FDFBF7]/75"
               >
-                <MessageCircle className="h-4 w-4" strokeWidth={2} />
-                {isEnglish ? "Write a reflection" : "Tulis refleksi"}
+                {isEnglish
+                  ? "Write a reflection"
+                  : "Tulis refleksi"}
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Stats Grid */}
-        <section className="grid gap-4 sm:grid-cols-3">
-          <OverviewCard
-            icon={<CalendarDays className="h-5 w-5 text-[#5c6b9c]" />}
-            title={isEnglish ? "Check-in streak" : "Streak check-in"}
-            value={`${streak} ${isEnglish ? "days" : "hari"}`}
-            description={
-              streak > 0
-                ? isEnglish
-                  ? "Keep building your rhythm"
-                  : "Jaga ritmemu"
-                : isEnglish
-                  ? "Start your first check-in"
-                  : "Mulai check-in pertamamu"
-            }
-          />
-          <OverviewCard
-            icon={<Activity className="h-5 w-5 text-[#e2725b]" />}
-            title={isEnglish ? "Dominant emotion" : "Emosi dominan"}
-            value={
-              weeklyEmotion?.name ??
-              (loading ? "..." : "—")
-            }
-            description={
-              weeklyEmotion
-                ? isEnglish
-                  ? `Appeared ${weeklyEmotion.count} times this week`
-                  : `Muncul ${weeklyEmotion.count} kali minggu ini`
-                : isEnglish
-                  ? "No data available yet"
-                  : "Belum ada data"
-            }
-          />
-          <OverviewCard
-            icon={<TrendingUp className="h-5 w-5 text-[#c1d5c0]" />}
-            title={isEnglish ? "This week" : "Minggu ini"}
-            value={`${weeklyCheckins.length} / 7`}
-            description={
+        {/* ===================================================
+            YOUR WEEK
+        ==================================================== */}
+
+        <section>
+          <SectionHeading
+            eyebrow={
               isEnglish
-                ? "Completed check-ins"
-                : "Check-in selesai"
+                ? "Your week"
+                : "Minggumu"
+            }
+            title={
+              isEnglish
+                ? "A small look at your rhythm."
+                : "Sedikit melihat ritmemu."
             }
           />
-        </section>
 
-        {/* Main Dashboard Content */}
-        <section className="grid gap-6 lg:grid-cols-3">
-          
-          {/* Weekly Flow Chart - Takes up 2 columns */}
-          <div className="lg:col-span-2 rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
-            <div className="flex items-center justify-between border-b border-[#c1d5c0]/40 pb-4 mb-6">
-              <div>
-                <h3 className="text-base font-bold text-[#4a3f35]">
-                  {isEnglish ? "Weekly Emotional Flow" : "Alur Emosi Mingguan"}
-                </h3>
-                <p className="mt-1 text-sm text-[#4a3f35]/60">
+          <div className="mt-7 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+
+            {/* STREAK */}
+
+            <div className="relative overflow-hidden rounded-[24px] bg-[#5C6B9C] p-7 text-[#FDFBF7] sm:p-8">
+              <div className="absolute -bottom-16 -right-12 h-40 w-40 rounded-full bg-[#FBC4AB]/15" />
+
+              <div className="relative">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] opacity-60">
                   {isEnglish
-                    ? "Your emotional intensity over the last 7 days"
-                    : "Intensitas emosionalmu 7 hari terakhir"}
+                    ? "Check-in streak"
+                    : "Streak check-in"}
                 </p>
-              </div>
-              <Link
-                href={`/${locale}/insights`}
-                className="text-sm font-semibold text-[#5c6b9c] hover:underline"
-              >
-                {isEnglish ? "View all insights" : "Lihat semua insight"}
-              </Link>
-            </div>
 
-            <div className="flex h-56 items-end gap-2 sm:gap-4 mt-4">
-              {weeklyBars.map((item) => (
-                <div
-                  key={item.key}
-                  className="group flex h-full flex-1 flex-col items-center justify-end"
-                >
-                  <div
-                    className={`w-full max-w-12 transition-all duration-300 rounded-t-sm ${
-                      item.checkin
-                        ? "bg-[#e2725b]/80 hover:bg-[#e2725b]"
-                        : "bg-[#c1d5c0]/30"
-                    }`}
-                    style={{ height: `${item.height}%` }}
-                    title={
-                      item.checkin
-                        ? `${item.checkin.emotions
-                            .map((emotion) => emotion.name)
-                            .join(", ")}`
-                        : isEnglish
-                          ? "No check-in"
-                          : "Belum ada check-in"
-                    }
-                  />
-                  <span className="mt-3 text-xs font-medium text-[#4a3f35]/60">
-                    {dayLabel(item.date)}
+                <div className="mt-9 flex items-end gap-2">
+                  <span className="text-[52px] font-semibold leading-none tracking-[-0.06em]">
+                    {loading
+                      ? "—"
+                      : streak}
+                  </span>
+
+                  <span className="mb-1.5 text-sm opacity-65">
+                    {isEnglish
+                      ? "days"
+                      : "hari"}
                   </span>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* AI Insight Sidebar */}
-          <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-[#5c6b9c]" strokeWidth={2} />
-              <h3 className="text-base font-bold text-[#4a3f35]">
-                {isEnglish ? "AI Insight" : "Insight AI"}
-              </h3>
-            </div>
-
-            {todayAnalysis ? (
-              <div className="flex flex-col h-full">
-                <p className="text-sm leading-relaxed text-[#4a3f35]">
-                  {todayAnalysis.summary}
-                </p>
-
-                <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[#c1d5c0]/40 pt-6">
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-[#4a3f35]/50">
-                      {isEnglish ? "Stress Level" : "Tingkat Stres"}
-                    </p>
-                    <p className="mt-1 text-lg font-bold text-[#4a3f35]">
-                      {todayAnalysis.stressScore != null
-                        ? `${todayAnalysis.stressScore}/100`
-                        : "—"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-[#4a3f35]/50">
-                      {isEnglish ? "State" : "Kondisi"}
-                    </p>
-                    <p className="mt-1 text-lg font-bold text-[#4a3f35] capitalize">
-                      {todayAnalysis.emotionalState ?? "—"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4 bg-[#fdfbf7] border border-[#c1d5c0]/30 p-4 rounded-md">
-                <p className="text-sm text-[#4a3f35]/70">
-                  {isEnglish
-                    ? "Your first AI insight will appear after you complete a check-in."
-                    : "Insight AI pertamamu akan muncul setelah kamu menyelesaikan check-in."}
+                <p className="mt-4 max-w-xs text-xs leading-6 opacity-65">
+                  {streak > 0
+                    ? isEnglish
+                      ? "Small moments of checking in can become a meaningful rhythm."
+                      : "Momen kecil untuk check-in bisa menjadi ritme yang berarti."
+                    : isEnglish
+                      ? "Your first check-in can start here."
+                      : "Check-in pertamamu bisa dimulai dari sini."}
                 </p>
               </div>
-            )}
+            </div>
+
+            {/* MOST PRESENT EMOTION */}
+
+            <div className="rounded-[24px] border border-[#C1D5C0]/60 bg-[#FDFBF7] p-7 sm:p-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4A3F35]/35">
+                {isEnglish
+                  ? "Most present emotion"
+                  : "Emosi yang paling terasa"}
+              </p>
+
+              <div className="mt-4 flex items-end justify-between gap-5">
+                <h3 className="text-[28px] font-semibold tracking-[-0.035em] text-[#4A3F35]">
+                  {weeklyEmotion?.name ??
+                    (loading
+                      ? "..."
+                      : isEnglish
+                        ? "No data yet"
+                        : "Belum ada data")}
+                </h3>
+
+                {weeklyEmotion && (
+                  <span className="text-sm text-[#4A3F35]/40">
+                    {weeklyEmotion.count}×
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-8 flex gap-1.5">
+                {Array.from({
+                  length: 7,
+                }).map((_, index) => {
+                  const filled =
+                    index <
+                    Math.min(
+                      7,
+                      weeklyEmotion?.count ??
+                        0,
+                    );
+
+                  return (
+                    <span
+                      key={index}
+                      className={[
+                        "h-1.5 flex-1 rounded-full",
+                        filled
+                          ? "bg-[#E2725B]"
+                          : "bg-[#C1D5C0]/35",
+                      ].join(" ")}
+                    />
+                  );
+                })}
+              </div>
+
+              <p className="mt-4 text-xs leading-5 text-[#4A3F35]/45">
+                {weeklyEmotion
+                  ? isEnglish
+                    ? `Appeared ${weeklyEmotion.count} times in your check-ins this week.`
+                    : `Muncul ${weeklyEmotion.count} kali dalam check-in minggu ini.`
+                  : isEnglish
+                    ? "Your emotional pattern will appear here."
+                    : "Pola emosimu akan muncul di sini."}
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* Two Column Bottom Layout */}
-        <section className="grid gap-6 lg:grid-cols-2">
-          {/* Latest Reflection */}
-          <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-[#4a3f35]" />
-                <h3 className="text-base font-bold text-[#4a3f35]">
-                  {isEnglish ? "Latest Reflection" : "Refleksi Terakhir"}
-                </h3>
+        {/* ===================================================
+            EMOTIONAL RHYTHM
+        ==================================================== */}
+
+        <section>
+          <div className="flex items-end justify-between gap-5">
+            <SectionHeading
+              eyebrow={
+                isEnglish
+                  ? "Seven day view"
+                  : "Tujuh hari terakhir"
+              }
+              title={
+                isEnglish
+                  ? "Your emotional rhythm."
+                  : "Ritme emosimu."
+              }
+            />
+
+            <Link
+              href={`/${locale}/insights`}
+              className="hidden text-xs font-semibold text-[#5C6B9C] sm:block"
+            >
+              {isEnglish
+                ? "See insights"
+                : "Lihat insight"}{" "}
+              →
+            </Link>
+          </div>
+
+          <div className="mt-7 border-y border-[#C1D5C0]/50 bg-[#FDFBF7] px-2 py-8 sm:px-6">
+            <div className="overflow-x-auto pb-2">
+              <div className="flex min-w-[560px] items-end gap-4">                {weeklyBars.map((item) => {
+                  /*
+                   * Show up to 3 emotions for each day.
+                   *
+                   * The strongest emotion gets the tallest bar.
+                   * Bars are ordered from highest intensity to lowest
+                   * intensity so the visual hierarchy is immediately clear.
+                   */
+                  const emotions = [...item.emotions]
+                    .sort(
+                      (a, b) =>
+                        (b.intensity ?? 0) -
+                        (a.intensity ?? 0),
+                    )
+                    .slice(0, 3);
+
+                  return (
+                    <div
+                      key={item.key}
+                      className="flex min-w-0 flex-1 flex-col items-center"
+                    >
+                      <div className="relative flex h-[210px] w-full items-end justify-center border-b border-[#4A3F35]/10">
+                        {emotions.length > 0 ? (
+                          <div className="flex h-full w-full max-w-[110px] items-end justify-center gap-1.5">
+                            {emotions.map((emotion) => {
+                              const intensity =
+                                emotion.intensity ?? 0;
+
+                              const height =
+                                Math.max(
+                                  14,
+                                  Math.min(
+                                    100,
+                                    intensity * 20,
+                                  ),
+                                );
+
+                              return (
+                                <div
+                                  key={`${item.key}-${emotion.slug}`}
+                                  className="group relative flex h-full flex-1 max-w-[32px] items-end justify-center"
+                                  title={`${emotion.name} · ${intensity}/5`}
+                                >
+                                  {/* Emoji above the bar */}
+                                  <div
+                                    className="absolute left-1/2 z-10 -translate-x-1/2 text-[19px] leading-none transition-transform duration-200 group-hover:-translate-y-0.5"
+                                    style={{
+                                      bottom: `calc(${height}% + 8px)`,
+                                    }}
+                                    aria-label={emotion.name}
+                                  >
+                                    {getEmotionEmoji(emotion)}
+                                  </div>
+
+                                  {/* Emotion bar */}
+                                  <div
+                                    className="w-full rounded-t-[7px] bg-[#E2725B]/75 transition-all duration-300 group-hover:bg-[#E2725B]"
+                                    style={{
+                                      height: `${height}%`,
+                                    }}
+                                  />
+
+                                  {/* Intensity */}
+                                  <span
+                                    className="absolute bottom-[-22px] left-1/2 -translate-x-1/2 whitespace-nowrap text-[8px] font-medium text-[#4A3F35]/35"
+                                  >
+                                    {intensity}/5
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="mb-0 h-1.5 w-9 rounded-full bg-[#C1D5C0]/35" />
+                        )}
+                      </div>
+
+                      <span className="mt-7 text-[10px] font-medium text-[#4A3F35]/40">
+                        {dayLabel(item.date)}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================
+            REFLECTION + AI
+        ==================================================== */}
+
+        <section className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr]">
+
+          {/* DIARY */}
+
+          <div className="border-t border-[#C1D5C0]/60 pt-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4A3F35]/35">
+              {isEnglish
+                ? "From your diary"
+                : "Dari diary-mu"}
+            </p>
+
+            <div className="mt-3 flex items-end justify-between gap-5">
+              <h3 className="text-[25px] font-semibold tracking-[-0.03em]">
+                {isEnglish
+                  ? "A recent thought."
+                  : "Cerita terakhirmu."}
+              </h3>
+
               {latestDiary && (
                 <Link
                   href={`/${locale}/diary`}
-                  className="text-sm font-semibold text-[#5c6b9c] hover:underline"
+                  className="text-xs font-semibold text-[#5C6B9C]"
                 >
-                  {isEnglish ? "View diary" : "Lihat diary"}
+                  {isEnglish
+                    ? "Open diary"
+                    : "Buka diary"}
                 </Link>
               )}
             </div>
 
             {latestDiary ? (
-              <div className="bg-[#fdfbf7] p-4 rounded-md border-l-2 border-[#5c6b9c]">
-                <p className="line-clamp-3 text-sm leading-relaxed text-[#4a3f35]">
-                  &quot;{latestDiary.content ||
-                    (latestDiary.entryType === "VOICE"
-                      ? isEnglish
-                        ? "Voice reflection"
-                        : "Refleksi suara"
-                      : isEnglish
-                        ? "Empty reflection"
-                        : "Refleksi kosong")}&quot;
+              <div className="mt-8">
+                <div className="border-l-2 border-[#E2725B] pl-5">
+                  <p className="line-clamp-5 text-[15px] leading-8 text-[#4A3F35]/75">
+                    &quot;
+                    {latestDiary.content ||
+                      (latestDiary.entryType ===
+                      "VOICE"
+                        ? isEnglish
+                          ? "Voice reflection"
+                          : "Refleksi suara"
+                        : isEnglish
+                          ? "Empty reflection"
+                          : "Refleksi kosong")}
+                    &quot;
+                  </p>
+                </div>
+
+                <p className="mt-5 text-[10px] font-medium uppercase tracking-[0.1em] text-[#4A3F35]/30">
+                  {formatDate(
+                    latestDiary.createdAt,
+                  )}
                 </p>
-                <span className="mt-3 block text-xs font-medium text-[#4a3f35]/50">
-                  {formatDate(latestDiary.createdAt)}
-                </span>
               </div>
             ) : (
-              <div className="border border-dashed border-[#c1d5c0] p-6 text-center rounded-md">
-                <p className="text-sm text-[#4a3f35]/60 mb-2">
-                  {isEnglish ? "No reflections yet." : "Belum ada refleksi."}
+              <div className="mt-7 border-y border-dashed border-[#C1D5C0] py-8">
+                <p className="text-sm text-[#4A3F35]/50">
+                  {isEnglish
+                    ? "Nothing written here yet."
+                    : "Belum ada refleksi di sini."}
                 </p>
+
                 <Link
                   href={`/${locale}/diary`}
-                  className="text-sm font-semibold text-[#5c6b9c] hover:underline"
+                  className="mt-4 inline-block text-xs font-semibold text-[#5C6B9C]"
                 >
                   {isEnglish
                     ? "Write your first reflection"
-                    : "Tulis refleksi pertamamu"}
+                    : "Tulis refleksi pertamamu"}{" "}
+                  →
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Recommended Activity */}
-          <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Clock3 className="h-5 w-5 text-[#4a3f35]" />
-                <h3 className="text-base font-bold text-[#4a3f35]">
-                  {isEnglish ? "Up Next" : "Selanjutnya"}
-                </h3>
-              </div>
-              <Link
-                href={`/${locale}/activities`}
-                className="flex items-center gap-1 text-sm font-semibold text-[#5c6b9c] hover:underline"
-              >
-                {isEnglish ? "All activities" : "Semua aktivitas"}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+          {/* AI REFLECTION */}
 
-            {recommendedActivity ? (
-              <div className="bg-[#fbc4ab]/20 p-4 rounded-md border border-[#fbc4ab]/40">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#e2725b]">
-                    {recommendedActivity.category}
-                  </span>
-                  <span className="text-xs font-medium text-[#4a3f35]/60">
-                    {recommendedActivity.durationMinutes} {isEnglish ? "min" : "menit"}
-                  </span>
-                </div>
-                <h4 className="text-lg font-bold text-[#4a3f35] mb-1">
-                  {recommendedActivity.title}
-                </h4>
-                <p className="text-sm text-[#4a3f35]/80 mb-4 line-clamp-2">
-                  {recommendedActivity.description}
+          <div className="bg-[#FBC4AB]/30 p-7 sm:p-8">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
+              {isEnglish
+                ? "A little reflection"
+                : "Sedikit refleksi"}
+            </p>
+
+            {todayAnalysis ? (
+              <div className="mt-6">
+                <p className="text-[15px] leading-8 text-[#4A3F35]/75">
+                  {todayAnalysis.summary}
                 </p>
-                <Link
-                  href={`/${locale}/activities/${recommendedActivity.slug}`}
-                  className="inline-flex h-9 items-center justify-center bg-white border border-[#c1d5c0] px-4 text-sm font-semibold text-[#4a3f35] transition-colors hover:bg-gray-50 rounded-md"
-                >
-                  {isEnglish ? "Start activity" : "Mulai aktivitas"}
-                </Link>
+
+                <div className="mt-7 grid grid-cols-2 gap-5 border-t border-[#4A3F35]/10 pt-5">
+                  <div>
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
+                      {isEnglish
+                        ? "Stress"
+                        : "Stres"}
+                    </p>
+
+                    <p className="mt-2 text-xl font-semibold text-[#4A3F35]">
+                      {todayAnalysis.stressScore !=
+                      null
+                        ? `${todayAnalysis.stressScore}/100`
+                        : "—"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
+                      {isEnglish
+                        ? "State"
+                        : "Kondisi"}
+                    </p>
+
+                    <p className="mt-2 truncate text-sm font-semibold capitalize text-[#4A3F35]">
+                      {todayAnalysis.emotionalState ??
+                        "—"}
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="bg-[#fdfbf7] p-4 rounded-md border border-[#c1d5c0]/30 text-center">
-                <p className="text-sm text-[#4a3f35]/60">
+              <div className="mt-6">
+                <p className="text-[15px] leading-8 text-[#4A3F35]/65">
+                  {isEnglish
+                    ? "Once you complete a check-in, your reflection will appear here."
+                    : "Setelah kamu menyelesaikan check-in, refleksi untukmu akan muncul di sini."}
+                </p>
+
+                <Link
+                  href={`/${locale}/check-in`}
+                  className="mt-5 inline-block text-xs font-semibold text-[#5C6B9C]"
+                >
+                  {isEnglish
+                    ? "Start a check-in"
+                    : "Mulai check-in"}{" "}
+                  →
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ===================================================
+            ACTIVITY
+        ==================================================== */}
+
+        <section>
+          <SectionHeading
+            eyebrow={
+              isEnglish
+                ? "For you"
+                : "Untukmu"
+            }
+            title={
+              isEnglish
+                ? "Something gentle to try."
+                : "Sesuatu yang bisa kamu coba."
+            }
+          />
+
+          <div className="mt-7">
+            {recommendedActivity ? (
+              <div className="border-y border-[#C1D5C0]/55 py-7">
+                <div className="grid gap-7 sm:grid-cols-[1fr_auto] sm:items-center">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
+                        {
+                          recommendedActivity.category
+                        }
+                      </span>
+
+                      <span className="h-1 w-1 rounded-full bg-[#C1D5C0]" />
+
+                      <span className="text-[10px] text-[#4A3F35]/40">
+                        {
+                          recommendedActivity.durationMinutes
+                        }{" "}
+                        {isEnglish
+                          ? "min"
+                          : "menit"}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-3 text-[23px] font-semibold tracking-[-0.025em]">
+                      {
+                        recommendedActivity.title
+                      }
+                    </h3>
+
+                    <p className="mt-2 max-w-xl text-sm leading-7 text-[#4A3F35]/55">
+                      {
+                        recommendedActivity.description
+                      }
+                    </p>
+                  </div>
+
+                  <Link
+                    href={`/${locale}/activities/${recommendedActivity.slug}`}
+                    className="inline-flex h-11 items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
+                  >
+                    {isEnglish
+                      ? "Try this"
+                      : "Coba ini"}{" "}
+                    →
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="border-y border-dashed border-[#C1D5C0] py-9">
+                <p className="text-sm text-[#4A3F35]/50">
                   {isEnglish
                     ? "No activity recommendation available yet."
                     : "Belum ada rekomendasi aktivitas."}
@@ -596,56 +1006,95 @@ export default function DashboardClient({
           </div>
         </section>
 
-        {/* Support Banner */}
-        <section className="rounded-lg border border-[#c1d5c0]/70 bg-white p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-start gap-4">
-            <CheckCircle2 className="h-6 w-6 text-[#5c6b9c] shrink-0 mt-0.5" />
+        {/* ===================================================
+            SUPPORT
+        ==================================================== */}
+
+        <section className="border-t border-[#C1D5C0]/50 pt-8">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-base font-bold text-[#4a3f35]">
+              <p className="text-sm font-semibold text-[#4A3F35]">
                 {isEnglish
-                  ? "Need a little extra support?"
-                  : "Butuh dukungan tambahan?"}
-              </h3>
-              <p className="mt-1 text-sm text-[#4a3f35]/70">
+                  ? "You don't have to handle everything alone."
+                  : "Kamu tidak harus menghadapi semuanya sendirian."}
+              </p>
+
+              <p className="mt-2 max-w-xl text-xs leading-5 text-[#4A3F35]/45">
                 {isEnglish
-                  ? "Explore Moodify's support resources whenever you need a little more help."
-                  : "Jelajahi sumber dukungan Moodify kapan pun kamu membutuhkan bantuan."}
+                  ? "Support resources are available whenever you need them."
+                  : "Sumber dukungan tersedia kapan pun kamu membutuhkannya."}
               </p>
             </div>
+
+            <Link
+              href={`/${locale}/support`}
+              className="shrink-0 text-xs font-semibold text-[#5C6B9C]"
+            >
+              {isEnglish
+                ? "Explore support"
+                : "Lihat dukungan"}{" "}
+              →
+            </Link>
           </div>
-          <Link
-            href={`/${locale}/support`}
-            className="shrink-0 inline-flex h-10 items-center justify-center bg-[#fdfbf7] border border-[#c1d5c0] px-5 text-sm font-semibold text-[#4a3f35] transition-colors hover:bg-gray-50 rounded-md"
-          >
-            {isEnglish ? "Explore support" : "Lihat dukungan"}
-          </Link>
         </section>
       </div>
+    </main>
   );
 }
 
-// Komponen dipersingkat agar lebih padat
-function OverviewCard({
-  icon,
+// =========================================================
+// SECTION HEADING
+// =========================================================
+
+function SectionHeading({
+  eyebrow,
   title,
-  value,
-  description,
 }: {
-  icon: React.ReactNode;
+  eyebrow: string;
   title: string;
-  value: string;
-  description: string;
 }) {
   return (
-    <div className="rounded-lg border border-[#c1d5c0]/70 bg-white p-5 flex flex-col justify-between">
-      <div className="flex items-center gap-3 mb-4">
-        {icon}
-        <h3 className="text-sm font-semibold text-[#4a3f35]">{title}</h3>
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-[#4a3f35]">{value}</p>
-        <p className="mt-1 text-xs text-[#4a3f35]/60">{description}</p>
-      </div>
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
+        {eyebrow}
+      </p>
+
+      <h2 className="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-[#4A3F35] sm:text-[25px]">
+        {title}
+      </h2>
     </div>
   );
+}
+
+// =========================================================
+// GREETING
+// =========================================================
+
+function getGreeting(
+  isEnglish: boolean,
+) {
+  const hour =
+    new Date().getHours();
+
+  if (
+    hour >= 5 &&
+    hour < 12
+  ) {
+    return isEnglish
+      ? "Good morning"
+      : "Selamat pagi";
+  }
+
+  if (
+    hour >= 12 &&
+    hour < 18
+  ) {
+    return isEnglish
+      ? "Good afternoon"
+      : "Selamat siang";
+  }
+
+  return isEnglish
+    ? "Good evening"
+    : "Selamat malam";
 }

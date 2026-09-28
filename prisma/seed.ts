@@ -18,9 +18,6 @@ const prisma = new PrismaClient({
 async function main() {
   console.log("🌱 Seeding Moodify database...");
 
-  // =========================
-  // EMOTIONS
-  // =========================
 
   const emotions = [
     {
