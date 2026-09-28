@@ -1,15 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpen,
-  ExternalLink,
-  Heart,
-  LifeBuoy,
-  MessageCircle,
-  ShieldCheck,
-} from "lucide-react";
 
 import type { Locale } from "@/i18n/config";
 
@@ -17,6 +8,19 @@ type Props = {
   locale: Locale;
   userName: string;
 };
+
+import {
+  ArrowRightIcon,
+  DiaryIcon,
+  InsightIcon,
+  PrivacyIcon,
+  SupportIcon,
+  WellbeingIcon,
+} from "@/components/moodify-icons";
+
+/* ========================================================= */
+/* COMPONENT                                                 */
+/* ========================================================= */
 
 export default function SupportClient({
   locale,
@@ -27,7 +31,7 @@ export default function SupportClient({
   const resources = [
     {
       number: "01",
-      icon: Heart,
+      icon: WellbeingIcon,
       title: isEnglish
         ? "Take a moment to breathe"
         : "Berhenti sebentar untuk bernapas",
@@ -39,7 +43,7 @@ export default function SupportClient({
     },
     {
       number: "02",
-      icon: BookOpen,
+      icon: DiaryIcon,
       title: isEnglish
         ? "Put your thoughts into words"
         : "Tuangkan pikiranmu",
@@ -51,7 +55,7 @@ export default function SupportClient({
     },
     {
       number: "03",
-      icon: MessageCircle,
+      icon: InsightIcon,
       title: isEnglish
         ? "Look at your patterns"
         : "Lihat pola emosimu",
@@ -102,7 +106,7 @@ export default function SupportClient({
 
           <div className="relative grid gap-8 lg:grid-cols-[auto_1fr] lg:items-start">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fdfbf7]/80">
-              <LifeBuoy className="h-5 w-5 text-[#e2725b]" />
+              <SupportIcon className="h-5 w-5 text-[#e2725b]" />
             </div>
 
             <div className="max-w-3xl">
@@ -175,7 +179,7 @@ export default function SupportClient({
                       {resource.number}
                     </span>
 
-                    <Icon className="h-5 w-5 text-[#5c6b9c] transition-transform group-hover:scale-105" />
+                    <Icon className="h-5 w-5 text-[#5c6b9c] transition-transform duration-200 group-hover:-translate-y-0.5" />
                   </div>
 
                   <h3 className="mt-8 max-w-xs text-lg font-semibold leading-snug text-[#4a3f35]">
@@ -189,7 +193,7 @@ export default function SupportClient({
                   <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-[#5c6b9c]">
                     {resource.label}
 
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                   </div>
                 </Link>
               );
@@ -205,7 +209,7 @@ export default function SupportClient({
           <div className="grid gap-6 lg:grid-cols-[0.8fr_1.5fr]">
             <div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#c1d5c0]/35">
-                <ShieldCheck className="h-5 w-5 text-[#5c6b9c]" />
+                <PrivacyIcon className="h-5 w-5 text-[#5c6b9c]" />
               </div>
 
               <p className="mt-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
@@ -229,7 +233,7 @@ export default function SupportClient({
               </p>
 
               <div className="mt-5 flex items-start gap-2 text-xs leading-5 text-[#4a3f35]/50">
-                <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <ArrowRightIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
 
                 <span>
                   {isEnglish

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -374,34 +375,54 @@ export default function DashboardClient({
 
   // =========================================================
 // =========================================================
-// EMOTION EMOJI
+// CUSTOM EMOTION ARTWORK
 // =========================================================
 
-const emotionEmoji: Record<string, string> = {
-  happy: "😊",
-  sad: "😢",
-  angry: "😠",
-  anxious: "😰",
-  stressed: "😣",
-  calm: "😌",
-  tired: "😴",
-  excited: "🤩",
-  lonely: "🥺",
-  grateful: "😊",
-  frustrated: "😤",
-  overwhelmed: "😵‍💫",
+const emotionArtwork: Record<string, string> = {
+  happy: "/emotions-emoji/happy.png",
+  sad: "/emotions-emoji/sad.png",
+  angry: "/emotions-emoji/angry.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  calm: "/emotions-emoji/calm.png",
+  tired: "/emotions-emoji/tired.png",
+  excited: "/emotions-emoji/excited.png",
+  lonely: "/emotions-emoji/lonely.png",
+  grateful: "/emotions-emoji/grateful.png",
+  frustrated: "/emotions-emoji/frustrated.png",
+  overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
-function getEmotionEmoji(emotion: Emotion) {
+function getEmotionArtwork(emotion: Emotion) {
   const slug = emotion.slug
     .toLowerCase()
     .trim()
     .replace(/\s+/g, "-");
 
-  return emotionEmoji[slug] ?? "•";
+  return emotionArtwork[slug] ?? "/emotions-emoji/calm.png";
 }
 
-  // RENDER
+function EmotionArtwork({
+  emotion,
+  size = 42,
+  className = "",
+}: {
+  emotion: Emotion;
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <Image
+      src={getEmotionArtwork(emotion)}
+      alt={emotion.name}
+      width={size}
+      height={size}
+      className={`object-contain mix-blend-multiply ${className}`}
+    />
+  );
+}
+
+// RENDER
   // =========================================================
 
   return (
@@ -662,125 +683,123 @@ function getEmotionEmoji(emotion: Emotion) {
           </div>
         </section>
 
-        {/* ===================================================
-            EMOTIONAL RHYTHM
-        ==================================================== */}
+       {/* ===================================================
+    EMOTIONAL RHYTHM
+==================================================== */}
 
-        <section>
-          <div className="flex items-end justify-between gap-5">
-            <SectionHeading
-              eyebrow={
-                isEnglish
-                  ? "Seven day view"
-                  : "Tujuh hari terakhir"
-              }
-              title={
-                isEnglish
-                  ? "Your emotional rhythm."
-                  : "Ritme emosimu."
-              }
-            />
+<section>
+  <div className="flex items-end justify-between gap-5">
+    <SectionHeading
+      eyebrow={
+        isEnglish
+          ? "Seven day view"
+          : "Tujuh hari terakhir"
+      }
+      title={
+        isEnglish
+          ? "Your emotional rhythm."
+          : "Ritme emosimu."
+      }
+    />
 
-            <Link
-              href={`/${locale}/insights`}
-              className="hidden text-xs font-semibold text-[#5C6B9C] sm:block"
+    <Link
+      href={`/${locale}/insights`}
+      className="hidden text-xs font-semibold text-[#5C6B9C] sm:block"
+    >
+      {isEnglish ? "See insights" : "Lihat insight"}{" "}
+      →
+    </Link>
+  </div>
+
+  <div className="mt-7 border-y border-[#C1D5C0]/50 bg-[#FDFBF7] px-2 py-10 sm:px-6">
+    <div className="overflow-x-auto pb-4">
+      <div className="flex min-w-[560px] items-end gap-4">
+        {weeklyBars.map((item) => {
+          /*
+           * Show up to 3 emotions for each day.
+           *
+           * The strongest emotion gets the tallest bar.
+           * Bars are ordered from highest intensity to lowest
+           * intensity so the visual hierarchy is immediately clear.
+           */
+          const emotions = [...item.emotions]
+            .sort(
+              (a, b) =>
+                (b.intensity ?? 0) -
+                (a.intensity ?? 0),
+            )
+            .slice(0, 3);
+
+          return (
+            <div
+              key={item.key}
+              className="flex min-w-0 flex-1 flex-col items-center"
             >
-              {isEnglish
-                ? "See insights"
-                : "Lihat insight"}{" "}
-              →
-            </Link>
-          </div>
+              <div className="relative flex h-[230px] w-full items-end justify-center border-b border-[#4A3F35]/10">
+                {emotions.length > 0 ? (
+                  <div className="flex h-full w-full max-w-[118px] items-end justify-center gap-2">
+                    {emotions.map((emotion) => {
+                      const intensity =
+                        emotion.intensity ?? 0;
 
-          <div className="mt-7 border-y border-[#C1D5C0]/50 bg-[#FDFBF7] px-2 py-8 sm:px-6">
-            <div className="overflow-x-auto pb-2">
-              <div className="flex min-w-[560px] items-end gap-4">                {weeklyBars.map((item) => {
-                  /*
-                   * Show up to 3 emotions for each day.
-                   *
-                   * The strongest emotion gets the tallest bar.
-                   * Bars are ordered from highest intensity to lowest
-                   * intensity so the visual hierarchy is immediately clear.
-                   */
-                  const emotions = [...item.emotions]
-                    .sort(
-                      (a, b) =>
-                        (b.intensity ?? 0) -
-                        (a.intensity ?? 0),
-                    )
-                    .slice(0, 3);
+                      const height = Math.max(
+                        14,
+                        Math.min(100, intensity * 20),
+                      );
 
-                  return (
-                    <div
-                      key={item.key}
-                      className="flex min-w-0 flex-1 flex-col items-center"
-                    >
-                      <div className="relative flex h-[210px] w-full items-end justify-center border-b border-[#4A3F35]/10">
-                        {emotions.length > 0 ? (
-                          <div className="flex h-full w-full max-w-[110px] items-end justify-center gap-1.5">
-                            {emotions.map((emotion) => {
-                              const intensity =
-                                emotion.intensity ?? 0;
-
-                              const height =
-                                Math.max(
-                                  14,
-                                  Math.min(
-                                    100,
-                                    intensity * 20,
-                                  ),
-                                );
-
-                              return (
-                                <div
-                                  key={`${item.key}-${emotion.slug}`}
-                                  className="group relative flex h-full flex-1 max-w-[32px] items-end justify-center"
-                                  title={`${emotion.name} · ${intensity}/5`}
-                                >
-                                  {/* Emoji above the bar */}
-                                  <div
-                                    className="absolute left-1/2 z-10 -translate-x-1/2 text-[19px] leading-none transition-transform duration-200 group-hover:-translate-y-0.5"
-                                    style={{
-                                      bottom: `calc(${height}% + 8px)`,
-                                    }}
-                                    aria-label={emotion.name}
-                                  >
-                                    {getEmotionEmoji(emotion)}
-                                  </div>
-
-                                  {/* Emotion bar */}
-                                  <div
-                                    className="w-full rounded-t-[7px] bg-[#E2725B]/75 transition-all duration-300 group-hover:bg-[#E2725B]"
-                                    style={{
-                                      height: `${height}%`,
-                                    }}
-                                  />
-
-                                  {/* Intensity */}
-                                  <span
-                                    className="absolute bottom-[-22px] left-1/2 -translate-x-1/2 whitespace-nowrap text-[8px] font-medium text-[#4A3F35]/35"
-                                  >
-                                    {intensity}/5
-                                  </span>
-                                </div>
-                              );
-                            })}
+                      return (
+                        <div
+                          key={`${item.key}-${emotion.slug}`}
+                          className="group relative flex h-full max-w-[34px] flex-1 items-end justify-center"
+                          title={`${emotion.name} · ${intensity}/5`}
+                        >
+                          {/* Custom emotion artwork */}
+                          <div
+                            className="absolute left-1/2 z-10 w-5 sm:w-8 flex -translate-x-1/2 items-center justify-center transition-transform duration-200 group-hover:-translate-y-1"
+                            style={{
+                              bottom: `calc(${height}% + 12px)`,
+                            }}
+                          >
+                            <EmotionArtwork
+                              emotion={emotion}
+                              size={52}
+                            />
                           </div>
-                        ) : (
-                          <div className="mb-0 h-1.5 w-9 rounded-full bg-[#C1D5C0]/35" />
-                        )}
-                      </div>
 
-                      <span className="mt-7 text-[10px] font-medium text-[#4A3F35]/40">
-                        {dayLabel(item.date)}
-                      </span>
-                    </div>
-                  );
-                })}
+                          {/* Emotion bar */}
+                          <div
+                            className="w-full rounded-t-[8px] bg-[#E2725B]/75 transition-all duration-300 group-hover:bg-[#E2725B]"
+                            style={{
+                              height: `${height}%`,
+                            }}
+                          />
+
+                          {/* Intensity */}
+                          <span
+                            className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 whitespace-nowrap text-[8px] font-medium text-[#4A3F35]/35"
+                          >
+                            {intensity}/5
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="mb-0 h-1.5 w-9 rounded-full bg-[#C1D5C0]/35" />
+                )}
               </div>
+
+              {/* Day */}
+              <span className="mt-8 text-[10px] font-medium text-[#4A3F35]/40">
+                {dayLabel(item.date)}
+              </span>
             </div>
-          </div>
-        </section>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* ===================================================
             REFLECTION + AI

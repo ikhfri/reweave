@@ -1,18 +1,8 @@
 "use client";
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  CalendarDays,
-  ChevronRight,
-  Heart,
-} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { Locale } from "@/i18n/config";
 
@@ -62,35 +52,203 @@ type Props = {
   userName: string;
 };
 
-const emotionEmoji: Record<string, string> = {
-  happy: "😊",
-  sad: "😢",
-  angry: "😠",
-  anxious: "😰",
-  stressed: "😣",
-  calm: "😌",
-  tired: "😴",
-  excited: "🤩",
-  lonely: "🥺",
-  grateful: "😊",
-  frustrated: "😤",
-  overwhelmed: "😵‍💫",
+const emotionArtwork: Record<string, string> = {
+  happy: "/emotions-emoji/happy.png",
+  sad: "/emotions-emoji/sad.png",
+  angry: "/emotions-emoji/angry.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  calm: "/emotions-emoji/calm.png",
+  tired: "/emotions-emoji/tired.png",
+  excited: "/emotions-emoji/excited.png",
+  lonely: "/emotions-emoji/lonely.png",
+  grateful: "/emotions-emoji/grateful.png",
+  frustrated: "/emotions-emoji/frustrated.png",
+  overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
-function getEmotionEmoji(slug: string) {
+function getEmotionArtwork(slug: string) {
   const normalized = slug
     .toLowerCase()
     .trim()
     .replace(/\s+/g, "-");
 
+  return emotionArtwork[normalized] ?? "/emotions-emoji/calm.png";
+}
+
+function EmotionArtwork({
+  slug,
+  name,
+  size = 44,
+  className = "",
+}: {
+  slug: string;
+  name: string;
+  size?: number;
+  className?: string;
+}) {
   return (
-    emotionEmoji[normalized] ?? "•"
+    <Image
+      src={getEmotionArtwork(slug)}
+      alt={name}
+      width={size}
+      height={size}
+      className={`object-contain mix-blend-multiply ${className}`}
+    />
   );
 }
 
-function getHighestEmotion(
-  emotions: CalendarEmotion[],
-) {
+function CalendarIcon({
+  size = 16,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect
+        x="3.5"
+        y="5"
+        width="17"
+        height="15"
+        rx="2.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M7.5 3.5V7M16.5 3.5V7M3.5 9.5H20.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7.5 13H7.51M12 13H12.01M16.5 13H16.51M7.5 16.5H7.51M12 16.5H12.01"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowIcon({
+  direction,
+  size = 16,
+  className = "",
+}: {
+  direction: "left" | "right";
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      {direction === "left" ? (
+        <>
+          <path
+            d="M19 12H5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M11 6L5 12L11 18"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </>
+      ) : (
+        <>
+          <path
+            d="M5 12H19"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M13 6L19 12L13 18"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function ChevronRightIcon({
+  size = 16,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M9 5L16 12L9 19"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function HeartIcon({
+  size = 24,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M20.8 8.8C20.8 13.5 12 19 12 19S3.2 13.5 3.2 8.8C3.2 6.5 4.9 4.7 7.2 4.7C8.7 4.7 10.1 5.5 12 7.1C13.9 5.5 15.3 4.7 16.8 4.7C19.1 4.7 20.8 6.5 20.8 8.8Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function getHighestEmotion(emotions: CalendarEmotion[]) {
   if (emotions.length === 0) {
     return null;
   }
@@ -100,16 +258,13 @@ function getHighestEmotion(
   )[0];
 }
 
-    
 function getMonthName(
   year: number,
   month: number,
   locale: Locale,
 ) {
   return new Intl.DateTimeFormat(
-    locale === "id"
-      ? "id-ID"
-      : "en-US",
+    locale === "id" ? "id-ID" : "en-US",
     {
       month: "long",
       year: "numeric",
@@ -130,9 +285,7 @@ function formatDate(
   locale: Locale,
 ) {
   return new Intl.DateTimeFormat(
-    locale === "id"
-      ? "id-ID"
-      : "en-US",
+    locale === "id" ? "id-ID" : "en-US",
     {
       weekday: "long",
       day: "numeric",
@@ -140,9 +293,7 @@ function formatDate(
       year: "numeric",
     },
   ).format(
-    new Date(
-      `${dateKey}T00:00:00`,
-    ),
+    new Date(`${dateKey}T00:00:00`),
   );
 }
 
@@ -154,16 +305,16 @@ export default function MoodCalendarClient({
 
   const now = new Date();
 
-  const [year, setYear] =
-    useState(now.getFullYear());
+  const [year, setYear] = useState(
+    now.getFullYear(),
+  );
 
-  const [month, setMonth] =
-    useState(now.getMonth() + 1);
+  const [month, setMonth] = useState(
+    now.getMonth() + 1,
+  );
 
   const [data, setData] =
-    useState<CalendarResponse | null>(
-      null,
-    );
+    useState<CalendarResponse | null>(null);
 
   const [selectedDate, setSelectedDate] =
     useState<string | null>(null);
@@ -171,8 +322,7 @@ export default function MoodCalendarClient({
   const [loading, setLoading] =
     useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -193,10 +343,7 @@ export default function MoodCalendarClient({
         const result =
           (await response.json()) as CalendarResponse;
 
-        if (
-          !response.ok ||
-          !result.success
-        ) {
+        if (!response.ok || !result.success) {
           throw new Error(
             isId
               ? "Gagal memuat kalender mood."
@@ -211,21 +358,19 @@ export default function MoodCalendarClient({
         setData(result);
 
         setSelectedDate((current) => {
+          const monthPrefix = `${year}-${String(month).padStart(
+            2,
+            "0",
+          )}`;
+
           if (
             current &&
-            current.startsWith(
-              `${year}-${String(
-                month,
-              ).padStart(2, "0")}`,
-            )
+            current.startsWith(monthPrefix)
           ) {
             return current;
           }
 
-          return (
-            result.days[0]?.date ??
-            null
-          );
+          return result.days[0]?.date ?? null;
         });
       } catch (err) {
         console.error(
@@ -257,14 +402,9 @@ export default function MoodCalendarClient({
   }, [year, month, isId]);
 
   const dayMap = useMemo(() => {
-    const map = new Map<
-      string,
-      CalendarDay
-    >();
+    const map = new Map<string, CalendarDay>();
 
-    for (
-      const day of data?.days ?? []
-    ) {
+    for (const day of data?.days ?? []) {
       map.set(day.date, day);
     }
 
@@ -272,28 +412,25 @@ export default function MoodCalendarClient({
   }, [data]);
 
   const calendarCells = useMemo(() => {
-    const firstDay =
-      new Date(
-        Date.UTC(
-          year,
-          month - 1,
-          1,
-        ),
-      );
+    const firstDay = new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        1,
+      ),
+    );
 
-    const daysInMonth =
-      new Date(
-        Date.UTC(
-          year,
-          month,
-          0,
-        ),
-      ).getUTCDate();
+    const daysInMonth = new Date(
+      Date.UTC(
+        year,
+        month,
+        0,
+      ),
+    ).getUTCDate();
 
     // Monday = 0 ... Sunday = 6
     const mondayIndex =
-      (firstDay.getUTCDay() + 6) %
-      7;
+      (firstDay.getUTCDay() + 6) % 7;
 
     const cells: Array<
       | {
@@ -333,75 +470,57 @@ export default function MoodCalendarClient({
     return cells;
   }, [month, year]);
 
-  const selectedDay =
-    selectedDate
-      ? dayMap.get(
-          selectedDate,
-        ) ?? null
-      : null;
+  const selectedDay = selectedDate
+    ? dayMap.get(selectedDate) ?? null
+    : null;
 
-  const selectedEmotion =
-    selectedDay
-      ? getHighestEmotion(
-          selectedDay.emotions,
-        )
-      : null;
+  const selectedEmotion = selectedDay
+    ? getHighestEmotion(selectedDay.emotions)
+    : null;
 
   const todayKey = [
     now.getFullYear(),
-    String(
-      now.getMonth() + 1,
-    ).padStart(2, "0"),
-    String(
-      now.getDate(),
-    ).padStart(2, "0"),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
   ].join("-");
 
   function changeMonth(
     direction: -1 | 1,
   ) {
-    const next =
-      new Date(
-        Date.UTC(
-          year,
-          month - 1 + direction,
-          1,
-        ),
-      );
-
-    setYear(
-      next.getUTCFullYear(),
+    const next = new Date(
+      Date.UTC(
+        year,
+        month - 1 + direction,
+        1,
+      ),
     );
 
-    setMonth(
-      next.getUTCMonth() + 1,
-    );
-
+    setYear(next.getUTCFullYear());
+    setMonth(next.getUTCMonth() + 1);
     setSelectedDate(null);
   }
 
   return (
-    <main className="min-h-screen bg-[#fdfbf7] px-4 py-6 md:px-8 md:py-10">
+    <main className="min-h-screen bg-[#FDFBF7] px-4 py-6 text-[#4A3F35] md:px-8 md:py-10">
       <div className="mx-auto max-w-6xl">
 
         {/* HEADER */}
-
         <header className="mb-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
                 {isId
                   ? "Perjalanan mood"
                   : "Mood journey"}
               </p>
 
-              <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#4a3f35] md:text-4xl">
+              <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#4A3F35] md:text-4xl">
                 {isId
                   ? `Kalender mood, ${userName}`
                   : `Your mood calendar, ${userName}`}
               </h1>
 
-              <p className="mt-3 max-w-xl text-sm leading-7 text-[#4a3f35]/60 md:text-[15px]">
+              <p className="mt-3 max-w-xl text-sm leading-7 text-[#4A3F35]/60 md:text-[15px]">
                 {isId
                   ? "Lihat emosi yang paling kuat tercatat di setiap harimu."
                   : "See the strongest emotion recorded on each day."}
@@ -411,24 +530,27 @@ export default function MoodCalendarClient({
         </header>
 
         {/* MAIN CARD */}
-
-        <section className="rounded-[2rem] border border-[#4a3f35]/10 bg-[#fdfbf7] p-5 md:p-8">
+        <section className="rounded-[2rem] border border-[#4A3F35]/10 bg-[#FDFBF7] p-5 md:p-8">
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
 
             {/* CALENDAR */}
-
             <div className="min-w-0">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4 text-[#5c6b9c]" />
+                    <CalendarIcon
+                      size={16}
+                      className="text-[#5C6B9C]"
+                    />
 
-                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
-                      Mood Calendar
+                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
+                      {isId
+                        ? "Kalender mood"
+                        : "Mood calendar"}
                     </span>
                   </div>
 
-                  <h2 className="mt-1 text-xl font-semibold text-[#4a3f35]">
+                  <h2 className="mt-1 text-xl font-semibold text-[#4A3F35]">
                     {getMonthName(
                       year,
                       month,
@@ -443,14 +565,17 @@ export default function MoodCalendarClient({
                     onClick={() =>
                       changeMonth(-1)
                     }
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#4a3f35]/10 text-[#4a3f35]/60 transition hover:border-[#5c6b9c]/30 hover:text-[#5c6b9c]"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
                     aria-label={
                       isId
                         ? "Bulan sebelumnya"
                         : "Previous month"
                     }
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowIcon
+                      direction="left"
+                      size={16}
+                    />
                   </button>
 
                   <button
@@ -458,24 +583,28 @@ export default function MoodCalendarClient({
                     onClick={() =>
                       changeMonth(1)
                     }
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#4a3f35]/10 text-[#4a3f35]/60 transition hover:border-[#5c6b9c]/30 hover:text-[#5c6b9c]"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
                     aria-label={
                       isId
                         ? "Bulan berikutnya"
                         : "Next month"
                     }
                   >
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowIcon
+                      direction="right"
+                      size={16}
+                    />
                   </button>
                 </div>
               </div>
 
               {error ? (
-                <div className="rounded-xl border border-[#e2725b]/20 bg-[#fbc4ab]/20 p-5 text-sm text-[#4a3f35]/75">
+                <div className="rounded-xl border border-[#E2725B]/20 bg-[#FBC4AB]/20 p-5 text-sm text-[#4A3F35]/75">
                   {error}
                 </div>
               ) : (
                 <>
+                  {/* WEEKDAYS */}
                   <div className="mb-2 grid grid-cols-7">
                     {(isId
                       ? [
@@ -496,18 +625,17 @@ export default function MoodCalendarClient({
                           "Sat",
                           "Sun",
                         ]
-                    ).map(
-                      (label) => (
-                        <div
-                          key={label}
-                          className="py-2 text-center text-[10px] font-medium uppercase tracking-wide text-[#4a3f35]/35"
-                        >
-                          {label}
-                        </div>
-                      ),
-                    )}
+                    ).map((label) => (
+                      <div
+                        key={label}
+                        className="py-2 text-center text-[10px] font-medium uppercase tracking-wide text-[#4A3F35]/35"
+                      >
+                        {label}
+                      </div>
+                    ))}
                   </div>
 
+                  {/* CALENDAR GRID */}
                   <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
                     {calendarCells.map(
                       (cell) => {
@@ -517,9 +645,7 @@ export default function MoodCalendarClient({
                         ) {
                           return (
                             <div
-                              key={
-                                cell.key
-                              }
+                              key={cell.key}
                               className="aspect-square"
                             />
                           );
@@ -527,9 +653,7 @@ export default function MoodCalendarClient({
 
                         const dateKey = [
                           year,
-                          String(
-                            month,
-                          ).padStart(
+                          String(month).padStart(
                             2,
                             "0",
                           ),
@@ -546,12 +670,11 @@ export default function MoodCalendarClient({
                             dateKey,
                           );
 
-                        const emotion =
-                          day
-                            ? getHighestEmotion(
-                                day.emotions,
-                              )
-                            : null;
+                        const emotion = day
+                          ? getHighestEmotion(
+                              day.emotions,
+                            )
+                          : null;
 
                         const selected =
                           selectedDate ===
@@ -563,9 +686,7 @@ export default function MoodCalendarClient({
 
                         return (
                           <button
-                            key={
-                              cell.key
-                            }
+                            key={cell.key}
                             type="button"
                             onClick={() =>
                               setSelectedDate(
@@ -575,36 +696,36 @@ export default function MoodCalendarClient({
                             className={[
                               "group relative flex aspect-square min-h-16 flex-col items-center justify-center rounded-xl border text-center transition sm:min-h-20",
                               selected
-                                ? "border-[#5c6b9c]/50 bg-[#5c6b9c]/8"
-                                : "border-transparent hover:border-[#4a3f35]/10 hover:bg-[#4a3f35]/[0.03]",
-                            ].join(
-                              " ",
-                            )}
+                                ? "border-[#5C6B9C]/50 bg-[#5C6B9C]/8"
+                                : "border-transparent hover:border-[#4A3F35]/10 hover:bg-[#4A3F35]/[0.03]",
+                            ].join(" ")}
                           >
                             <span
                               className={[
                                 "text-xs font-medium",
                                 isToday
-                                  ? "text-[#e2725b]"
-                                  : "text-[#4a3f35]/70",
-                              ].join(
-                                " ",
-                              )}
+                                  ? "text-[#E2725B]"
+                                  : "text-[#4A3F35]/70",
+                              ].join(" ")}
                             >
-                              {
-                                cell.day
-                              }
+                              {cell.day}
                             </span>
 
                             {emotion ? (
                               <>
-                                <span className="mt-1.5 text-base leading-none sm:text-lg">
-                                  {getEmotionEmoji(
-                                    emotion.slug,
-                                  )}
-                                </span>
+                                <div className="mt-1 flex h-10 w-10 items-center justify-center sm:h-11 sm:w-11">
+                                  <EmotionArtwork
+                                    slug={
+                                      emotion.slug
+                                    }
+                                    name={
+                                      emotion.name
+                                    }
+                                    size={42}
+                                  />
+                                </div>
 
-                                <span className="mt-1 text-[9px] font-medium text-[#4a3f35]/40">
+                                <span className="mt-0.5 text-[9px] font-medium text-[#4A3F35]/40">
                                   {
                                     emotion.intensity
                                   }
@@ -612,11 +733,11 @@ export default function MoodCalendarClient({
                                 </span>
                               </>
                             ) : (
-                              <span className="mt-2 h-2.5 w-2.5 rounded-full border border-[#4a3f35]/10" />
+                              <span className="mt-2 h-2.5 w-2.5 rounded-full border border-[#4A3F35]/10" />
                             )}
 
                             {isToday && (
-                              <span className="absolute inset-x-3 bottom-1 h-px bg-[#e2725b]/50" />
+                              <span className="absolute inset-x-3 bottom-1 h-px bg-[#E2725B]/50" />
                             )}
                           </button>
                         );
@@ -625,9 +746,8 @@ export default function MoodCalendarClient({
                   </div>
 
                   {/* LEGEND */}
-
-                  <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-[#4a3f35]/8 pt-4 text-[11px] text-[#4a3f35]/50">
-                    <span className="font-medium text-[#4a3f35]/65">
+                  <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-[#4A3F35]/8 pt-4 text-[11px] text-[#4A3F35]/50">
+                    <span className="font-medium text-[#4A3F35]/65">
                       {isId
                         ? "Intensitas"
                         : "Intensity"}
@@ -643,17 +763,15 @@ export default function MoodCalendarClient({
                             className={[
                               "h-2.5 w-2.5 rounded-full",
                               level === 1
-                                ? "bg-[#5c6b9c]"
+                                ? "bg-[#5C6B9C]"
                                 : level === 2
-                                  ? "bg-[#c1d5c0]"
+                                  ? "bg-[#C1D5C0]"
                                   : level === 3
-                                    ? "bg-[#fbc4ab]"
+                                    ? "bg-[#FBC4AB]"
                                     : level === 4
-                                      ? "bg-[#e2725b]"
-                                      : "bg-[#4a3f35]",
-                            ].join(
-                              " ",
-                            )}
+                                      ? "bg-[#E2725B]"
+                                      : "bg-[#4A3F35]",
+                            ].join(" ")}
                           />
 
                           {level}
@@ -666,14 +784,13 @@ export default function MoodCalendarClient({
             </div>
 
             {/* DETAIL */}
-
-            <aside className="border-t border-[#4a3f35]/8 pt-7 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+            <aside className="border-t border-[#4A3F35]/8 pt-7 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
               {loading ? (
                 <div className="flex min-h-[320px] items-center justify-center">
                   <div className="text-center">
-                    <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#5c6b9c]/20 border-t-[#5c6b9c]" />
+                    <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#5C6B9C]/20 border-t-[#5C6B9C]" />
 
-                    <p className="text-sm text-[#4a3f35]/50">
+                    <p className="text-sm text-[#4A3F35]/50">
                       {isId
                         ? "Memuat kalender..."
                         : "Loading calendar..."}
@@ -683,13 +800,13 @@ export default function MoodCalendarClient({
               ) : selectedDay ? (
                 <div>
                   <div className="mb-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
                       {isId
                         ? "Detail hari"
                         : "Day detail"}
                     </p>
 
-                    <h3 className="mt-2 text-xl font-semibold leading-tight text-[#4a3f35]">
+                    <h3 className="mt-2 text-xl font-semibold leading-tight text-[#4A3F35]">
                       {formatDate(
                         selectedDay.date,
                         locale,
@@ -699,22 +816,28 @@ export default function MoodCalendarClient({
 
                   {selectedEmotion ? (
                     <div>
-                      <div className="rounded-[1.5rem] bg-[#fbc4ab]/25 p-6">
+                      <div className="rounded-[1.5rem] bg-[#FBC4AB]/25 p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <span className="text-4xl">
-                              {getEmotionEmoji(
-                                selectedEmotion.slug,
-                              )}
-                            </span>
+                            <div className="flex h-16 w-16 items-center justify-center">
+                              <EmotionArtwork
+                                slug={
+                                  selectedEmotion.slug
+                                }
+                                name={
+                                  selectedEmotion.name
+                                }
+                                size={64}
+                              />
+                            </div>
 
-                            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
                               {isId
                                 ? "Emosi utama hari ini"
                                 : "Main emotion today"}
                             </p>
 
-                            <h4 className="mt-1 text-2xl font-semibold text-[#4a3f35]">
+                            <h4 className="mt-1 text-2xl font-semibold text-[#4A3F35]">
                               {
                                 selectedEmotion.name
                               }
@@ -722,20 +845,20 @@ export default function MoodCalendarClient({
                           </div>
 
                           <div className="text-right">
-                            <span className="text-2xl font-semibold text-[#4a3f35]">
+                            <span className="text-2xl font-semibold text-[#4A3F35]">
                               {
                                 selectedEmotion.intensity
                               }
                             </span>
 
-                            <span className="text-sm text-[#4a3f35]/40">
+                            <span className="text-sm text-[#4A3F35]/40">
                               /5
                             </span>
                           </div>
                         </div>
 
                         <div className="mt-6">
-                          <div className="mb-2 flex justify-between text-[11px] text-[#4a3f35]/45">
+                          <div className="mb-2 flex justify-between text-[11px] text-[#4A3F35]/45">
                             <span>
                               {isId
                                 ? "Intensitas"
@@ -750,9 +873,9 @@ export default function MoodCalendarClient({
                             </span>
                           </div>
 
-                          <div className="h-2 overflow-hidden rounded-full bg-[#fdfbf7]">
+                          <div className="h-2 overflow-hidden rounded-full bg-[#FDFBF7]">
                             <div
-                              className="h-full rounded-full bg-[#e2725b]"
+                              className="h-full rounded-full bg-[#E2725B]"
                               style={{
                                 width: `${
                                   selectedEmotion.intensity *
@@ -764,14 +887,14 @@ export default function MoodCalendarClient({
                         </div>
 
                         {selectedEmotion.note && (
-                          <div className="mt-6 border-t border-[#4a3f35]/10 pt-5">
-                            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a3f35]/40">
+                          <div className="mt-6 border-t border-[#4A3F35]/10 pt-5">
+                            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
                               {isId
                                 ? "Catatan"
                                 : "Note"}
                             </p>
 
-                            <p className="mt-2 text-sm leading-6 text-[#4a3f35]/70">
+                            <p className="mt-2 text-sm leading-6 text-[#4A3F35]/70">
                               {
                                 selectedEmotion.note
                               }
@@ -783,20 +906,20 @@ export default function MoodCalendarClient({
                       {selectedDay.contexts.length >
                         0 && (
                         <div className="mt-6">
-                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a3f35]/40">
-                            Context
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
+                            {isId
+                              ? "Konteks"
+                              : "Context"}
                           </p>
 
                           <div className="mt-3 flex flex-wrap gap-2">
                             {selectedDay.contexts.map(
-                              (
-                                context,
-                              ) => (
+                              (context) => (
                                 <span
                                   key={
                                     context.id
                                   }
-                                  className="rounded-full bg-[#c1d5c0]/25 px-3 py-1.5 text-xs text-[#4a3f35]/70"
+                                  className="rounded-full bg-[#C1D5C0]/25 px-3 py-1.5 text-xs text-[#4A3F35]/70"
                                 >
                                   {
                                     context.name
@@ -808,13 +931,16 @@ export default function MoodCalendarClient({
                         </div>
                       )}
 
-                      {selectedDay.diary?.content && (
-                        <div className="mt-6 border-t border-[#4a3f35]/8 pt-5">
-                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a3f35]/40">
-                            Diary
+                      {selectedDay.diary
+                        ?.content && (
+                        <div className="mt-6 border-t border-[#4A3F35]/8 pt-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
+                            {isId
+                              ? "Diary"
+                              : "Diary"}
                           </p>
 
-                          <p className="mt-2 line-clamp-4 text-sm leading-6 text-[#4a3f35]/60">
+                          <p className="mt-2 line-clamp-4 text-sm leading-6 text-[#4A3F35]/60">
                             {
                               selectedDay
                                 .diary
@@ -827,7 +953,7 @@ export default function MoodCalendarClient({
                       {selectedDay.checkin && (
                         <Link
                           href={`/${locale}/check-in/result/${selectedDay.checkin.id}`}
-                          className="mt-6 flex items-center justify-between rounded-xl border border-[#4a3f35]/10 px-4 py-3 text-sm font-medium text-[#4a3f35]/70 transition hover:border-[#5c6b9c]/30 hover:text-[#5c6b9c]"
+                          className="mt-6 flex items-center justify-between rounded-xl border border-[#4A3F35]/10 px-4 py-3 text-sm font-medium text-[#4A3F35]/70 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
                         >
                           <span>
                             {isId
@@ -835,24 +961,29 @@ export default function MoodCalendarClient({
                               : "View check-in"}
                           </span>
 
-                          <ChevronRight className="h-4 w-4" />
+                          <ChevronRightIcon
+                            size={16}
+                          />
                         </Link>
                       )}
                     </div>
                   ) : (
                     <div className="flex min-h-[320px] items-center justify-center text-center">
                       <div>
-                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#c1d5c0]/25">
-                          <Heart className="h-6 w-6 text-[#5c6b9c]" />
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#C1D5C0]/25">
+                          <HeartIcon
+                            size={24}
+                            className="text-[#5C6B9C]"
+                          />
                         </div>
 
-                        <h4 className="mt-4 text-base font-semibold text-[#4a3f35]">
+                        <h4 className="mt-4 text-base font-semibold text-[#4A3F35]">
                           {isId
                             ? "Belum ada mood"
                             : "No mood recorded"}
                         </h4>
 
-                        <p className="mt-2 text-sm leading-6 text-[#4a3f35]/50">
+                        <p className="mt-2 text-sm leading-6 text-[#4A3F35]/50">
                           {isId
                             ? "Belum ada check-in atau emosi yang tercatat pada hari ini."
                             : "There is no check-in or emotion recorded for this day."}
@@ -864,17 +995,20 @@ export default function MoodCalendarClient({
               ) : (
                 <div className="flex min-h-[320px] items-center justify-center text-center">
                   <div>
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fbc4ab]/25">
-                      <CalendarDays className="h-6 w-6 text-[#5c6b9c]" />
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FBC4AB]/25">
+                      <CalendarIcon
+                        size={24}
+                        className="text-[#5C6B9C]"
+                      />
                     </div>
 
-                    <h4 className="mt-4 text-base font-semibold text-[#4a3f35]">
+                    <h4 className="mt-4 text-base font-semibold text-[#4A3F35]">
                       {isId
                         ? "Pilih tanggal"
                         : "Select a date"}
                     </h4>
 
-                    <p className="mt-2 text-sm leading-6 text-[#4a3f35]/50">
+                    <p className="mt-2 text-sm leading-6 text-[#4A3F35]/50">
                       {isId
                         ? "Pilih tanggal untuk melihat emosi utama hari tersebut."
                         : "Select a date to see the main emotion for that day."}

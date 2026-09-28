@@ -2,17 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  ArrowRight,
-  BookOpen,
-  Brain,
-  Check,
-  Heart,
-  LockKeyhole,
-  Sparkles,
-  TrendingUp,
-} from "lucide-react";
+  ArrowRightIcon,
+  DiaryIcon,
+  InsightIcon,
+  PrivacyIcon,
+  WellbeingIcon,
+  ActivityIcon,
+} from "@/components/moodify-icons";
 
 import { isValidLocale, type Locale } from "@/i18n/config";
+import { ArrowRight, Check, LockKeyhole } from "lucide-react";
 
 type PageProps = {
   params: Promise<{
@@ -47,12 +46,12 @@ export default async function LandingPage({ params }: PageProps) {
             aria-label="Moodify"
           >
             <Image
-              src="/moodify-logo.png"
+              src="/Moodify-logo.png"
               alt="Moodify"
               width={150}
               height={45}
               priority
-              className="h-9 w-auto object-contain"
+              className="h-15 w-auto object-contain"
             />
           </Link>
 
@@ -97,10 +96,7 @@ export default async function LandingPage({ params }: PageProps) {
             >
               {isEnglish ? "Register" : "Daftar"}
 
-              <ArrowRight
-                className="h-4 w-4"
-                strokeWidth={1.8}
-              />
+              <ArrowRightIcon className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -123,22 +119,13 @@ export default async function LandingPage({ params }: PageProps) {
           <div className="max-w-2xl">
             {/* Badge */}
 
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#5C6B9C]/15 bg-[#5C6B9C]/[0.06] px-3.5 py-2">
-              <Sparkles
-                className="h-3.5 w-3.5 text-[#5C6B9C]"
-                strokeWidth={1.8}
-              />
-
-              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
-                {isEnglish
-                  ? "Your emotional wellbeing space"
-                  : "Ruang untuk memahami dirimu"}
-              </span>
-            </div>
+          
+             
+  
 
             {/* Heading */}
 
-            <h1 className="mt-7 max-w-[720px] text-[46px] font-semibold leading-[1.04] tracking-[-0.055em] text-[#4A3F35] sm:text-[60px] lg:text-[72px]">
+            <h1 className="mt-7 max-w-[720px] text-[48px] font-semibold leading-[1.02] tracking-[-0.06em] text-[#4A3F35] sm:text-[60px] lg:text-[72px]">
               {isEnglish ? (
                 <>
                   Understand
@@ -173,10 +160,7 @@ export default async function LandingPage({ params }: PageProps) {
                   ? "Start for free"
                   : "Mulai sekarang"}
 
-                <ArrowRight
-                  className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                  strokeWidth={1.8}
-                />
+                <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
 
               <Link
@@ -208,7 +192,7 @@ export default async function LandingPage({ params }: PageProps) {
           {/* HERO VISUAL */}
 
           <div className="relative mx-auto w-full max-w-[510px] lg:ml-auto">
-            <div className="relative min-h-[470px] rounded-[36px] bg-[#FBC4AB]/35 p-5 sm:p-8">
+            <div className="relative min-h-[500px] rounded-[40px] border border-[#4A3F35]/[0.06] bg-gradient-to-br from-[#FBC4AB]/45 via-white/40 to-[#C1D5C0]/35 p-5 sm:p-8">
               {/* Decorative circles */}
 
               <div className="absolute -right-6 top-10 h-20 w-20 rounded-full bg-[#C1D5C0]/60" />
@@ -217,7 +201,7 @@ export default async function LandingPage({ params }: PageProps) {
 
               {/* Main App Preview */}
 
-              <div className="relative mt-4 rounded-[26px] border border-white/80 bg-[#FDFBF7] p-5 shadow-[0_25px_70px_rgba(74,63,53,0.10)] sm:p-7">
+              <div className="relative mt-3 rounded-[28px] border border-white bg-[#FDFBF7]/95 p-5 shadow-[0_28px_80px_rgba(74,63,53,0.13)] sm:p-7">
                 {/* Header */}
 
                 <div className="flex items-center justify-between">
@@ -236,7 +220,7 @@ export default async function LandingPage({ params }: PageProps) {
                   </div>
 
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FBC4AB]/35">
-                    <Heart
+                    <WellbeingIcon
                       className="h-4 w-4 text-[#E2725B]"
                       strokeWidth={1.8}
                     />
@@ -247,7 +231,7 @@ export default async function LandingPage({ params }: PageProps) {
 
                 <div className="mt-7 grid grid-cols-3 gap-2.5">
                   <div className="rounded-2xl border border-[#E2725B]/20 bg-[#E2725B]/[0.07] p-3 text-center">
-                    <span className="text-[25px]">😊</span>
+                    <Image src="/emotions-emoji/calm.png" alt="" width={42} height={42} className="mx-auto object-contain mix-blend-multiply" />
 
                     <p className="mt-2 text-[10px] font-medium">
                       {isEnglish ? "Calm" : "Tenang"}
@@ -255,7 +239,7 @@ export default async function LandingPage({ params }: PageProps) {
                   </div>
 
                   <div className="rounded-2xl border border-[#5C6B9C]/15 bg-[#5C6B9C]/[0.06] p-3 text-center">
-                    <span className="text-[25px]">😌</span>
+                    <Image src="/emotions-emoji/happy.png" alt="" width={42} height={42} className="mx-auto object-contain mix-blend-multiply" />
 
                     <p className="mt-2 text-[10px] font-medium">
                       {isEnglish ? "Okay" : "Baik"}
@@ -263,7 +247,7 @@ export default async function LandingPage({ params }: PageProps) {
                   </div>
 
                   <div className="rounded-2xl border border-[#C1D5C0]/60 bg-[#C1D5C0]/15 p-3 text-center">
-                    <span className="text-[25px]">🥺</span>
+                    <Image src="/emotions-emoji/tired.png" alt="" width={42} height={42} className="mx-auto object-contain mix-blend-multiply" />
 
                     <p className="mt-2 text-[10px] font-medium">
                       {isEnglish ? "Low" : "Lelah"}
@@ -281,10 +265,7 @@ export default async function LandingPage({ params }: PageProps) {
                         : "Ritme emosimu"}
                     </p>
 
-                    <TrendingUp
-                      className="h-3.5 w-3.5 text-[#5C6B9C]"
-                      strokeWidth={1.8}
-                    />
+                    <InsightIcon className="h-3.5 w-3.5 text-[#5C6B9C]" />
                   </div>
 
                   <div className="mt-5 flex h-20 items-end gap-2">
@@ -341,9 +322,8 @@ export default async function LandingPage({ params }: PageProps) {
               <div className="absolute -bottom-5 -left-4 w-[235px] rounded-2xl border border-white/80 bg-white/95 p-4 shadow-[0_18px_50px_rgba(74,63,53,0.12)] sm:-left-8">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5C6B9C]/10">
-                    <Brain
+                    <InsightIcon
                       className="h-4 w-4 text-[#5C6B9C]"
-                      strokeWidth={1.8}
                     />
                   </div>
 
@@ -395,7 +375,7 @@ export default async function LandingPage({ params }: PageProps) {
       <section className="border-y border-[#4A3F35]/[0.07] bg-white/40">
         <div className="mx-auto grid max-w-7xl md:grid-cols-3">
           <TrustItem
-            icon={<Heart className="h-4 w-4" />}
+            icon={<WellbeingIcon className="h-4 w-4" />}
             title={
               isEnglish
                 ? "Check in with yourself"
@@ -409,7 +389,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <TrustItem
-            icon={<BookOpen className="h-4 w-4" />}
+            icon={<DiaryIcon className="h-4 w-4" />}
             title={
               isEnglish
                 ? "A private diary"
@@ -423,7 +403,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <TrustItem
-            icon={<TrendingUp className="h-4 w-4" />}
+            icon={<InsightIcon className="h-4 w-4" />}
             title={
               isEnglish
                 ? "Understand your patterns"
@@ -468,7 +448,7 @@ export default async function LandingPage({ params }: PageProps) {
 
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <FeatureCard
-            icon={<Heart className="h-5 w-5" />}
+            icon={<WellbeingIcon className="h-5 w-5" />}
             number="01"
             title={
               isEnglish
@@ -483,7 +463,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <FeatureCard
-            icon={<BookOpen className="h-5 w-5" />}
+            icon={<DiaryIcon className="h-5 w-5" />}
             number="02"
             title={
               isEnglish
@@ -498,7 +478,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <FeatureCard
-            icon={<Brain className="h-5 w-5" />}
+            icon={<InsightIcon className="h-5 w-5" />}
             number="03"
             title={
               isEnglish
@@ -513,7 +493,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <FeatureCard
-            icon={<TrendingUp className="h-5 w-5" />}
+            icon={<InsightIcon className="h-5 w-5" />}
             number="04"
             title={
               isEnglish
@@ -528,7 +508,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <FeatureCard
-            icon={<LockKeyhole className="h-5 w-5" />}
+            icon={<PrivacyIcon className="h-5 w-5" />}
             number="05"
             title={
               isEnglish
@@ -543,7 +523,7 @@ export default async function LandingPage({ params }: PageProps) {
           />
 
           <FeatureCard
-            icon={<Sparkles className="h-5 w-5" />}
+            icon={<ActivityIcon className="h-5 w-5" />}
             number="06"
             title={
               isEnglish
@@ -744,11 +724,8 @@ export default async function LandingPage({ params }: PageProps) {
 
       <section>
         <div className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FBC4AB]/40">
-            <Heart
-              className="h-5 w-5 text-[#E2725B]"
-              strokeWidth={1.8}
-            />
+          <div className="mx-auto flex  items-center justify-center">
+            <Image src="/Moodify-logo.png" alt="Moodify" width={170} height={52} className="h-24 w-auto object-contain" />
           </div>
 
           <h2 className="mx-auto mt-7 max-w-3xl text-[36px] font-semibold leading-tight tracking-[-0.05em] sm:text-[50px]">
@@ -805,7 +782,7 @@ export default async function LandingPage({ params }: PageProps) {
                 className="inline-flex items-center"
               >
                 <Image
-                  src="/moodify-logo.png"
+                  src="/Moodify-logo.png"
                   alt="Moodify"
                   width={130}
                   height={40}
@@ -910,10 +887,7 @@ export default async function LandingPage({ params }: PageProps) {
             </p>
 
             <div className="flex items-center gap-2 text-[10px] text-[#4A3F35]/35">
-              <LockKeyhole
-                className="h-3 w-3"
-                strokeWidth={1.8}
-              />
+              <PrivacyIcon className="h-3 w-3" />
 
               <span>
                 {isEnglish
@@ -976,7 +950,7 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="group rounded-[22px] border border-[#4A3F35]/[0.07] bg-white/55 p-6 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_50px_rgba(74,63,53,0.07)]">
+    <div className="group rounded-[26px] border border-[#4A3F35]/[0.07] bg-white/60 p-7 transition duration-300 hover:-translate-y-0.5 hover:border-[#5C6B9C]/15 hover:bg-white hover:shadow-[0_22px_60px_rgba(74,63,53,0.08)]">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5C6B9C]/[0.07] text-[#5C6B9C] transition group-hover:bg-[#5C6B9C] group-hover:text-white">
           {icon}

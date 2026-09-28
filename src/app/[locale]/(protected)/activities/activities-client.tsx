@@ -4,16 +4,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
-  Brain,
-  CheckCircle2,
-  Clock3,
-  Footprints,
-  Heart,
-  Loader2,
-  Sparkles,
-  Wind,
-} from "lucide-react";
+  ActivityIcon,
+  ArrowRightIcon,
+  DiaryIcon,
+  SupportIcon,
+  WellbeingIcon,
+} from "@/components/moodify-icons";
 
 import type { Locale } from "@/i18n/config";
 
@@ -52,14 +48,14 @@ type ActivitiesClientProps = {
   userName: string;
 };
 
-const categoryIcons: Record<string, typeof Wind> = {
-  breathing: Wind,
-  breath: Wind,
-  grounding: Brain,
-  ground: Brain,
-  movement: Footprints,
-  reflection: Heart,
-  relaxation: Sparkles,
+const categoryIcons: Record<string, typeof ActivityIcon> = {
+  breathing: ActivityIcon,
+  breath: ActivityIcon,
+  grounding: WellbeingIcon,
+  ground: WellbeingIcon,
+  movement: ActivityIcon,
+  reflection: DiaryIcon,
+  relaxation: SupportIcon,
 };
 
 function getCategoryIcon(category: string) {
@@ -69,7 +65,7 @@ function getCategoryIcon(category: string) {
     key.includes(item),
   );
 
-  return match ? categoryIcons[match] : Sparkles;
+  return match ? categoryIcons[match] : ActivityIcon;
 }
 
 function formatCategory(category: string, isId: boolean) {
@@ -292,7 +288,10 @@ export default function ActivitiesClient({
         <div className="mx-auto flex min-h-[65vh] max-w-6xl items-center justify-center">
           <div className="flex flex-col items-center text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">
-              <Loader2 className="h-5 w-5 animate-spin text-[#5c6b9c]" />
+              <span
+                className="h-5 w-5 animate-spin rounded-full border-2 border-[#5c6b9c]/20 border-t-[#5c6b9c]"
+                aria-hidden="true"
+              />
             </div>
 
             <p className="text-sm font-medium text-[#4a3f35]">
@@ -425,7 +424,6 @@ export default function ActivitiesClient({
 
                   <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#4a3f35]/55">
                     <span className="inline-flex items-center gap-1.5">
-                      <Clock3 className="h-3.5 w-3.5" />
                       {featuredActivity.durationMinutes}{" "}
                       {isId ? "menit" : "min"}
                     </span>
@@ -445,7 +443,7 @@ export default function ActivitiesClient({
                 >
                   {isId ? "Mulai sekarang" : "Begin"}
 
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </article>
@@ -596,7 +594,7 @@ export default function ActivitiesClient({
           {history.length === 0 ? (
             <div className="max-w-2xl border-l-2 border-[#fbc4ab] pl-5">
               <div className="flex items-center gap-2 text-[#5c6b9c]">
-                <CheckCircle2 className="h-4 w-4" />
+                <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
 
                 <span className="text-sm font-medium">
                   {isId
@@ -673,7 +671,7 @@ function RecommendedRow({
             </h3>
           </div>
 
-          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[#4a3f35]/30 transition group-hover:translate-x-1 group-hover:text-[#5c6b9c]" />
+          <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-[#4a3f35]/30 transition group-hover:translate-x-1 group-hover:text-[#5c6b9c]" />
         </div>
 
         <p className="mt-1 line-clamp-1 text-xs leading-5 text-[#4a3f35]/50">
@@ -739,7 +737,7 @@ function ExploreActivityRow({
             </h3>
           </div>
 
-          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[#4a3f35]/25 transition group-hover:translate-x-1 group-hover:text-[#5c6b9c]" />
+          <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-[#4a3f35]/25 transition group-hover:translate-x-1 group-hover:text-[#5c6b9c]" />
         </div>
 
         <p className="mt-2 line-clamp-2 max-w-xl text-sm leading-6 text-[#4a3f35]/55">
@@ -761,10 +759,7 @@ function ExploreActivityRow({
             )}
           </span>
 
-          <span className="inline-flex items-center gap-1">
-            <Clock3 className="h-3 w-3" />
-
-            {activity.durationMinutes}{" "}
+          <span>{activity.durationMinutes}{" "}
             {isId ? "menit" : "min"}
           </span>
         </div>
@@ -816,10 +811,7 @@ function HistoryItem({
 
               <span>·</span>
 
-              <span className="inline-flex items-center gap-1">
-                <Clock3 className="h-3 w-3" />
-
-                {log.activity.durationMinutes}{" "}
+              <span>{log.activity.durationMinutes}{" "}
                 {isId ? "menit" : "min"}
               </span>
             </div>

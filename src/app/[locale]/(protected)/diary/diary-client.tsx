@@ -1,18 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  BookOpen,
-  CalendarDays,
-  ChevronRight,
-  Loader2,
-  PenLine,
-  Plus,
-  Sparkles,
-  X,
-} from "lucide-react";
-
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 
 type Diary = {
@@ -23,6 +13,7 @@ type Diary = {
   durationSeconds: number | null;
   checkinId: string | null;
   createdAt: string;
+
   aiAnalyses: Array<{
     id: string;
     summary: string;
@@ -30,6 +21,7 @@ type Diary = {
     stressScore: number | null;
     riskLevel: string;
   }>;
+
   checkin: {
     emotions: Array<{
       intensity: number;
@@ -46,19 +38,312 @@ type Props = {
   userName: string;
 };
 
+function BookIcon({
+  size = 18,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M5.5 4.5H9.2C10.7 4.5 12 5.7 12 7.2V19C12 17.7 10.9 16.7 9.5 16.7H5.5C4.7 16.7 4 16 4 15.2V6C4 5.2 4.7 4.5 5.5 4.5Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18.5 4.5H14.8C13.3 4.5 12 5.7 12 7.2V19C12 17.7 13.1 16.7 14.5 16.7H18.5C19.3 16.7 20 16 20 15.2V6C20 5.2 19.3 4.5 18.5 4.5Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CalendarIcon({
+  size = 14,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect
+        x="3.5"
+        y="5"
+        width="17"
+        height="15"
+        rx="2.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <path
+        d="M7.5 3.5V7M16.5 3.5V7M3.5 9.5H20.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function PlusIcon({
+  size = 16,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M12 5V19M5 12H19"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon({
+  size = 16,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M6 6L18 18M18 6L6 18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function PenIcon({
+  size = 15,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M14.5 5.5L18.5 9.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M4.5 19.5L5.4 15.2L15.9 4.7C16.7 3.9 18 3.9 18.8 4.7L19.3 5.2C20.1 6 20.1 7.3 19.3 8.1L8.8 18.6L4.5 19.5Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SparkleIcon({
+  size = 15,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3L13.3 8.7L19 10L13.3 11.3L12 17L10.7 11.3L5 10L10.7 8.7L12 3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18.5 15L19.1 17.9L22 18.5L19.1 19.1L18.5 22L17.9 19.1L15 18.5L17.9 17.9L18.5 15Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowRightIcon({
+  size = 14,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M5 12H19"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 6L19 12L13 18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function LoadingSpinner({
+  size = 15,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`inline-block animate-spin rounded-full border-2 border-current/20 border-t-current ${className}`}
+      style={{
+        width: size,
+        height: size,
+      }}
+    />
+  );
+}
+
+const emotionArtwork: Record<string, string> = {
+  happy: "/emotions-emoji/happy.png",
+  sad: "/emotions-emoji/sad.png",
+  angry: "/emotions-emoji/angry.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  calm: "/emotions-emoji/calm.png",
+  tired: "/emotions-emoji/tired.png",
+  excited: "/emotions-emoji/excited.png",
+  lonely: "/emotions-emoji/lonely.png",
+  grateful: "/emotions-emoji/grateful.png",
+  frustrated: "/emotions-emoji/frustrated.png",
+  overwhelmed: "/emotions-emoji/overwhelmed.png",
+};
+
+function getEmotionArtwork(slug: string) {
+  const normalized = slug
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-");
+
+  return (
+    emotionArtwork[normalized] ??
+    "/emotions-emoji/calm.png"
+  );
+}
+
+function EmotionArtwork({
+  slug,
+  name,
+  size = 30,
+}: {
+  slug: string;
+  name: string;
+  size?: number;
+}) {
+  return (
+    <Image
+      src={getEmotionArtwork(slug)}
+      alt={name}
+      width={size}
+      height={size}
+      className="object-contain mix-blend-multiply"
+    />
+  );
+}
+
 export default function DiaryClient({
   locale,
   userName,
 }: Props) {
-  const [diaries, setDiaries] = useState<Diary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [diaries, setDiaries] =
+    useState<Diary[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [saving, setSaving] =
+    useState(false);
+
   const [analyzingDiaryId, setAnalyzingDiaryId] =
     useState<string | null>(null);
 
-  const [showComposer, setShowComposer] = useState(false);
-  const [content, setContent] = useState("");
-  const [error, setError] = useState("");
+  const [showComposer, setShowComposer] =
+    useState(false);
+
+  const [content, setContent] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
 
   const isId = locale === "id";
 
@@ -67,24 +352,37 @@ export default function DiaryClient({
 
     async function fetchDiaries() {
       try {
-        const response = await fetch("/api/diary", {
-          method: "GET",
-          cache: "no-store",
-        });
+        setLoading(true);
+
+        const response = await fetch(
+          "/api/diary",
+          {
+            method: "GET",
+            cache: "no-store",
+          },
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(
-            data.error || "Failed to load diary",
+            data.error ||
+              (isId
+                ? "Gagal memuat diary."
+                : "Failed to load diary."),
           );
         }
 
         if (!cancelled) {
-          const safeDiaries = Array.isArray(data.diaries)
+          const safeDiaries = Array.isArray(
+            data.diaries,
+          )
             ? data.diaries.filter(
-                (item: unknown): item is Diary =>
-                  typeof item === "object" &&
+                (
+                  item: unknown,
+                ): item is Diary =>
+                  typeof item ===
+                    "object" &&
                   item !== null &&
                   "id" in item &&
                   "createdAt" in item,
@@ -94,13 +392,18 @@ export default function DiaryClient({
           setDiaries(safeDiaries);
         }
       } catch (err) {
-        console.error(err);
+        console.error(
+          "[Diary]",
+          err,
+        );
 
         if (!cancelled) {
           setError(
-            isId
-              ? "Gagal memuat diary."
-              : "Failed to load your diary.",
+            err instanceof Error
+              ? err.message
+              : isId
+                ? "Gagal memuat diary."
+                : "Failed to load your diary.",
           );
         }
       } finally {
@@ -110,7 +413,7 @@ export default function DiaryClient({
       }
     }
 
-    fetchDiaries();
+    void fetchDiaries();
 
     return () => {
       cancelled = true;
@@ -131,22 +434,29 @@ export default function DiaryClient({
       setSaving(true);
       setError("");
 
-      const response = await fetch("/api/diary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "/api/diary",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            content: content.trim(),
+            entryType: "TEXT",
+          }),
         },
-        body: JSON.stringify({
-          content: content.trim(),
-          entryType: "TEXT",
-        }),
-      });
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Failed to create diary",
+          data.error ||
+            (isId
+              ? "Gagal membuat diary."
+              : "Failed to create diary."),
         );
       }
 
@@ -157,7 +467,8 @@ export default function DiaryClient({
         )
           ? data.diary.aiAnalyses
           : [],
-        checkin: data.diary?.checkin ?? null,
+        checkin:
+          data.diary?.checkin ?? null,
       };
 
       setDiaries((current) => [
@@ -168,6 +479,7 @@ export default function DiaryClient({
       setContent("");
       setShowComposer(false);
 
+      // Start AI analysis without blocking diary creation.
       setAnalyzingDiaryId(newDiary.id);
 
       try {
@@ -176,23 +488,30 @@ export default function DiaryClient({
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type":
+                "application/json",
             },
             body: JSON.stringify({
               diaryId: newDiary.id,
-              language: locale === "id" ? "id" : "en",
+              language:
+                locale === "id"
+                  ? "id"
+                  : "en",
             }),
           },
         );
 
-        const aiData = await aiResponse.json();
+        const aiData =
+          await aiResponse.json();
 
         if (!aiResponse.ok) {
           console.error(
             "Diary AI analysis failed:",
             aiData,
           );
-        } else if (aiData.analysis) {
+        } else if (
+          aiData.analysis
+        ) {
           setDiaries((current) =>
             current.map((item) =>
               item.id === newDiary.id
@@ -206,16 +525,19 @@ export default function DiaryClient({
             ),
           );
         }
-      } catch (error) {
+      } catch (analysisError) {
         console.error(
           "Diary AI analysis error:",
-          error,
+          analysisError,
         );
       } finally {
         setAnalyzingDiaryId(null);
       }
     } catch (err) {
-      console.error(err);
+      console.error(
+        "[Diary:create]",
+        err,
+      );
 
       setError(
         err instanceof Error
@@ -251,36 +573,35 @@ export default function DiaryClient({
   }
 
   return (
-    <main className="min-h-screen bg-[#fdfbf7] px-5 pb-20 pt-6 sm:px-8 lg:px-10 lg:pt-8">
+    <main className="min-h-screen bg-[#FDFBF7] px-5 pb-20 pt-6 text-[#4A3F35] sm:px-8 lg:px-10 lg:pt-8">
       <div className="mx-auto max-w-[1120px]">
-        {/* =====================================================
-            PAGE INTRO
-        ===================================================== */}
-        <section className="border-b border-[#c1d5c0]/40 pb-8">
+
+        {/* PAGE INTRO */}
+        <section className="border-b border-[#C1D5C0]/40 pb-8">
           <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#fbc4ab]/35">
-                  <BookOpen
-                    className="h-3.5 w-3.5 text-[#5c6b9c]"
-                    strokeWidth={1.8}
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FBC4AB]/35">
+                  <BookIcon
+                    size={14}
+                    className="text-[#5C6B9C]"
                   />
                 </span>
 
-                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4a3f35]/40">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
                   {isId
                     ? "Ruang refleksi"
                     : "Reflection space"}
                 </span>
               </div>
 
-              <h1 className="mt-5 text-[32px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#4a3f35] sm:text-[40px]">
+              <h1 className="mt-5 text-[32px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#4A3F35] sm:text-[40px]">
                 {isId
                   ? `Cerita hari-hari ${userName}.`
                   : `${userName}'s little corner.`}
               </h1>
 
-              <p className="mt-3 max-w-xl text-[14px] leading-6 text-[#4a3f35]/55">
+              <p className="mt-3 max-w-xl text-[14px] leading-6 text-[#4A3F35]/55">
                 {isId
                   ? "Tempat untuk berhenti sebentar, menulis apa yang kamu rasakan, dan melihat kembali perjalananmu."
                   : "A quiet place to pause, write what you feel, and look back at your journey."}
@@ -293,12 +614,9 @@ export default function DiaryClient({
                 setShowComposer(true);
                 setError("");
               }}
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[11px] bg-[#e2725b] px-5 text-xs font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#d96852]"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[11px] bg-[#E2725B] px-5 text-xs font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#D96852]"
             >
-              <Plus
-                className="h-4 w-4"
-                strokeWidth={1.8}
-              />
+              <PlusIcon size={16} />
 
               {isId
                 ? "Tulis sesuatu"
@@ -307,37 +625,33 @@ export default function DiaryClient({
           </div>
         </section>
 
-        {/* =====================================================
-            ERROR
-        ===================================================== */}
+        {/* ERROR */}
         {error && (
-          <div className="mt-6 border-l-2 border-[#e2725b] bg-[#e2725b]/10 px-4 py-3">
-            <p className="text-xs text-[#4a3f35]">
+          <div className="mt-6 border-l-2 border-[#E2725B] bg-[#E2725B]/10 px-4 py-3">
+            <p className="text-xs text-[#4A3F35]">
               {error}
             </p>
           </div>
         )}
 
-        {/* =====================================================
-            COMPOSER
-        ===================================================== */}
+        {/* COMPOSER */}
         {showComposer && (
-          <section className="mt-7 rounded-[22px] bg-[#fbc4ab]/22 p-5 sm:p-7">
+          <section className="mt-7 rounded-[22px] bg-[#FBC4AB]/22 p-5 sm:p-7">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4a3f35]/40">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/40">
                   {isId
                     ? "Catatan baru"
                     : "New reflection"}
                 </p>
 
-                <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.025em] text-[#4a3f35]">
+                <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.025em] text-[#4A3F35]">
                   {isId
                     ? "Apa yang ada di pikiranmu?"
                     : "What's on your mind?"}
                 </h2>
 
-                <p className="mt-2 text-xs leading-5 text-[#4a3f35]/55">
+                <p className="mt-2 text-xs leading-5 text-[#4A3F35]/55">
                   {isId
                     ? "Tidak perlu rapi atau sempurna. Tulis saja apa adanya."
                     : "It doesn't have to be polished. Just put it into words."}
@@ -351,15 +665,14 @@ export default function DiaryClient({
                   setContent("");
                   setError("");
                 }}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#4a3f35]/40 transition hover:bg-[#fdfbf7]/60 hover:text-[#4a3f35]"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#4A3F35]/40 transition hover:bg-[#FDFBF7]/60 hover:text-[#4A3F35]"
                 aria-label={
-                  isId ? "Tutup" : "Close"
+                  isId
+                    ? "Tutup"
+                    : "Close"
                 }
               >
-                <X
-                  className="h-4 w-4"
-                  strokeWidth={1.8}
-                />
+                <CloseIcon size={16} />
               </button>
             </div>
 
@@ -367,7 +680,9 @@ export default function DiaryClient({
               <textarea
                 value={content}
                 onChange={(event) =>
-                  setContent(event.target.value)
+                  setContent(
+                    event.target.value,
+                  )
                 }
                 placeholder={
                   isId
@@ -376,35 +691,38 @@ export default function DiaryClient({
                 }
                 maxLength={10000}
                 rows={9}
-                className="w-full resize-none rounded-[15px] border border-[#4a3f35]/10 bg-[#fdfbf7]/80 p-5 text-sm leading-7 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/35 focus:border-[#e2725b]/60 focus:bg-[#fdfbf7] focus:ring-4 focus:ring-[#fbc4ab]/25"
+                className="w-full resize-none rounded-[15px] border border-[#4A3F35]/10 bg-[#FDFBF7]/80 p-5 text-sm leading-7 text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/35 focus:border-[#E2725B]/60 focus:bg-[#FDFBF7] focus:ring-4 focus:ring-[#FBC4AB]/25"
               />
 
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-[10px] text-[#4a3f35]/35">
+                <span className="text-[10px] text-[#4A3F35]/35">
                   {content.length}/10000
                 </span>
 
                 <button
                   type="button"
-                  onClick={handleCreateDiary}
-                  disabled={
-                    saving || !content.trim()
+                  onClick={
+                    handleCreateDiary
                   }
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#e2725b] px-5 text-xs font-semibold text-white transition hover:bg-[#d96852] disabled:cursor-not-allowed disabled:opacity-40"
+                  disabled={
+                    saving ||
+                    !content.trim()
+                  }
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#E2725B] px-5 text-xs font-semibold text-white transition hover:bg-[#D96852] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {saving ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <LoadingSpinner
+                        size={14}
+                      />
+
                       {isId
                         ? "Menyimpan..."
                         : "Saving..."}
                     </>
                   ) : (
                     <>
-                      <PenLine
-                        className="h-3.5 w-3.5"
-                        strokeWidth={1.8}
-                      />
+                      <PenIcon size={14} />
 
                       {isId
                         ? "Simpan catatan"
@@ -417,14 +735,12 @@ export default function DiaryClient({
           </section>
         )}
 
-        {/* =====================================================
-            CONTENT
-        ===================================================== */}
+        {/* CONTENT */}
         <section className="mt-10">
           {loading ? (
             <div className="flex min-h-[300px] items-center justify-center">
-              <div className="flex items-center gap-2 text-xs text-[#4a3f35]/45">
-                <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="flex items-center gap-2 text-xs text-[#4A3F35]/45">
+                <LoadingSpinner size={16} />
 
                 {isId
                   ? "Membuka diary..."
@@ -443,18 +759,16 @@ export default function DiaryClient({
             <div>
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4a3f35]/35">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
                     {isId
                       ? "Catatanmu"
                       : "Your reflections"}
                   </p>
 
-                  <p className="mt-1 text-sm text-[#4a3f35]/50">
+                  <p className="mt-1 text-sm text-[#4A3F35]/50">
                     {diaries.length}{" "}
                     {isId
-                      ? diaries.length === 1
-                        ? "catatan"
-                        : "catatan"
+                      ? "catatan"
                       : diaries.length === 1
                         ? "entry"
                         : "entries"}
@@ -463,22 +777,32 @@ export default function DiaryClient({
               </div>
 
               <div className="space-y-7">
-                {diaries.filter(Boolean).map(
-                  (diary, index) => (
-                    <DiaryEntry
-                      key={diary.id}
-                      diary={diary}
-                      locale={locale}
-                      isId={isId}
-                      index={index}
-                      analyzing={
-                        analyzingDiaryId === diary.id
-                      }
-                      formatDate={formatDate}
-                      formatTime={formatTime}
-                    />
-                  ),
-                )}
+                {diaries
+                  .filter(Boolean)
+                  .map(
+                    (
+                      diary,
+                      index,
+                    ) => (
+                      <DiaryEntry
+                        key={diary.id}
+                        diary={diary}
+                        locale={locale}
+                        isId={isId}
+                        index={index}
+                        analyzing={
+                          analyzingDiaryId ===
+                          diary.id
+                        }
+                        formatDate={
+                          formatDate
+                        }
+                        formatTime={
+                          formatTime
+                        }
+                      />
+                    ),
+                  )}
               </div>
             </div>
           )}
@@ -506,59 +830,86 @@ function DiaryEntry({
   isId: boolean;
   index: number;
   analyzing: boolean;
-  formatDate: (date: string) => string;
-  formatTime: (date: string) => string;
+  formatDate: (
+    date: string,
+  ) => string;
+  formatTime: (
+    date: string,
+  ) => string;
 }) {
-  const analysis = diary.aiAnalyses?.[0];
+  const analysis =
+    diary.aiAnalyses?.[0];
 
   return (
     <article className="group relative">
       {/* Timeline */}
-      <div className="absolute bottom-0 left-[13px] top-10 hidden w-px bg-[#c1d5c0]/35 sm:block" />
+      <div className="absolute bottom-0 left-[13px] top-10 hidden w-px bg-[#C1D5C0]/35 sm:block" />
 
       <div className="relative grid gap-5 sm:grid-cols-[28px_1fr]">
+
         {/* Timeline marker */}
         <div className="relative z-10 hidden sm:block">
           <span
-            className={`mt-2 block h-[9px] w-[9px] rounded-full border-2 border-[#fdfbf7] ${
+            className={`mt-2 block h-[9px] w-[9px] rounded-full border-2 border-[#FDFBF7] ${
               index === 0
-                ? "bg-[#e2725b]"
-                : "bg-[#c1d5c0]"
+                ? "bg-[#E2725B]"
+                : "bg-[#C1D5C0]"
             }`}
           />
         </div>
 
         {/* Content */}
-        <div className="rounded-[20px] border border-[#c1d5c0]/45 bg-white/55 p-5 transition-colors group-hover:border-[#c1d5c0]/80 sm:p-7">
+        <div className="rounded-[20px] border border-[#C1D5C0]/45 bg-white/55 p-5 transition-colors group-hover:border-[#C1D5C0]/80 sm:p-7">
+
           {/* Meta */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-medium text-[#4a3f35]/40">
-                <CalendarDays
-                  className="h-3.5 w-3.5"
-                  strokeWidth={1.6}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-medium text-[#4A3F35]/40">
+                <CalendarIcon
+                  size={14}
                 />
 
                 <span>
-                  {formatDate(diary.createdAt)}
+                  {formatDate(
+                    diary.createdAt,
+                  )}
                 </span>
 
                 <span>·</span>
 
                 <span>
-                  {formatTime(diary.createdAt)}
+                  {formatTime(
+                    diary.createdAt,
+                  )}
                 </span>
               </div>
 
-              {diary.checkin?.emotions?.length ? (
+              {diary.checkin
+                ?.emotions
+                ?.length ? (
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {diary.checkin.emotions.map(
                     (item) => (
                       <span
                         key={`${diary.id}-${item.emotion.slug}`}
-                        className="rounded-full bg-[#fbc4ab]/25 px-2.5 py-1 text-[9px] font-semibold text-[#5c6b9c]"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#FBC4AB]/25 px-2.5 py-1 text-[9px] font-semibold text-[#5C6B9C]"
                       >
-                        {item.emotion.name}
+                        <EmotionArtwork
+                          slug={
+                            item.emotion
+                              .slug
+                          }
+                          name={
+                            item.emotion
+                              .name
+                          }
+                          size={22}
+                        />
+
+                        {
+                          item.emotion
+                            .name
+                        }
                       </span>
                     ),
                   )}
@@ -567,10 +918,10 @@ function DiaryEntry({
             </div>
 
             {analysis && (
-              <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#c1d5c0]/25 px-2.5 py-1 text-[9px] font-semibold text-[#4a3f35]/55">
-                <Sparkles
-                  className="h-3 w-3 text-[#5c6b9c]"
-                  strokeWidth={1.7}
+              <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#C1D5C0]/25 px-2.5 py-1 text-[9px] font-semibold text-[#4A3F35]/55">
+                <SparkleIcon
+                  size={12}
+                  className="text-[#5C6B9C]"
                 />
 
                 {isId
@@ -581,18 +932,18 @@ function DiaryEntry({
           </div>
 
           {/* Diary text */}
-          <div className="mt-6 border-l-2 border-[#e2725b]/55 pl-5">
-            <p className="whitespace-pre-wrap text-[14px] leading-7 text-[#4a3f35]/78">
+          <div className="mt-6 border-l-2 border-[#E2725B]/55 pl-5">
+            <p className="whitespace-pre-wrap text-[14px] leading-7 text-[#4A3F35]/78">
               {diary.content}
             </p>
           </div>
 
           {/* AI processing */}
           {analyzing && (
-            <div className="mt-6 flex items-center gap-2 rounded-[12px] bg-[#c1d5c0]/20 px-4 py-3 text-[11px] text-[#4a3f35]/65">
-              <Loader2
-                className="h-3.5 w-3.5 animate-spin text-[#5c6b9c]"
-                strokeWidth={1.8}
+            <div className="mt-6 flex items-center gap-2 rounded-[12px] bg-[#C1D5C0]/20 px-4 py-3 text-[11px] text-[#4A3F35]/65">
+              <LoadingSpinner
+                size={14}
+                className="text-[#5C6B9C]"
               />
 
               {isId
@@ -603,50 +954,56 @@ function DiaryEntry({
 
           {/* AI analysis */}
           {analysis && (
-            <div className="mt-7 rounded-[16px] bg-[#fbc4ab]/15 p-5">
+            <div className="mt-7 rounded-[16px] bg-[#FBC4AB]/15 p-5">
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#fdfbf7]/75">
-                  <Sparkles
-                    className="h-3.5 w-3.5 text-[#5c6b9c]"
-                    strokeWidth={1.7}
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FDFBF7]/75">
+                  <SparkleIcon
+                    size={14}
+                    className="text-[#5C6B9C]"
                   />
                 </span>
 
-                <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-[#4a3f35]/45">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-[#4A3F35]/45">
                   {isId
                     ? "Refleksi dari Moodify"
                     : "A reflection from Moodify"}
                 </p>
               </div>
 
-              <p className="mt-4 text-[13px] leading-6 text-[#4a3f35]/70">
+              <p className="mt-4 text-[13px] leading-6 text-[#4A3F35]/70">
                 {analysis.summary}
               </p>
 
               {analysis.emotionalState && (
-                <div className="mt-5 flex flex-wrap gap-5 border-t border-[#4a3f35]/10 pt-4">
+                <div className="mt-5 flex flex-wrap gap-5 border-t border-[#4A3F35]/10 pt-4">
                   <div>
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-[#4a3f35]/35">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-[#4A3F35]/35">
                       {isId
                         ? "Kondisi emosional"
                         : "Emotional state"}
                     </p>
 
-                    <p className="mt-1 text-xs font-semibold capitalize text-[#4a3f35]/75">
-                      {analysis.emotionalState}
+                    <p className="mt-1 text-xs font-semibold capitalize text-[#4A3F35]/75">
+                      {
+                        analysis.emotionalState
+                      }
                     </p>
                   </div>
 
-                  {analysis.stressScore != null && (
+                  {analysis.stressScore !=
+                    null && (
                     <div>
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-[#4a3f35]/35">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-[#4A3F35]/35">
                         {isId
                           ? "Skor stres"
                           : "Stress score"}
                       </p>
 
-                      <p className="mt-1 text-xs font-semibold text-[#4a3f35]/75">
-                        {analysis.stressScore}/100
+                      <p className="mt-1 text-xs font-semibold text-[#4A3F35]/75">
+                        {
+                          analysis.stressScore
+                        }
+                        /100
                       </p>
                     </div>
                   )}
@@ -659,15 +1016,14 @@ function DiaryEntry({
           {diary.checkinId && (
             <Link
               href={`/${locale}/check-in/result/${diary.checkinId}`}
-              className="mt-5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#5c6b9c] transition-colors hover:text-[#e2725b]"
+              className="mt-5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#5C6B9C] transition-colors hover:text-[#E2725B]"
             >
               {isId
                 ? "Lihat check-in terkait"
                 : "View related check-in"}
 
-              <ChevronRight
-                className="h-3.5 w-3.5"
-                strokeWidth={1.8}
+              <ArrowRightIcon
+                size={14}
               />
             </Link>
           )}
@@ -689,30 +1045,30 @@ function EmptyDiary({
   onCreate: () => void;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[24px] bg-[#fbc4ab]/20 px-6 py-14 text-center sm:px-10">
-      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#c1d5c0]/35" />
+    <div className="relative overflow-hidden rounded-[24px] bg-[#FBC4AB]/20 px-6 py-14 text-center sm:px-10">
+      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#C1D5C0]/35" />
 
       <div className="relative mx-auto max-w-md">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fdfbf7]/70">
-          <BookOpen
-            className="h-6 w-6 text-[#5c6b9c]"
-            strokeWidth={1.5}
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FDFBF7]/70">
+          <BookIcon
+            size={24}
+            className="text-[#5C6B9C]"
           />
         </div>
 
-        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4a3f35]/35">
+        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
           {isId
             ? "Halaman masih kosong"
             : "A blank page"}
         </p>
 
-        <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.025em] text-[#4a3f35]">
+        <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.025em] text-[#4A3F35]">
           {isId
             ? "Mulai dari satu cerita."
             : "Start with one little story."}
         </h2>
 
-        <p className="mt-3 text-sm leading-6 text-[#4a3f35]/55">
+        <p className="mt-3 text-sm leading-6 text-[#4A3F35]/55">
           {isId
             ? "Tidak harus panjang. Bahkan beberapa kalimat tentang hari ini sudah cukup."
             : "It doesn't have to be long. A few honest sentences about today are enough."}
@@ -721,12 +1077,9 @@ function EmptyDiary({
         <button
           type="button"
           onClick={onCreate}
-          className="mt-6 inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#e2725b] px-5 text-xs font-semibold text-white transition hover:bg-[#d96852]"
+          className="mt-6 inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#E2725B] px-5 text-xs font-semibold text-white transition hover:bg-[#D96852]"
         >
-          <PenLine
-            className="h-3.5 w-3.5"
-            strokeWidth={1.8}
-          />
+          <PenIcon size={14} />
 
           {isId
             ? "Tulis cerita pertama"

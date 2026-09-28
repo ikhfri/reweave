@@ -1,18 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, type ReactNode, type SVGProps } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  Check,
-  Heart,
-  Loader2,
-  MessageCircle,
-  Minus,
-  Plus,
-  Sparkles,
-} from "lucide-react";
-
 import type { Locale } from "@/i18n/config";
 
 type Emotion = {
@@ -515,10 +505,7 @@ export default function CheckInForm({
         <div className="flex min-h-[500px] items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">
-              <Loader2
-                className="h-5 w-5 animate-spin text-[#5c6b9c]"
-                strokeWidth={1.8}
-              />
+              <SpinnerIcon className="h-5 w-5 animate-spin text-[#5c6b9c]" />
             </div>
 
             <p className="text-sm text-[#4a3f35]/55">
@@ -645,23 +632,30 @@ export default function CheckInForm({
 
                     <div className="flex h-full flex-col justify-between gap-5">
                       <div className="flex items-start justify-between gap-3">
-                        <span
-                          className={[
-                            "text-[10px] font-semibold uppercase tracking-[0.12em]",
-                            selected
-                              ? "text-[#e2725b]"
-                              : "text-[#4a3f35]/25",
-                          ].join(" ")}
-                        >
-                          {emotion.category}
-                        </span>
+                        <div className="flex items-center gap-3">
+                            <Image
+                              src={getEmotionImage(emotion.slug)}
+                              alt={getEmotionLabel(emotion)}
+                              width={52}
+                              height={52}
+                              className="h-full w-full object-contain"
+                            />
+
+                          <span
+                            className={[
+                              "text-[10px] font-semibold uppercase tracking-[0.12em]",
+                              selected
+                                ? "text-[#e2725b]"
+                                : "text-[#4a3f35]/25",
+                            ].join(" ")}
+                          >
+                            {emotion.category}
+                          </span>
+                        </div>
 
                         {selected && (
                           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e2725b]">
-                            <Check
-                              className="h-3 w-3 text-white"
-                              strokeWidth={2.5}
-                            />
+                            <CheckIcon className="h-3 w-3 text-white" />
                           </span>
                         )}
                       </div>
@@ -720,13 +714,25 @@ export default function CheckInForm({
 
                         <div>
                           <div className="flex items-center gap-3">
-                            <span className="h-2 w-2 rounded-full bg-[#e2725b]" />
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fbc4ab]/25 p-1.5">
+                              <Image
+                                src={getEmotionImage(emotion.slug)}
+                                alt={getEmotionLabel(emotion)}
+                                width={52}
+                                height={52}
+                                className="h-full w-full object-contain"
+                              />
+                            </div>
 
-                            <h3 className="text-lg font-semibold">
+                            <div>
+                              <span className="mb-1 block h-1.5 w-8 rounded-full bg-[#e2725b]" />
+
+                              <h3 className="text-lg font-semibold">
                               {getEmotionLabel(
                                 emotion,
                               )}
-                            </h3>
+                              </h3>
+                            </div>
                           </div>
 
                           {emotion.description && (
@@ -775,7 +781,7 @@ export default function CheckInForm({
                                   : "Kurangi intensitas"
                               }
                             >
-                              <Minus className="h-3.5 w-3.5" />
+                              <MinusIcon className="h-3.5 w-3.5" />
                             </button>
 
                             <div className="flex flex-1 gap-1.5">
@@ -823,7 +829,7 @@ export default function CheckInForm({
                                   : "Tambah intensitas"
                               }
                             >
-                              <Plus className="h-3.5 w-3.5" />
+                              <PlusIcon className="h-3.5 w-3.5" />
                             </button>
                           </div>
 
@@ -899,10 +905,7 @@ export default function CheckInForm({
               }
               className="inline-flex items-center gap-2 border-b border-[#5c6b9c]/40 pb-1 text-sm font-medium text-[#5c6b9c] transition hover:border-[#e2725b] hover:text-[#e2725b]"
             >
-              <MessageCircle
-                className="h-4 w-4"
-                strokeWidth={1.8}
-              />
+              <MessageIcon className="h-4 w-4" />
 
               {unknownEmotionMode
                 ? isEnglish
@@ -917,10 +920,7 @@ export default function CheckInForm({
               <div className="mt-8 bg-[#fbc4ab]/20 p-6 sm:p-8">
                 <div className="max-w-2xl">
                   <div className="flex items-center gap-3">
-                    <MessageCircle
-                      className="h-5 w-5 text-[#e2725b]"
-                      strokeWidth={1.8}
-                    />
+                    <MessageIcon className="h-5 w-5 text-[#e2725b]" />
 
                     <h3 className="text-lg font-semibold">
                       {isEnglish
@@ -1028,10 +1028,7 @@ export default function CheckInForm({
                       ].join(" ")}
                     >
                       {selected && (
-                        <Check
-                          className="h-3 w-3 text-white"
-                          strokeWidth={2.5}
-                        />
+                        <CheckIcon className="h-3 w-3 text-white" />
                       )}
                     </span>
 
@@ -1084,10 +1081,7 @@ export default function CheckInForm({
 
             <div className="relative">
               <div className="flex items-center gap-3">
-                <MessageCircle
-                  className="h-5 w-5 text-[#e2725b]"
-                  strokeWidth={1.7}
-                />
+                <MessageIcon className="h-5 w-5 text-[#e2725b]" />
 
                 <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
                   {isEnglish
@@ -1170,10 +1164,7 @@ export default function CheckInForm({
             >
               {isAnalyzing ? (
                 <>
-                  <Loader2
-                    className="h-4 w-4 animate-spin"
-                    strokeWidth={2}
-                  />
+                  <SpinnerIcon className="h-4 w-4 animate-spin" />
 
                   {isEnglish
                     ? "Analyzing..."
@@ -1181,10 +1172,7 @@ export default function CheckInForm({
                 </>
               ) : (
                 <>
-                  <Sparkles
-                    className="h-4 w-4"
-                    strokeWidth={1.8}
-                  />
+                  <SparkleIcon className="h-4 w-4" />
 
                   {isEnglish
                     ? "Try AI analysis again"
@@ -1216,10 +1204,7 @@ export default function CheckInForm({
             <div className="max-w-md">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c1d5c0]/45">
-                  <Heart
-                    className="h-4 w-4 text-[#5c6b9c]"
-                    strokeWidth={1.7}
-                  />
+                  <HeartIcon className="h-4 w-4 text-[#5c6b9c]" />
                 </div>
 
                 <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
@@ -1251,10 +1236,7 @@ export default function CheckInForm({
             >
               {isSubmitting || isAnalyzing ? (
                 <>
-                  <Loader2
-                    className="h-4 w-4 animate-spin"
-                    strokeWidth={2}
-                  />
+                  <SpinnerIcon className="h-4 w-4 animate-spin" />
 
                   {isAnalyzing
                     ? isEnglish
@@ -1270,10 +1252,7 @@ export default function CheckInForm({
                     ? "Save check-in"
                     : "Simpan check-in"}
 
-                  <ArrowRight
-                    className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                    strokeWidth={2}
-                  />
+                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </>
               )}
             </button>
@@ -1282,6 +1261,29 @@ export default function CheckInForm({
       </div>
     </main>
   );
+}
+
+// =========================================================
+// MOODIFY EMOTION VISUALS
+// =========================================================
+
+const emotionImages: Record<string, string> = {
+  happy: "/emotions-emoji/happy.png",
+  sad: "/emotions-emoji/sad.png",
+  angry: "/emotions-emoji/angry.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  calm: "/emotions-emoji/calm.png",
+  tired: "/emotions-emoji/tired.png",
+  excited: "/emotions-emoji/excited.png",
+  lonely: "/emotions-emoji/lonely.png",
+  grateful: "/emotions-emoji/grateful.png",
+  frustrated: "/emotions-emoji/frustrated.png",
+  overwhelmed: "/emotions-emoji/overwhelmed.png",
+};
+
+function getEmotionImage(slug: string) {
+  return emotionImages[slug.toLowerCase()] ?? "/emotions-emoji/calm.png";
 }
 
 // =========================================================
@@ -1307,3 +1309,95 @@ function getContextLabel(
 
   return context.name;
 }
+
+// =========================================================
+// CUSTOM MOODIFY ICONS
+// No icon library dependency.
+// =========================================================
+
+type IconProps = SVGProps<SVGSVGElement>;
+
+function Icon({
+  children,
+  className,
+  viewBox = "0 0 24 24",
+}: IconProps & { children: ReactNode; viewBox?: string }) {
+  return (
+    <svg
+      viewBox={viewBox}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function CheckIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M5 12.5 9.2 17 19 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+function HeartIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 20.2S4.2 15.4 4.2 9.7C4.2 6.8 6.2 5 8.7 5c1.5 0 2.7.7 3.3 1.8C12.6 5.7 13.8 5 15.3 5c2.5 0 4.5 1.8 4.5 4.7 0 5.7-7.8 10.5-7.8 10.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+function ArrowRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 12h15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m13 6 6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+function MinusIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </Icon>
+  );
+}
+
+function PlusIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 6v12M6 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </Icon>
+  );
+}
+
+function MessageIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M5.2 6.4A3.4 3.4 0 0 1 8.6 3h6.8a3.4 3.4 0 0 1 3.4 3.4v4.8a3.4 3.4 0 0 1-3.4 3.4h-3.2l-4.4 3v-3H8.6a3.4 3.4 0 0 1-3.4-3.4V6.4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+function SparkleIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m12 3 1.15 5.85L19 10l-5.85 1.15L12 17l-1.15-5.85L5 10l5.85-1.15L12 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="m19 16 .55 2.45L22 19l-2.45.55L19 22l-.55-2.45L16 19l2.45-.55L19 16Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+function SpinnerIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3a9 9 0 1 0 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </Icon>
+  );
+}
+
