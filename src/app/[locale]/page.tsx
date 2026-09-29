@@ -29,7 +29,6 @@ export default async function LandingPage({ params }: PageProps) {
   const typedLocale = locale as Locale;
   const isEnglish = typedLocale === "en";
 
-
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#FDFBF7] text-[#4A3F35]">
       {/* =========================================================
@@ -119,10 +118,6 @@ export default async function LandingPage({ params }: PageProps) {
           <div className="max-w-2xl">
             {/* Badge */}
 
-          
-             
-  
-
             {/* Heading */}
 
             <h1 className="mt-7 max-w-[720px] text-[48px] font-semibold leading-[1.02] tracking-[-0.06em] text-[#4A3F35] sm:text-[60px] lg:text-[72px]">
@@ -156,9 +151,7 @@ export default async function LandingPage({ params }: PageProps) {
                 href={`/${typedLocale}/register`}
                 className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-6 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
               >
-                {isEnglish
-                  ? "Start for free"
-                  : "Mulai sekarang"}
+                {isEnglish ? "Start for free" : "Mulai sekarang"}
 
                 <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
@@ -176,10 +169,7 @@ export default async function LandingPage({ params }: PageProps) {
             {/* Small privacy message */}
 
             <div className="mt-8 flex items-center gap-2 text-xs text-[#4A3F35]/40">
-              <LockKeyhole
-                className="h-3.5 w-3.5"
-                strokeWidth={1.8}
-              />
+              <LockKeyhole className="h-3.5 w-3.5" strokeWidth={1.8} />
 
               <span>
                 {isEnglish
@@ -195,9 +185,9 @@ export default async function LandingPage({ params }: PageProps) {
             <div className="relative min-h-[500px] rounded-[40px] border border-[#4A3F35]/[0.06] bg-gradient-to-br from-[#FBC4AB]/45 via-white/40 to-[#C1D5C0]/35 p-5 sm:p-8">
               {/* Decorative circles */}
 
-              <div className="absolute -right-6 top-10 h-20 w-20 rounded-full bg-[#C1D5C0]/60" />
+              <div className="absolute -right-3 top-6 h-18 w-18 rounded-full bg-[#C1D5C0]/60 sm:-right-6 sm:top-10 sm:h-20 sm:w-20" />
 
-              <div className="absolute -bottom-5 left-8 h-28 w-28 rounded-full bg-[#5C6B9C]/10" />
+              <div className="absolute -bottom-3 left-4 h-20 w-20 rounded-full bg-[#5C6B9C]/10 sm:-bottom-5 sm:left-8 sm:h-28 sm:w-28" />
 
               {/* Main App Preview */}
 
@@ -207,9 +197,7 @@ export default async function LandingPage({ params }: PageProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
-                      {isEnglish
-                        ? "Daily check-in"
-                        : "Check-in hari ini"}
+                      {isEnglish ? "Daily check-in" : "Check-in hari ini"}
                     </p>
 
                     <p className="mt-1.5 text-lg font-semibold tracking-[-0.025em]">
@@ -231,7 +219,13 @@ export default async function LandingPage({ params }: PageProps) {
 
                 <div className="mt-7 grid grid-cols-3 gap-2.5">
                   <div className="rounded-2xl border border-[#E2725B]/20 bg-[#E2725B]/[0.07] p-3 text-center">
-                    <Image src="/emotions-emoji/calm.png" alt="" width={42} height={42} className="mx-auto object-contain mix-blend-multiply" />
+                    <Image
+                      src="/emotions-emoji/calm.png"
+                      alt=""
+                      width={42}
+                      height={42}
+                      className="mx-auto object-contain mix-blend-multiply"
+                    />
 
                     <p className="mt-2 text-[10px] font-medium">
                       {isEnglish ? "Calm" : "Tenang"}
@@ -239,7 +233,13 @@ export default async function LandingPage({ params }: PageProps) {
                   </div>
 
                   <div className="rounded-2xl border border-[#5C6B9C]/15 bg-[#5C6B9C]/[0.06] p-3 text-center">
-                    <Image src="/emotions-emoji/happy.png" alt="" width={42} height={42} className="mx-auto object-contain mix-blend-multiply" />
+                    <Image
+                      src="/emotions-emoji/happy.png"
+                      alt=""
+                      width={42}
+                      height={42}
+                      className="mx-auto object-contain mix-blend-multiply"
+                    />
 
                     <p className="mt-2 text-[10px] font-medium">
                       {isEnglish ? "Okay" : "Baik"}
@@ -247,7 +247,13 @@ export default async function LandingPage({ params }: PageProps) {
                   </div>
 
                   <div className="rounded-2xl border border-[#C1D5C0]/60 bg-[#C1D5C0]/15 p-3 text-center">
-                    <Image src="/emotions-emoji/tired.png" alt="" width={42} height={42} className="mx-auto object-contain mix-blend-multiply" />
+                    <Image
+                      src="/emotions-emoji/tired.png"
+                      alt=""
+                      width={42}
+                      height={42}
+                      className="mx-auto object-contain mix-blend-multiply"
+                    />
 
                     <p className="mt-2 text-[10px] font-medium">
                       {isEnglish ? "Low" : "Lelah"}
@@ -260,9 +266,7 @@ export default async function LandingPage({ params }: PageProps) {
                 <div className="mt-7 rounded-2xl bg-[#4A3F35]/[0.035] p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
-                      {isEnglish
-                        ? "Your rhythm"
-                        : "Ritme emosimu"}
+                      {isEnglish ? "Your rhythm" : "Ritme emosimu"}
                     </p>
 
                     <InsightIcon className="h-3.5 w-3.5 text-[#5C6B9C]" />
@@ -319,22 +323,18 @@ export default async function LandingPage({ params }: PageProps) {
 
               {/* Reflection Card */}
 
-              <div className="absolute -bottom-5 -left-4 w-[235px] rounded-2xl border border-white/80 bg-white/95 p-4 shadow-[0_18px_50px_rgba(74,63,53,0.12)] sm:-left-8">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5C6B9C]/10">
-                    <InsightIcon
-                      className="h-4 w-4 text-[#5C6B9C]"
-                    />
+              <div className="absolute -bottom-3 left-1 w-[215px] rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-[0_18px_50px_rgba(74,63,53,0.12)] sm:-bottom-5 sm:-left-8 sm:w-[235px] sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5C6B9C]/10 sm:h-8 sm:w-8">
+                    <InsightIcon className="h-3.5 w-3.5 text-[#5C6B9C] sm:h-4 sm:w-4" />
                   </div>
 
                   <div>
-                    <p className="text-[10px] font-semibold">
-                      {isEnglish
-                        ? "A gentle reflection"
-                        : "Refleksi kecil"}
+                    <p className="text-[9px] font-semibold sm:text-[10px]">
+                      {isEnglish ? "A gentle reflection" : "Refleksi kecil"}
                     </p>
 
-                    <p className="text-[9px] text-[#4A3F35]/40">
+                    <p className="text-[8px] text-[#4A3F35]/40 sm:text-[9px]">
                       {isEnglish
                         ? "Based on your check-in"
                         : "Dari check-in kamu"}
@@ -342,7 +342,7 @@ export default async function LandingPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                <p className="mt-3 text-[10px] leading-5 text-[#4A3F35]/55">
+                <p className="mt-2.5 text-[9px] leading-relaxed text-[#4A3F35]/55 sm:mt-3 sm:text-[10px] sm:leading-5">
                   {isEnglish
                     ? "You seem to be carrying a few things today. Taking a short pause may help."
                     : "Sepertinya ada beberapa hal yang sedang kamu bawa hari ini. Berhenti sejenak mungkin bisa membantu."}
@@ -351,16 +351,13 @@ export default async function LandingPage({ params }: PageProps) {
 
               {/* Privacy Badge */}
 
-              <div className="absolute -right-3 bottom-16 hidden items-center gap-2 rounded-xl border border-white/80 bg-[#FDFBF7] px-3 py-2.5 shadow-[0_12px_35px_rgba(74,63,53,0.10)] sm:flex">
+              <div className="absolute right-0 bottom-24 flex items-center gap-1.5 rounded-xl border border-white/80 bg-[#FDFBF7] px-2.5 py-2 shadow-[0_12px_35px_rgba(74,63,53,0.10)] sm:-right-3 sm:bottom-16 sm:gap-2 sm:px-3 sm:py-2.5">
                 <LockKeyhole
-                  className="h-3.5 w-3.5 text-[#5C6B9C]"
+                  className="h-3 w-3 text-[#5C6B9C] sm:h-3.5 sm:w-3.5"
                   strokeWidth={1.8}
                 />
-
-                <span className="text-[9px] font-semibold text-[#4A3F35]/60">
-                  {isEnglish
-                    ? "Private space"
-                    : "Ruang pribadi"}
+                <span className="text-[8px] font-semibold text-[#4A3F35]/60 sm:text-[9px]">
+                  {isEnglish ? "Private space" : "Ruang pribadi"}
                 </span>
               </div>
             </div>
@@ -377,9 +374,7 @@ export default async function LandingPage({ params }: PageProps) {
           <TrustItem
             icon={<WellbeingIcon className="h-4 w-4" />}
             title={
-              isEnglish
-                ? "Check in with yourself"
-                : "Check-in dengan dirimu"
+              isEnglish ? "Check in with yourself" : "Check-in dengan dirimu"
             }
             description={
               isEnglish
@@ -390,11 +385,7 @@ export default async function LandingPage({ params }: PageProps) {
 
           <TrustItem
             icon={<DiaryIcon className="h-4 w-4" />}
-            title={
-              isEnglish
-                ? "A private diary"
-                : "Diary pribadi"
-            }
+            title={isEnglish ? "A private diary" : "Diary pribadi"}
             description={
               isEnglish
                 ? "Write down what is on your mind."
@@ -404,11 +395,7 @@ export default async function LandingPage({ params }: PageProps) {
 
           <TrustItem
             icon={<InsightIcon className="h-4 w-4" />}
-            title={
-              isEnglish
-                ? "Understand your patterns"
-                : "Pahami polamu"
-            }
+            title={isEnglish ? "Understand your patterns" : "Pahami polamu"}
             description={
               isEnglish
                 ? "See your emotional rhythm over time."
@@ -450,11 +437,7 @@ export default async function LandingPage({ params }: PageProps) {
           <FeatureCard
             icon={<WellbeingIcon className="h-5 w-5" />}
             number="01"
-            title={
-              isEnglish
-                ? "Daily check-in"
-                : "Check-in harian"
-            }
+            title={isEnglish ? "Daily check-in" : "Check-in harian"}
             description={
               isEnglish
                 ? "Choose the emotions that feel closest to you and add context when you want to."
@@ -465,11 +448,7 @@ export default async function LandingPage({ params }: PageProps) {
           <FeatureCard
             icon={<DiaryIcon className="h-5 w-5" />}
             number="02"
-            title={
-              isEnglish
-                ? "Digital diary"
-                : "Diary digital"
-            }
+            title={isEnglish ? "Digital diary" : "Diary digital"}
             description={
               isEnglish
                 ? "Write or record your thoughts so your experiences have a place to live."
@@ -480,11 +459,7 @@ export default async function LandingPage({ params }: PageProps) {
           <FeatureCard
             icon={<InsightIcon className="h-5 w-5" />}
             number="03"
-            title={
-              isEnglish
-                ? "AI reflection"
-                : "Refleksi dengan AI"
-            }
+            title={isEnglish ? "AI reflection" : "Refleksi dengan AI"}
             description={
               isEnglish
                 ? "Receive gentle reflections based on the content you choose to submit."
@@ -495,11 +470,7 @@ export default async function LandingPage({ params }: PageProps) {
           <FeatureCard
             icon={<InsightIcon className="h-5 w-5" />}
             number="04"
-            title={
-              isEnglish
-                ? "Emotional insights"
-                : "Insight emosional"
-            }
+            title={isEnglish ? "Emotional insights" : "Insight emosional"}
             description={
               isEnglish
                 ? "Look back at your emotional rhythm and notice recurring patterns."
@@ -510,11 +481,7 @@ export default async function LandingPage({ params }: PageProps) {
           <FeatureCard
             icon={<PrivacyIcon className="h-5 w-5" />}
             number="05"
-            title={
-              isEnglish
-                ? "Privacy controls"
-                : "Kontrol privasi"
-            }
+            title={isEnglish ? "Privacy controls" : "Kontrol privasi"}
             description={
               isEnglish
                 ? "Manage your personal data with export and deletion controls."
@@ -525,11 +492,7 @@ export default async function LandingPage({ params }: PageProps) {
           <FeatureCard
             icon={<ActivityIcon className="h-5 w-5" />}
             number="06"
-            title={
-              isEnglish
-                ? "Gentle activities"
-                : "Aktivitas yang tenang"
-            }
+            title={isEnglish ? "Gentle activities" : "Aktivitas yang tenang"}
             description={
               isEnglish
                 ? "Find simple activities for moments when you need a pause."
@@ -551,9 +514,7 @@ export default async function LandingPage({ params }: PageProps) {
           <div className="grid gap-14 lg:grid-cols-[0.75fr_1.25fr]">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#FBC4AB]">
-                {isEnglish
-                  ? "Simple by design"
-                  : "Sederhana sejak awal"}
+                {isEnglish ? "Simple by design" : "Sederhana sejak awal"}
               </p>
 
               <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.045em] sm:text-[44px]">
@@ -572,11 +533,7 @@ export default async function LandingPage({ params }: PageProps) {
             <div className="grid gap-4 sm:grid-cols-3">
               <StepCard
                 number="01"
-                title={
-                  isEnglish
-                    ? "Check in"
-                    : "Check-in"
-                }
+                title={isEnglish ? "Check in" : "Check-in"}
                 description={
                   isEnglish
                     ? "Tell Moodify what you are feeling today."
@@ -586,11 +543,7 @@ export default async function LandingPage({ params }: PageProps) {
 
               <StepCard
                 number="02"
-                title={
-                  isEnglish
-                    ? "Reflect"
-                    : "Refleksi"
-                }
+                title={isEnglish ? "Reflect" : "Refleksi"}
                 description={
                   isEnglish
                     ? "Write a thought or let your feelings speak."
@@ -600,11 +553,7 @@ export default async function LandingPage({ params }: PageProps) {
 
               <StepCard
                 number="03"
-                title={
-                  isEnglish
-                    ? "Understand"
-                    : "Pahami"
-                }
+                title={isEnglish ? "Understand" : "Pahami"}
                 description={
                   isEnglish
                     ? "Look at patterns and gentle insights over time."
@@ -657,9 +606,7 @@ export default async function LandingPage({ params }: PageProps) {
 
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5C6B9C]">
-                {isEnglish
-                  ? "Privacy first"
-                  : "Privasi terlebih dahulu"}
+                {isEnglish ? "Privacy first" : "Privasi terlebih dahulu"}
               </p>
 
               <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.045em] sm:text-[44px]">
@@ -708,10 +655,7 @@ export default async function LandingPage({ params }: PageProps) {
                   ? "Create your private space"
                   : "Buat ruang pribadimu"}
 
-                <ArrowRight
-                  className="h-4 w-4"
-                  strokeWidth={1.8}
-                />
+                <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
               </Link>
             </div>
           </div>
@@ -725,7 +669,13 @@ export default async function LandingPage({ params }: PageProps) {
       <section>
         <div className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
           <div className="mx-auto flex  items-center justify-center">
-            <Image src="/moodify-logo.png" alt="Moodify" width={170} height={52} className="h-24 w-auto object-contain" />
+            <Image
+              src="/moodify-logo.png"
+              alt="Moodify"
+              width={170}
+              height={52}
+              className="h-24 w-auto object-contain"
+            />
           </div>
 
           <h2 className="mx-auto mt-7 max-w-3xl text-[36px] font-semibold leading-tight tracking-[-0.05em] sm:text-[50px]">
@@ -745,9 +695,7 @@ export default async function LandingPage({ params }: PageProps) {
               href={`/${typedLocale}/register`}
               className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-7 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
             >
-              {isEnglish
-                ? "Create your account"
-                : "Buat akun sekarang"}
+              {isEnglish ? "Create your account" : "Buat akun sekarang"}
 
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
@@ -759,9 +707,7 @@ export default async function LandingPage({ params }: PageProps) {
               href={`/${typedLocale}/login`}
               className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white px-7 text-sm font-medium text-[#4A3F35]/70 transition hover:border-[#5C6B9C]/20 hover:text-[#4A3F35]"
             >
-              {isEnglish
-                ? "Login to Moodify"
-                : "Masuk ke Moodify"}
+              {isEnglish ? "Login to Moodify" : "Masuk ke Moodify"}
             </Link>
           </div>
         </div>
@@ -817,9 +763,7 @@ export default async function LandingPage({ params }: PageProps) {
                     href="#how-it-works"
                     className="block text-xs text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
                   >
-                    {isEnglish
-                      ? "How it works"
-                      : "Cara kerja"}
+                    {isEnglish ? "How it works" : "Cara kerja"}
                   </a>
                 </div>
               </div>
@@ -878,17 +822,14 @@ export default async function LandingPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col gap-3 border-t border-[#4A3F35]/[0.07] pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-12 flex flex-col items-center justify-center gap-3 border-t border-[#4A3F35]/[0.07] pt-6 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="text-[10px] text-[#4A3F35]/35">
               © {new Date().getFullYear()} Moodify.{" "}
-              {isEnglish
-                ? "All rights reserved."
-                : "Semua hak dilindungi."}
+              {isEnglish ? "All rights reserved." : "Semua hak dilindungi."}
             </p>
 
-            <div className="flex items-center gap-2 text-[10px] text-[#4A3F35]/35">
-              <PrivacyIcon className="h-3 w-3" />
-
+            <div className="flex items-center justify-center gap-2 text-[10px] text-[#4A3F35]/35">
+              <PrivacyIcon className="h-3 w-3 shrink-0" />
               <span>
                 {isEnglish
                   ? "Your wellbeing, your space."
@@ -922,9 +863,7 @@ function TrustItem({
       </div>
 
       <div>
-        <p className="text-xs font-semibold">
-          {title}
-        </p>
+        <p className="text-xs font-semibold">{title}</p>
 
         <p className="mt-1 text-[11px] leading-5 text-[#4A3F35]/45">
           {description}
@@ -965,9 +904,7 @@ function FeatureCard({
         {title}
       </h3>
 
-      <p className="mt-3 text-xs leading-6 text-[#4A3F35]/50">
-        {description}
-      </p>
+      <p className="mt-3 text-xs leading-6 text-[#4A3F35]/50">{description}</p>
     </div>
   );
 }
@@ -991,13 +928,9 @@ function StepCard({
         {number}
       </span>
 
-      <h3 className="mt-6 text-base font-semibold">
-        {title}
-      </h3>
+      <h3 className="mt-6 text-base font-semibold">{title}</h3>
 
-      <p className="mt-3 text-xs leading-6 text-white/55">
-        {description}
-      </p>
+      <p className="mt-3 text-xs leading-6 text-white/55">{description}</p>
     </div>
   );
 }
@@ -1006,23 +939,14 @@ function StepCard({
    PRIVACY POINT
 ================================================================ */
 
-function PrivacyPoint({
-  text,
-}: {
-  text: string;
-}) {
+function PrivacyPoint({ text }: { text: string }) {
   return (
     <div className="flex items-start gap-3">
       <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C1D5C0]/50">
-        <Check
-          className="h-3 w-3 text-[#4A3F35]"
-          strokeWidth={2}
-        />
+        <Check className="h-3 w-3 text-[#4A3F35]" strokeWidth={2} />
       </div>
 
-      <p className="text-sm text-[#4A3F35]/60">
-        {text}
-      </p>
+      <p className="text-sm text-[#4A3F35]/60">{text}</p>
     </div>
   );
 }
