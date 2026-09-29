@@ -6,37 +6,27 @@ import { useMemo, useState } from "react";
 
 import type { Locale } from "@/i18n/config";
 
-import {
-  ArrowRightIcon,
-  WellbeingIcon,
-} from "@/components/moodify-icons";
+import { ArrowRightIcon, WellbeingIcon } from "@/components/moodify-icons";
 import { useParams } from "next/navigation";
 
 /* =========================================================
    EMOTION DATA
 ========================================================= */
 
-type EmotionCategory =
-  | "all"
-  | "positive"
-  | "calm"
-  | "difficult";
+type EmotionCategory = "all" | "positive" | "calm" | "difficult";
 
 type EmotionItem = {
   slug: string;
   nameId: string;
   nameEn: string;
-  category: Exclude<
-    EmotionCategory,
-    "all"
-  >;
+  category: Exclude<EmotionCategory, "all">;
   descriptionId: string;
   descriptionEn: string;
   image: string;
   color: string;
 };
 
- const emotions: EmotionItem[] = [
+const emotions: EmotionItem[] = [
   {
     slug: "happy",
     nameId: "Senang",
@@ -206,72 +196,42 @@ export default function EmotionsPage() {
 
   const isEnglish = locale === "en";
 
-  const [query, setQuery] =
-    useState("");
+  const [query, setQuery] = useState("");
 
-  const [category, setCategory] =
-    useState<EmotionCategory>("all");
+  const [category, setCategory] = useState<EmotionCategory>("all");
 
   /* =======================================================
      FILTER
   ======================================================= */
 
-  const filteredEmotions =
-    useMemo(() => {
-      const normalizedQuery =
-        query
-          .trim()
-          .toLowerCase();
+  const filteredEmotions = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
 
-      return emotions.filter(
-        (emotion) => {
-          const matchesCategory =
-            category === "all" ||
-            emotion.category ===
-              category;
+    return emotions.filter((emotion) => {
+      const matchesCategory =
+        category === "all" || emotion.category === category;
 
-          if (!matchesCategory) {
-            return false;
-          }
+      if (!matchesCategory) {
+        return false;
+      }
 
-          if (!normalizedQuery) {
-            return true;
-          }
+      if (!normalizedQuery) {
+        return true;
+      }
 
-          const name =
-            isEnglish
-              ? emotion.nameEn
-              : emotion.nameId;
+      const name = isEnglish ? emotion.nameEn : emotion.nameId;
 
-          const description =
-            isEnglish
-              ? emotion.descriptionEn
-              : emotion.descriptionId;
+      const description = isEnglish
+        ? emotion.descriptionEn
+        : emotion.descriptionId;
 
-          return (
-            name
-              .toLowerCase()
-              .includes(
-                normalizedQuery,
-              ) ||
-            description
-              .toLowerCase()
-              .includes(
-                normalizedQuery,
-              ) ||
-            emotion.slug
-              .toLowerCase()
-              .includes(
-                normalizedQuery,
-              )
-          );
-        },
+      return (
+        name.toLowerCase().includes(normalizedQuery) ||
+        description.toLowerCase().includes(normalizedQuery) ||
+        emotion.slug.toLowerCase().includes(normalizedQuery)
       );
-    }, [
-      category,
-      isEnglish,
-      query,
-    ]);
+    });
+  }, [category, isEnglish, query]);
 
   /* =======================================================
      CATEGORY LABEL
@@ -283,40 +243,30 @@ export default function EmotionsPage() {
   }[] = [
     {
       id: "all",
-      label: isEnglish
-        ? "All"
-        : "Semua",
+      label: isEnglish ? "All" : "Semua",
     },
     {
       id: "positive",
-      label: isEnglish
-        ? "Positive"
-        : "Positif",
+      label: isEnglish ? "Positive" : "Positif",
     },
     {
       id: "calm",
-      label: isEnglish
-        ? "Calm"
-        : "Tenang",
+      label: isEnglish ? "Calm" : "Tenang",
     },
     {
       id: "difficult",
-      label: isEnglish
-        ? "Difficult"
-        : "Tidak nyaman",
+      label: isEnglish ? "Difficult" : "Tidak nyaman",
     },
   ];
 
   return (
     <main className="min-h-full bg-[#FDFBF7] pb-20 text-[#4A3F35]">
       <div className="mx-auto max-w-6xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
-
-    
         {/* =================================================
             HERO
         ================================================== */}
 
-        <section className="relative mt-10 overflow-hidden rounded-[30px] bg-[#FBC4AB]/35 px-6 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
+        <section className="relative mt-3 sm:mt-5 overflow-hidden rounded-[30px] bg-[#FBC4AB]/35 px-6 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
           {/* decorative shapes */}
 
           <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#FDFBF7]/55" />
@@ -328,15 +278,11 @@ export default function EmotionsPage() {
           <div className="relative max-w-3xl">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FDFBF7]/70 text-[#5C6B9C]">
-                <WellbeingIcon
-                   className="h-[19px] w-[19px]"
-                />
+                <WellbeingIcon className="h-[19px] w-[19px]" />
               </div>
 
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                {isEnglish
-                  ? "Emotional literacy"
-                  : "Mengenal emosi"}
+                {isEnglish ? "Emotional literacy" : "Mengenal emosi"}
               </p>
             </div>
 
@@ -361,9 +307,7 @@ export default function EmotionsPage() {
         <section className="mt-10 grid gap-6 lg:grid-cols-[1fr_0.7fr] lg:items-end">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
-              {isEnglish
-                ? "A small reminder"
-                : "Pengingat kecil"}
+              {isEnglish ? "A small reminder" : "Pengingat kecil"}
             </p>
 
             <h2 className="mt-2 max-w-2xl text-[24px] font-semibold leading-tight tracking-[-0.03em]">
@@ -397,16 +341,8 @@ export default function EmotionsPage() {
             <input
               type="search"
               value={query}
-              onChange={(event) =>
-                setQuery(
-                  event.target.value,
-                )
-              }
-              placeholder={
-                isEnglish
-                  ? "Search an emotion..."
-                  : "Cari emosi..."
-              }
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={isEnglish ? "Search an emotion..." : "Cari emosi..."}
               className="h-12 w-full rounded-[14px] border border-[#C1D5C0]/70 bg-white px-4 text-sm text-[#4A3F35] outline-none transition-colors placeholder:text-[#4A3F35]/30 focus:border-[#5C6B9C]/50"
             />
           </div>
@@ -414,33 +350,25 @@ export default function EmotionsPage() {
           {/* CATEGORY FILTER */}
 
           <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
-            {categories.map(
-              (item) => {
-                const active =
-                  category ===
-                  item.id;
+            {categories.map((item) => {
+              const active = category === item.id;
 
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() =>
-                      setCategory(
-                        item.id,
-                      )
-                    }
-                    className={[
-                      "shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-colors",
-                      active
-                        ? "border-[#4A3F35] bg-[#4A3F35] text-[#FDFBF7]"
-                        : "border-[#C1D5C0]/70 bg-white text-[#4A3F35]/55 hover:border-[#4A3F35]/20 hover:text-[#4A3F35]",
-                    ].join(" ")}
-                  >
-                    {item.label}
-                  </button>
-                );
-              },
-            )}
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setCategory(item.id)}
+                  className={[
+                    "shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-colors",
+                    active
+                      ? "border-[#4A3F35] bg-[#4A3F35] text-[#FDFBF7]"
+                      : "border-[#C1D5C0]/70 bg-white text-[#4A3F35]/55 hover:border-[#4A3F35]/20 hover:text-[#4A3F35]",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -451,9 +379,7 @@ export default function EmotionsPage() {
         <section className="mt-12 flex items-end justify-between gap-5">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4A3F35]/30">
-              {isEnglish
-                ? "Emotion library"
-                : "Perpustakaan emosi"}
+              {isEnglish ? "Emotion library" : "Perpustakaan emosi"}
             </p>
 
             <h2 className="mt-2 text-[25px] font-semibold tracking-[-0.03em]">
@@ -468,98 +394,78 @@ export default function EmotionsPage() {
             EMOTION GRID
         ================================================== */}
 
-        {filteredEmotions.length >
-        0 ? (
+        {filteredEmotions.length > 0 ? (
           <section className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredEmotions.map(
-              (emotion) => {
-                const name =
-                  isEnglish
-                    ? emotion.nameEn
-                    : emotion.nameId;
+            {filteredEmotions.map((emotion) => {
+              const name = isEnglish ? emotion.nameEn : emotion.nameId;
 
-                const description =
-                  isEnglish
-                    ? emotion.descriptionEn
-                    : emotion.descriptionId;
+              const description = isEnglish
+                ? emotion.descriptionEn
+                : emotion.descriptionId;
 
-                return (
-                  <Link
-                    key={emotion.slug}
-                    href={`/${locale}/emotions/${emotion.slug}`}
-                    className="group relative overflow-hidden rounded-[22px] border border-[#C1D5C0]/55 bg-white p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C1D5C0] hover:shadow-[0_14px_40px_rgba(74,63,53,0.06)]"
-                  >
-                    {/* color accent */}
+              return (
+                <Link
+                  key={emotion.slug}
+                  href={`/${locale}/emotions/${emotion.slug}`}
+                  className="group relative overflow-hidden rounded-[22px] border border-[#C1D5C0]/55 bg-white p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C1D5C0] hover:shadow-[0_14px_40px_rgba(74,63,53,0.06)]"
+                >
+                  {/* color accent */}
 
-                    <div
-                      className="absolute right-0 top-0 h-24 w-24 rounded-bl-[80px] opacity-45"
-                      style={{
-                        backgroundColor:
-                          emotion.color,
-                      }}
-                    />
+                  <div
+                    className="absolute right-0 top-0 h-24 w-24 rounded-bl-[80px] opacity-45"
+                    style={{
+                      backgroundColor: emotion.color,
+                    }}
+                  />
 
-                    <div className="relative">
-                      <div className="flex items-start justify-between gap-4">
-                        <div
-                          className="flex h-20 w-20 items-center justify-center rounded-[20px]"
-                          style={{
-                            backgroundColor:
-                              `${emotion.color}55`,
-                          }}
-                        >
-                          <Image
-                            src={
-                              emotion.image
-                            }
-                            alt={name}
-                            width={68}
-                            height={68}
-                            className="object-contain mix-blend-multiply"
-                          />
-                        </div>
-
-                        <div className="mt-2 text-[#4A3F35]/25 transition-transform duration-300 group-hover:translate-x-1">
-                          <ArrowRightIcon
-                            className="h-[19px] w-[19px]"
-                          />
-                        </div>
+                  <div className="relative">
+                    <div className="flex items-start justify-between gap-4">
+                      <div
+                        className="flex h-20 w-20 items-center justify-center rounded-[20px]"
+                        style={{
+                          backgroundColor: `${emotion.color}55`,
+                        }}
+                      >
+                        <Image
+                          src={emotion.image}
+                          alt={name}
+                          width={68}
+                          height={68}
+                          className="object-contain mix-blend-multiply"
+                        />
                       </div>
 
-                      <p className="mt-6 text-[22px] font-semibold tracking-[-0.025em]">
-                        {name}
-                      </p>
-
-                      <p className="mt-2 line-clamp-3 text-[13px] leading-6 text-[#4A3F35]/50">
-                        {description}
-                      </p>
-
-                      <div className="mt-6 flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{
-                            backgroundColor:
-                              emotion.color,
-                          }}
-                        />
-
-                        <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
-                          {isEnglish
-                            ? getCategoryLabel(
-                                emotion.category,
-                                true,
-                              )
-                            : getCategoryLabel(
-                                emotion.category,
-                                false,
-                              )}
-                        </span>
+                      <div className="mt-2 text-[#4A3F35]/25 transition-transform duration-300 group-hover:translate-x-1">
+                        <ArrowRightIcon className="h-[19px] w-[19px]" />
                       </div>
                     </div>
-                  </Link>
-                );
-              },
-            )}
+
+                    <p className="mt-6 text-[22px] font-semibold tracking-[-0.025em]">
+                      {name}
+                    </p>
+
+                    <p className="mt-2 line-clamp-3 text-[13px] leading-6 text-[#4A3F35]/50">
+                      {description}
+                    </p>
+
+                    <div className="mt-6 flex items-center gap-2">
+                      <span
+                        className="h-2 w-2 rounded-full"
+                        style={{
+                          backgroundColor: emotion.color,
+                        }}
+                      />
+
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
+                        {isEnglish
+                          ? getCategoryLabel(emotion.category, true)
+                          : getCategoryLabel(emotion.category, false)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </section>
         ) : (
           /* =================================================
@@ -568,9 +474,7 @@ export default function EmotionsPage() {
 
           <section className="mt-7 border-y border-dashed border-[#C1D5C0] py-16 text-center">
             <p className="text-sm font-semibold text-[#4A3F35]/65">
-              {isEnglish
-                ? "No emotion found."
-                : "Emosi tidak ditemukan."}
+              {isEnglish ? "No emotion found." : "Emosi tidak ditemukan."}
             </p>
 
             <p className="mt-2 text-xs text-[#4A3F35]/40">
@@ -587,9 +491,7 @@ export default function EmotionsPage() {
               }}
               className="mt-5 text-xs font-semibold text-[#5C6B9C]"
             >
-              {isEnglish
-                ? "Clear filters"
-                : "Hapus filter"}
+              {isEnglish ? "Clear filters" : "Hapus filter"}
             </button>
           </section>
         )}
@@ -602,9 +504,7 @@ export default function EmotionsPage() {
           <div className="grid gap-7 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
-                {isEnglish
-                  ? "Put it into practice"
-                  : "Coba rasakan"}
+                {isEnglish ? "Put it into practice" : "Coba rasakan"}
               </p>
 
               <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.03em]">
@@ -624,13 +524,9 @@ export default function EmotionsPage() {
               href={`/${locale}/check-in`}
               className="inline-flex h-11 items-center justify-center gap-3 bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
             >
-              {isEnglish
-                ? "Start a check-in"
-                : "Mulai check-in"}
+              {isEnglish ? "Start a check-in" : "Mulai check-in"}
 
-              <ArrowRightIcon
-                className="h-[19px] w-[19px]"
-              />
+              <ArrowRightIcon className="h-[19px] w-[19px]" />
             </Link>
           </div>
         </section>
@@ -648,18 +544,12 @@ function getCategoryLabel(
   isEnglish: boolean,
 ) {
   if (category === "positive") {
-    return isEnglish
-      ? "Positive"
-      : "Positif";
+    return isEnglish ? "Positive" : "Positif";
   }
 
   if (category === "calm") {
-    return isEnglish
-      ? "Calm"
-      : "Tenang";
+    return isEnglish ? "Calm" : "Tenang";
   }
 
-  return isEnglish
-    ? "Difficult"
-    : "Tidak nyaman";
+  return isEnglish ? "Difficult" : "Tidak nyaman";
 }

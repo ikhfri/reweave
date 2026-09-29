@@ -505,22 +505,19 @@ export default function MoodCalendarClient({
       <div className="mx-auto max-w-6xl">
 
         {/* HEADER */}
-        <header className="mb-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <header className="mb-6 md:mb-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                {isId
-                  ? "Perjalanan mood"
-                  : "Mood journey"}
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C] md:text-xs">
+                {isId ? "Perjalanan mood" : "Mood journey"}
               </p>
 
-              <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#4A3F35] md:text-4xl">
-                {isId
-                  ? `Kalender mood, ${userName}`
-                  : `Your mood calendar, ${userName}`}
+              {/* Ubah text-3xl menjadi text-2xl untuk mobile */}
+              <h1 className="text-2xl font-semibold tracking-[-0.03em] text-[#4A3F35] md:text-4xl">
+                {isId ? `Kalender mood, ${userName}` : `Your mood calendar, ${userName}`}
               </h1>
 
-              <p className="mt-3 max-w-xl text-sm leading-7 text-[#4A3F35]/60 md:text-[15px]">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-[#4A3F35]/60 md:mt-3 md:text-[15px] md:leading-7">
                 {isId
                   ? "Lihat emosi yang paling kuat tercatat di setiap harimu."
                   : "See the strongest emotion recorded on each day."}
@@ -530,70 +527,43 @@ export default function MoodCalendarClient({
         </header>
 
         {/* MAIN CARD */}
-        <section className="rounded-[2rem] border border-[#4A3F35]/10 bg-[#FDFBF7] p-5 md:p-8">
+        {/* Kurangi padding di mobile (p-4) dan gunakan rounded-3xl */}
+        <section className="rounded-3xl border border-[#4A3F35]/10 bg-[#FDFBF7] p-4 sm:p-6 md:rounded-[2rem] md:p-8">
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
 
             {/* CALENDAR */}
             <div className="min-w-0">
-              <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="mb-5 flex items-center justify-between gap-4 md:mb-6">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <CalendarIcon
-                      size={16}
-                      className="text-[#5C6B9C]"
-                    />
-
-                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
-                      {isId
-                        ? "Kalender mood"
-                        : "Mood calendar"}
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <CalendarIcon size={14} className="text-[#5C6B9C] md:h-4 md:w-4" />
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5C6B9C] md:text-xs">
+                      {isId ? "Kalender mood" : "Mood calendar"}
                     </span>
                   </div>
 
-                  <h2 className="mt-1 text-xl font-semibold text-[#4A3F35]">
-                    {getMonthName(
-                      year,
-                      month,
-                      locale,
-                    )}
+                  <h2 className="mt-1 text-lg font-semibold text-[#4A3F35] md:text-xl">
+                    {getMonthName(year, month, locale)}
                   </h2>
                 </div>
 
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() =>
-                      changeMonth(-1)
-                    }
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
-                    aria-label={
-                      isId
-                        ? "Bulan sebelumnya"
-                        : "Previous month"
-                    }
+                    onClick={() => changeMonth(-1)}
+                    className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C] md:h-9 md:w-9"
+                    aria-label={isId ? "Bulan sebelumnya" : "Previous month"}
                   >
-                    <ArrowIcon
-                      direction="left"
-                      size={16}
-                    />
+                    <ArrowIcon direction="left" size={14} className="md:h-4 md:w-4" />
                   </button>
 
                   <button
                     type="button"
-                    onClick={() =>
-                      changeMonth(1)
-                    }
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
-                    aria-label={
-                      isId
-                        ? "Bulan berikutnya"
-                        : "Next month"
-                    }
+                    onClick={() => changeMonth(1)}
+                    className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C] md:h-9 md:w-9"
+                    aria-label={isId ? "Bulan berikutnya" : "Next month"}
                   >
-                    <ArrowIcon
-                      direction="right"
-                      size={16}
-                    />
+                    <ArrowIcon direction="right" size={14} className="md:h-4 md:w-4" />
                   </button>
                 </div>
               </div>
@@ -605,30 +575,15 @@ export default function MoodCalendarClient({
               ) : (
                 <>
                   {/* WEEKDAYS */}
-                  <div className="mb-2 grid grid-cols-7">
+                  {/* Tambahkan gap yang sama persis dengan kalender grid di bawahnya */}
+                  <div className="mb-1 grid grid-cols-7 gap-1 sm:gap-1.5 md:mb-2 md:gap-2">
                     {(isId
-                      ? [
-                          "Sen",
-                          "Sel",
-                          "Rab",
-                          "Kam",
-                          "Jum",
-                          "Sab",
-                          "Min",
-                        ]
-                      : [
-                          "Mon",
-                          "Tue",
-                          "Wed",
-                          "Thu",
-                          "Fri",
-                          "Sat",
-                          "Sun",
-                        ]
+                      ? ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
+                      : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
                     ).map((label) => (
                       <div
                         key={label}
-                        className="py-2 text-center text-[10px] font-medium uppercase tracking-wide text-[#4A3F35]/35"
+                        className="py-1 text-center text-[9px] font-medium uppercase tracking-wide text-[#4A3F35]/35 md:py-2 md:text-[10px]"
                       >
                         {label}
                       </div>
@@ -636,113 +591,72 @@ export default function MoodCalendarClient({
                   </div>
 
                   {/* CALENDAR GRID */}
-                  <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-                    {calendarCells.map(
-                      (cell) => {
-                        if (
-                          cell.type ===
-                          "empty"
-                        ) {
-                          return (
-                            <div
-                              key={cell.key}
-                              className="aspect-square"
-                            />
-                          );
-                        }
+                  {/* Kecilkan gap untuk mobile (gap-1) */}
+                  <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2">
+                    {calendarCells.map((cell) => {
+                      if (cell.type === "empty") {
+                        // Tambahkan w-full agar ukurannya konsisten
+                        return <div key={cell.key} className="aspect-square w-full" />;
+                      }
 
-                        const dateKey = [
-                          year,
-                          String(month).padStart(
-                            2,
-                            "0",
-                          ),
-                          String(
-                            cell.day,
-                          ).padStart(
-                            2,
-                            "0",
-                          ),
-                        ].join("-");
+                      const dateKey = [
+                        year,
+                        String(month).padStart(2, "0"),
+                        String(cell.day).padStart(2, "0"),
+                      ].join("-");
 
-                        const day =
-                          dayMap.get(
-                            dateKey,
-                          );
+                      const day = dayMap.get(dateKey);
+                      const emotion = day ? getHighestEmotion(day.emotions) : null;
+                      const selected = selectedDate === dateKey;
+                      const isToday = todayKey === dateKey;
 
-                        const emotion = day
-                          ? getHighestEmotion(
-                              day.emotions,
-                            )
-                          : null;
-
-                        const selected =
-                          selectedDate ===
-                          dateKey;
-
-                        const isToday =
-                          todayKey ===
-                          dateKey;
-
-                        return (
-                          <button
-                            key={cell.key}
-                            type="button"
-                            onClick={() =>
-                              setSelectedDate(
-                                dateKey,
-                              )
-                            }
+                      return (
+                        <button
+                          key={cell.key}
+                          type="button"
+                          onClick={() => setSelectedDate(dateKey)}
+                          className={[
+                            // HAPUS class min-h-*. Cukup gunakan w-full dan aspect-square 
+                            // agar ukurannya otomatis membentuk kotak sempurna mengikuti grid
+                            "group relative flex aspect-square w-full flex-col items-center justify-center rounded-lg border text-center transition sm:rounded-xl",
+                            selected
+                              ? "border-[#5C6B9C]/50 bg-[#5C6B9C]/8"
+                              : "border-transparent hover:border-[#4A3F35]/10 hover:bg-[#4A3F35]/[0.03]",
+                          ].join(" ")}
+                        >
+                          <span
                             className={[
-                              "group relative flex aspect-square min-h-16 flex-col items-center justify-center rounded-xl border text-center transition sm:min-h-20",
-                              selected
-                                ? "border-[#5C6B9C]/50 bg-[#5C6B9C]/8"
-                                : "border-transparent hover:border-[#4A3F35]/10 hover:bg-[#4A3F35]/[0.03]",
+                              "text-[10px] font-medium sm:text-xs",
+                              isToday ? "text-[#E2725B]" : "text-[#4A3F35]/70",
                             ].join(" ")}
                           >
-                            <span
-                              className={[
-                                "text-xs font-medium",
-                                isToday
-                                  ? "text-[#E2725B]"
-                                  : "text-[#4A3F35]/70",
-                              ].join(" ")}
-                            >
-                              {cell.day}
-                            </span>
+                            {cell.day}
+                          </span>
 
-                            {emotion ? (
-                              <>
-                                <div className="mt-1 flex h-10 w-10 items-center justify-center sm:h-11 sm:w-11">
-                                  <EmotionArtwork
-                                    slug={
-                                      emotion.slug
-                                    }
-                                    name={
-                                      emotion.name
-                                    }
-                                    size={42}
-                                  />
-                                </div>
+                          {emotion ? (
+                            <>
+                              <div className="mt-0.5 flex h-6 w-6 items-center justify-center sm:mt-1 sm:h-9 sm:w-9 md:h-11 md:w-11">
+                                <EmotionArtwork
+                                  slug={emotion.slug}
+                                  name={emotion.name}
+                                  className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10"
+                                />
+                              </div>
 
-                                <span className="mt-0.5 text-[9px] font-medium text-[#4A3F35]/40">
-                                  {
-                                    emotion.intensity
-                                  }
-                                  /5
-                                </span>
-                              </>
-                            ) : (
-                              <span className="mt-2 h-2.5 w-2.5 rounded-full border border-[#4A3F35]/10" />
-                            )}
+                              <span className="mt-0.5 text-[8px] font-medium text-[#4A3F35]/40 sm:text-[9px]">
+                                {emotion.intensity}/5
+                              </span>
+                            </>
+                          ) : (
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full border border-[#4A3F35]/10 sm:mt-2 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5" />
+                          )}
 
-                            {isToday && (
-                              <span className="absolute inset-x-3 bottom-1 h-px bg-[#E2725B]/50" />
-                            )}
-                          </button>
-                        );
-                      },
-                    )}
+                          {isToday && (
+                            <span className="absolute inset-x-2 bottom-1 h-px bg-[#E2725B]/50 sm:inset-x-3" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {/* LEGEND */}
