@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import BackButton from "@/components/dashboard/back-button";
+
 import {
   ActivityIcon,
   CalendarMoodIcon,
@@ -16,29 +17,31 @@ import {
   PrivacyIcon,
   SettingsIcon,
   SupportIcon,
+  WellbeingIcon,
 } from "@/components/moodify-icons";
 
 import type { Locale } from "@/i18n/config";
 
+/* ============================================================
+   TYPES
+============================================================ */
+
 type Props = {
   locale: Locale;
+
   user: {
     name: string;
     email: string;
   };
+
   children: React.ReactNode;
 };
-
-/* ============================================================
-   TYPES
-============================================================ */
 
 type NavigationItem = {
   label: string;
   href: string;
   icon: React.ComponentType<{
     className?: string;
-    strokeWidth?: number;
   }>;
 };
 
@@ -65,25 +68,41 @@ export default function DashboardShell({
 
   const navigation: NavigationItem[] = [
     {
-      label: isEnglish ? "Home" : "Beranda",
+      label: isEnglish
+        ? "Home"
+        : "Beranda",
       href: `/${locale}/dashboard`,
       icon: HomeIcon,
     },
+
     {
       label: "Check-in",
       href: `/${locale}/check-in`,
       icon: CheckinIcon,
     },
+
     {
       label: "Diary",
       href: `/${locale}/diary`,
       icon: DiaryIcon,
     },
+
     {
-      label: isEnglish ? "Insights" : "Insight",
+      label: isEnglish
+        ? "Emotions"
+        : "Kenali Emosi",
+      href: `/${locale}/emotions`,
+      icon: WellbeingIcon,
+    },
+
+    {
+      label: isEnglish
+        ? "Insights"
+        : "Insight",
       href: `/${locale}/insights`,
       icon: InsightIcon,
     },
+
     {
       label: isEnglish
         ? "Mood Calendar"
@@ -91,6 +110,7 @@ export default function DashboardShell({
       href: `/${locale}/mood-calendar`,
       icon: CalendarMoodIcon,
     },
+
     {
       label: isEnglish
         ? "Activities"
@@ -98,6 +118,7 @@ export default function DashboardShell({
       href: `/${locale}/activities`,
       icon: ActivityIcon,
     },
+
     {
       label: isEnglish
         ? "Support"
@@ -109,14 +130,16 @@ export default function DashboardShell({
 
   /* ==========================================================
      MOBILE NAVIGATION
+
+     Keep the most important destinations visible.
   ========================================================== */
 
   const mobileNavigation = [
-    navigation[0],
-    navigation[1],
-    navigation[2],
-    navigation[3],
-    navigation[4],
+    navigation[0], // Home
+    navigation[1], // Check-in
+    navigation[2], // Diary
+    navigation[3], // Emotions
+    navigation[4], // Insights
   ];
 
   /* ==========================================================
@@ -131,6 +154,7 @@ export default function DashboardShell({
       href: `/${locale}/settings`,
       icon: SettingsIcon,
     },
+
     {
       label: isEnglish
         ? "Privacy"
@@ -146,11 +170,17 @@ export default function DashboardShell({
 
   async function handleLogout() {
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
+      await fetch(
+        "/api/auth/logout",
+        {
+          method: "POST",
+        },
+      );
     } finally {
-      router.push(`/${locale}/login`);
+      router.push(
+        `/${locale}/login`,
+      );
+
       router.refresh();
     }
   }
@@ -159,14 +189,20 @@ export default function DashboardShell({
      ACTIVE STATE
   ========================================================== */
 
-  function isActive(href: string) {
-    if (href.endsWith("/dashboard")) {
+  function isActive(
+    href: string,
+  ) {
+    if (
+      href.endsWith("/dashboard")
+    ) {
       return pathname === href;
     }
 
     return (
       pathname === href ||
-      pathname.startsWith(`${href}/`)
+      pathname.startsWith(
+        `${href}/`,
+      )
     );
   }
 
@@ -178,8 +214,13 @@ export default function DashboardShell({
     setMobileOpen(false);
   }
 
+  /* ==========================================================
+     RENDER
+  ========================================================== */
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#4A3F35]">
+
       {/* ======================================================
           MOBILE OVERLAY
       ======================================================= */}
@@ -230,6 +271,7 @@ export default function DashboardShell({
           }
         `}
       >
+
         {/* ==================================================
             BRAND
         =================================================== */}
@@ -283,9 +325,7 @@ export default function DashboardShell({
                 : "Tutup menu"
             }
           >
-            <CloseIcon
-              className="h-4 w-4"
-            />
+            <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -294,6 +334,7 @@ export default function DashboardShell({
         =================================================== */}
 
         <div className="flex flex-1 flex-col overflow-y-auto px-4 pb-5">
+
           {/* PRIMARY LABEL */}
 
           <div className="mb-3 px-2">
@@ -314,29 +355,35 @@ export default function DashboardShell({
                 : "Navigasi utama"
             }
           >
-            {navigation.map((item) => {
-              const Icon = item.icon;
+            {navigation.map(
+              (item) => {
+                const Icon =
+                  item.icon;
 
-              const active = isActive(
-                item.href,
-              );
+                const active =
+                  isActive(
+                    item.href,
+                  );
 
-              return (
-                <NavigationLink
-                  key={item.href}
-                  item={item}
-                  active={active}
-                  onClick={closeMobile}
-                >
-                  <Icon
-                    className="h-[20px] w-[20px]"
-                    strokeWidth={
-                      active ? 2 : 1.7
+                return (
+                  <NavigationLink
+                    key={item.href}
+                    item={item}
+                    active={active}
+                    onClick={
+                      closeMobile
                     }
-                  />
-                </NavigationLink>
-              );
-            })}
+                  >
+                    <Icon
+                      className="
+                        h-[20px]
+                        w-[20px]
+                      "
+                    />
+                  </NavigationLink>
+                );
+              },
+            )}
           </nav>
 
           {/* ==================================================
@@ -368,24 +415,28 @@ export default function DashboardShell({
           >
             {secondaryNavigation.map(
               (item) => {
-                const Icon = item.icon;
+                const Icon =
+                  item.icon;
 
-                const active = isActive(
-                  item.href,
-                );
+                const active =
+                  isActive(
+                    item.href,
+                  );
 
                 return (
                   <NavigationLink
                     key={item.href}
                     item={item}
                     active={active}
-                    onClick={closeMobile}
+                    onClick={
+                      closeMobile
+                    }
                   >
                     <Icon
-                      className="h-[20px] w-[20px]"
-                      strokeWidth={
-                        active ? 2 : 1.7
-                      }
+                      className="
+                        h-[20px]
+                        w-[20px]
+                      "
                     />
                   </NavigationLink>
                 );
@@ -449,6 +500,7 @@ export default function DashboardShell({
 
         <div className="border-t border-[#E7DDD5] px-4 py-4">
           <div className="flex items-center gap-3">
+
             {/* Avatar */}
 
             <div
@@ -520,9 +572,7 @@ export default function DashboardShell({
                 hover:text-[#4A3F35]
               "
             >
-              <LogoutIcon
-                className="h-[16px] w-[16px]"
-              />
+              <LogoutIcon className="h-[16px] w-[16px]" />
             </button>
           </div>
         </div>
@@ -533,6 +583,7 @@ export default function DashboardShell({
       ======================================================= */}
 
       <div className="lg:pl-[246px]">
+
         {/* ====================================================
             MOBILE HEADER
         ===================================================== */}
@@ -554,6 +605,7 @@ export default function DashboardShell({
             lg:hidden
           "
         >
+
           {/* MENU */}
 
           <button
@@ -579,9 +631,7 @@ export default function DashboardShell({
                 : "Buka menu"
             }
           >
-            <MenuIcon
-              className="h-[19px] w-[19px]"
-            />
+            <MenuIcon className="h-[19px] w-[19px]" />
           </button>
 
           {/* MOBILE LOGO */}
@@ -653,6 +703,7 @@ export default function DashboardShell({
             lg:flex
           "
         >
+
           {/* Left */}
 
           <div>
@@ -738,6 +789,7 @@ export default function DashboardShell({
           "
         >
           <div className="mx-auto w-full max-w-[1280px]">
+
             {/* GLOBAL BACK */}
 
             <BackButton locale={locale} />
@@ -772,11 +824,13 @@ export default function DashboardShell({
         <div className="mx-auto grid max-w-lg grid-cols-5">
           {mobileNavigation.map(
             (item) => {
-              const Icon = item.icon;
+              const Icon =
+                item.icon;
 
-              const active = isActive(
-                item.href,
-              );
+              const active =
+                isActive(
+                  item.href,
+                );
 
               return (
                 <Link
@@ -817,9 +871,6 @@ export default function DashboardShell({
 
                   <Icon
                     className="h-[18px] w-[18px]"
-                    strokeWidth={
-                      active ? 2 : 1.6
-                    }
                   />
 
                   <span className="text-[9px] font-medium">
@@ -924,12 +975,16 @@ function NavigationLink({
    INITIALS
 ============================================================ */
 
-function getInitials(name: string) {
+function getInitials(
+  name: string,
+) {
   return name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map((word) => word[0])
+    .map(
+      (word) => word[0],
+    )
     .join("")
     .toUpperCase();
 }
