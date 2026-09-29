@@ -26,11 +26,9 @@ const content = {
     description:
       "Buat ruang pribadi untuk memahami emosi, mencatat perjalananmu, dan melihat pola yang mungkin selama ini terlewat.",
 
-    statement:
-      "Kamu tidak harus memahami semuanya sekaligus.",
+    statement: "Kamu tidak harus memahami semuanya sekaligus.",
 
-    statementSmall:
-      "Mulai saja dari satu momen yang jujur.",
+    statementSmall: "Mulai saja dari satu momen yang jujur.",
 
     privacyTitle: "Ruang pribadimu",
 
@@ -39,40 +37,40 @@ const content = {
 
     welcome: "Buat akun Moodify",
 
-    subtitle:
-      "Mulai perjalanan untuk lebih memahami dirimu.",
+    subtitle: "Mulai perjalanan untuk lebih memahami dirimu.",
 
     name: "Nama",
 
-    namePlaceholder:
-      "Masukkan nama kamu",
+    namePlaceholder: "Masukkan nama kamu",
 
     email: "Email",
 
-    emailPlaceholder:
-      "Masukkan email kamu",
+    emailPlaceholder: "Masukkan email kamu",
 
     password: "Password",
 
-    passwordPlaceholder:
-      "Minimal 8 karakter",
+    passwordPlaceholder: "Minimal 8 karakter",
 
-    passwordRequirement:
-      "Gunakan minimal 8 karakter.",
+    passwordRequirement: "Gunakan minimal 8 karakter.",
 
-    showPassword:
-      "Tampilkan password",
+    validation: {
+      emptyName: "Nama tidak boleh kosong.",
+      emptyEmail: "Email tidak boleh kosong.",
+      invalidEmail: "Format email tidak valid.",
+      unsupportedEmail:
+        "Gunakan penyedia email umum (contoh: Gmail, Yahoo, Outlook).",
+      emptyPassword: "Password tidak boleh kosong.",
+    },
 
-    hidePassword:
-      "Sembunyikan password",
+    showPassword: "Tampilkan password",
+
+    hidePassword: "Sembunyikan password",
 
     register: "Buat akun",
 
-    registering:
-      "Membuat akun...",
+    registering: "Membuat akun...",
 
-    alreadyAccount:
-      "Sudah punya akun?",
+    alreadyAccount: "Sudah punya akun?",
 
     login: "Masuk",
 
@@ -80,11 +78,9 @@ const content = {
       "Dengan membuat akun, kamu menyetujui Terms of Service dan Privacy Policy Moodify.",
 
     errors: {
-      registerFailed:
-        "Gagal membuat akun.",
+      registerFailed: "Gagal membuat akun.",
 
-      general:
-        "Terjadi kesalahan. Silakan coba lagi.",
+      general: "Terjadi kesalahan. Silakan coba lagi.",
     },
   },
 
@@ -96,69 +92,61 @@ const content = {
     description:
       "Create a private space to understand your emotions, reflect on your journey, and notice patterns that may otherwise go unnoticed.",
 
-    statement:
-      "You don't have to understand everything at once.",
+    statement: "You don't have to understand everything at once.",
 
-    statementSmall:
-      "Start with one honest moment.",
+    statementSmall: "Start with one honest moment.",
 
-    privacyTitle:
-      "Your private space",
+    privacyTitle: "Your private space",
 
     privacyText:
       "Your stories, check-ins, and reflections stay connected to your account.",
 
-    welcome:
-      "Create your Moodify account",
+    welcome: "Create your Moodify account",
 
-    subtitle:
-      "Start your journey toward understanding yourself better.",
+    subtitle: "Start your journey toward understanding yourself better.",
 
     name: "Name",
 
-    namePlaceholder:
-      "Enter your name",
+    namePlaceholder: "Enter your name",
 
     email: "Email",
 
-    emailPlaceholder:
-      "Enter your email",
+    emailPlaceholder: "Enter your email",
 
     password: "Password",
 
-    passwordPlaceholder:
-      "At least 8 characters",
+    passwordPlaceholder: "At least 8 characters",
 
-    passwordRequirement:
-      "Use at least 8 characters.",
+    passwordRequirement: "Use at least 8 characters.",
 
-    showPassword:
-      "Show password",
+    validation: {
+      emptyName: "Name cannot be empty.",
+      emptyEmail: "Email cannot be empty.",
+      invalidEmail: "Invalid email format.",
+      unsupportedEmail:
+        "Please use a standard email provider (e.g., Gmail, Yahoo, Outlook).",
+      emptyPassword: "Password cannot be empty.",
+    },
 
-    hidePassword:
-      "Hide password",
+    showPassword: "Show password",
 
-    register:
-      "Create account",
+    hidePassword: "Hide password",
 
-    registering:
-      "Creating account...",
+    register: "Create account",
 
-    alreadyAccount:
-      "Already have an account?",
+    registering: "Creating account...",
 
-    login:
-      "Sign in",
+    alreadyAccount: "Already have an account?",
+
+    login: "Sign in",
 
     privacyNote:
       "By creating an account, you agree to Moodify's Terms of Service and Privacy Policy.",
 
     errors: {
-      registerFailed:
-        "Failed to create your account.",
+      registerFailed: "Failed to create your account.",
 
-      general:
-        "Something went wrong. Please try again.",
+      general: "Something went wrong. Please try again.",
     },
   },
 };
@@ -169,8 +157,7 @@ export default function RegisterPage() {
 
   const localeParam = params.locale;
 
-  const locale: Locale =
-    localeParam === "en" ? "en" : "id";
+  const locale: Locale = localeParam === "en" ? "en" : "id";
 
   const t = content[locale];
 
@@ -178,64 +165,96 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [isLoading, setIsLoading] =
-    useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [error, setError] = useState("");
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
-    event.preventDefault();
+  const [errorField, setErrorField] = useState("");
 
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setError("");
+    setErrorField(""); // Reset error field
+
+    if (!name.trim()) {
+      setError(t.validation.emptyName);
+      setErrorField("name");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError(t.validation.emptyEmail);
+      setErrorField("email");
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError(t.validation.invalidEmail);
+      setErrorField("email");
+      return;
+    }
+
+    const domain = email.split("@")[1]?.toLowerCase();
+    const allowedDomains = [
+      "gmail.com",
+      "yahoo.com",
+      "yahoo.co.id",
+      "outlook.com",
+      "hotmail.com",
+      "icloud.com",
+    ];
+
+    if (!allowedDomains.includes(domain)) {
+      setError(t.validation.unsupportedEmail);
+      setErrorField("email");
+      return;
+    }
+
+    if (!password) {
+      setError(t.validation.emptyPassword);
+      setErrorField("password");
+      return;
+    }
 
     if (password.length < 8) {
       setError(t.passwordRequirement);
+      setErrorField("password");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "/api/auth/register",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-          }),
-        },
-      );
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.message ||
-            t.errors.registerFailed,
-        );
-
+        if (data.errors?.fieldErrors) {
+          const firstKey = Object.keys(data.errors.fieldErrors)[0];
+          const firstErrorField = data.errors.fieldErrors[firstKey] as string[];
+          if (firstErrorField && firstErrorField.length > 0) {
+            setError(firstErrorField[0]);
+            setErrorField(firstKey); // Set field dari backend (name/email/password)
+            return;
+          }
+        }
+        setError(data.message || t.errors.registerFailed);
+        setErrorField("general");
         return;
       }
 
-      router.push(
-        `/${locale}/onboarding`,
-      );
-
+      router.push(`/${locale}/onboarding`);
       router.refresh();
     } catch {
       setError(t.errors.general);
+      setErrorField("general");
     } finally {
       setIsLoading(false);
     }
@@ -320,45 +339,18 @@ export default function RegisterPage() {
 
               <div className="mt-10 flex items-center gap-3">
                 <BrandPoint
-                  icon={
-                    <UserRound
-                      className="h-4 w-4"
-                      strokeWidth={1.8}
-                    />
-                  }
-                  text={
-                    locale === "en"
-                      ? "Personal"
-                      : "Personal"
-                  }
+                  icon={<UserRound className="h-4 w-4" strokeWidth={1.8} />}
+                  text={locale === "en" ? "Personal" : "Personal"}
                 />
 
                 <BrandPoint
-                  icon={
-                    <LockKeyhole
-                      className="h-4 w-4"
-                      strokeWidth={1.8}
-                    />
-                  }
-                  text={
-                    locale === "en"
-                      ? "Private"
-                      : "Privat"
-                  }
+                  icon={<LockKeyhole className="h-4 w-4" strokeWidth={1.8} />}
+                  text={locale === "en" ? "Private" : "Privat"}
                 />
 
                 <BrandPoint
-                  icon={
-                    <ShieldCheck
-                      className="h-4 w-4"
-                      strokeWidth={1.8}
-                    />
-                  }
-                  text={
-                    locale === "en"
-                      ? "Thoughtful"
-                      : "Terjaga"
-                  }
+                  icon={<ShieldCheck className="h-4 w-4" strokeWidth={1.8} />}
+                  text={locale === "en" ? "Thoughtful" : "Terjaga"}
                 />
               </div>
             </div>
@@ -416,9 +408,7 @@ export default function RegisterPage() {
             {/* LANGUAGE */}
 
             <div className="ml-auto">
-              <LanguageSwitcher
-                locale={locale}
-              />
+              <LanguageSwitcher locale={locale} />
             </div>
           </header>
 
@@ -459,10 +449,7 @@ export default function RegisterPage() {
                   FORM
               ================================================== */}
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-5"
-              >
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 {/* =================================================
                     NAME
                 ================================================== */}
@@ -487,38 +474,15 @@ export default function RegisterPage() {
                       type="text"
                       autoComplete="name"
                       value={name}
-                      onChange={(event) =>
-                        setName(
-                          event.target.value,
-                        )
-                      }
-                      placeholder={
-                        t.namePlaceholder
-                      }
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder={t.namePlaceholder}
                       required
                       disabled={isLoading}
-                      className="
-                        h-[52px]
-                        w-full
-                        rounded-2xl
-                        border
-                        border-[#4A3F35]/10
-                        bg-[#FDFBF7]
-                        pl-11
-                        pr-4
-                        text-sm
-                        text-[#4A3F35]
-                        outline-none
-                        transition
-                        placeholder:text-[#4A3F35]/30
-                        hover:border-[#C1D5C0]
-                        focus:border-[#E2725B]
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-[#E2725B]/10
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                      "
+                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        errorField === "name"
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
+                          : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
+                      }`}
                     />
                   </div>
                 </div>
@@ -547,38 +511,15 @@ export default function RegisterPage() {
                       type="email"
                       autoComplete="email"
                       value={email}
-                      onChange={(event) =>
-                        setEmail(
-                          event.target.value,
-                        )
-                      }
-                      placeholder={
-                        t.emailPlaceholder
-                      }
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder={t.emailPlaceholder}
                       required
                       disabled={isLoading}
-                      className="
-                        h-[52px]
-                        w-full
-                        rounded-2xl
-                        border
-                        border-[#4A3F35]/10
-                        bg-[#FDFBF7]
-                        pl-11
-                        pr-4
-                        text-sm
-                        text-[#4A3F35]
-                        outline-none
-                        transition
-                        placeholder:text-[#4A3F35]/30
-                        hover:border-[#C1D5C0]
-                        focus:border-[#E2725B]
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-[#E2725B]/10
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                      "
+                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        errorField === "email"
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
+                          : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
+                      }`}
                     />
                   </div>
                 </div>
@@ -604,63 +545,29 @@ export default function RegisterPage() {
                     <input
                       id="password"
                       name="password"
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
                       value={password}
-                      onChange={(event) =>
-                        setPassword(
-                          event.target.value,
-                        )
-                      }
-                      placeholder={
-                        t.passwordPlaceholder
-                      }
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder={t.passwordPlaceholder}
                       required
                       minLength={8}
                       disabled={isLoading}
-                      className="
-                        h-[52px]
-                        w-full
-                        rounded-2xl
-                        border
-                        border-[#4A3F35]/10
-                        bg-[#FDFBF7]
-                        pl-11
-                        pr-12
-                        text-sm
-                        text-[#4A3F35]
-                        outline-none
-                        transition
-                        placeholder:text-[#4A3F35]/30
-                        hover:border-[#C1D5C0]
-                        focus:border-[#E2725B]
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-[#E2725B]/10
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                      "
+                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-12 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        errorField === "password"
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
+                          : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
+                      }`}
                     />
 
                     {/* PASSWORD TOGGLE */}
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowPassword(
-                          (previous) =>
-                            !previous,
-                        )
-                      }
+                      onClick={() => setShowPassword((previous) => !previous)}
                       disabled={isLoading}
                       aria-label={
-                        showPassword
-                          ? t.hidePassword
-                          : t.showPassword
+                        showPassword ? t.hidePassword : t.showPassword
                       }
                       className="
                         absolute
@@ -686,10 +593,7 @@ export default function RegisterPage() {
                           strokeWidth={1.8}
                         />
                       ) : (
-                        <Eye
-                          className="h-[17px] w-[17px]"
-                          strokeWidth={1.8}
-                        />
+                        <Eye className="h-[17px] w-[17px]" strokeWidth={1.8} />
                       )}
                     </button>
                   </div>
@@ -707,9 +611,7 @@ export default function RegisterPage() {
 
                 {error && (
                   <div className="rounded-2xl border border-[#E2725B]/30 bg-[#E2725B]/10 px-4 py-3">
-                    <p className="text-xs leading-5 text-[#C95F4B]">
-                      {error}
-                    </p>
+                    <p className="text-xs leading-5 text-[#C95F4B]">{error}</p>
                   </div>
                 )}
 
@@ -743,11 +645,7 @@ export default function RegisterPage() {
                     disabled:opacity-60
                   "
                 >
-                  <span>
-                    {isLoading
-                      ? t.registering
-                      : t.register}
-                  </span>
+                  <span>{isLoading ? t.registering : t.register}</span>
 
                   {!isLoading && (
                     <ArrowRight
@@ -763,9 +661,7 @@ export default function RegisterPage() {
               ================================================== */}
 
               <div className="mt-8 flex items-center justify-center gap-1.5 text-sm">
-                <span className="text-[#4A3F35]/45">
-                  {t.alreadyAccount}
-                </span>
+                <span className="text-[#4A3F35]/45">{t.alreadyAccount}</span>
 
                 <Link
                   href={`/${locale}/login`}
@@ -801,9 +697,7 @@ export default function RegisterPage() {
                   href={`/${locale}`}
                   className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#4A3F35]/30 transition hover:text-[#5C6B9C]"
                 >
-                  {locale === "en"
-                    ? "Back to Moodify"
-                    : "Kembali ke Moodify"}
+                  {locale === "en" ? "Back to Moodify" : "Kembali ke Moodify"}
                 </Link>
               </div>
             </div>
@@ -818,22 +712,14 @@ export default function RegisterPage() {
    BRAND POINT
 ================================================================ */
 
-function BrandPoint({
-  icon,
-  text,
-}: {
-  icon: React.ReactNode;
-  text: string;
-}) {
+function BrandPoint({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-2 text-[#4A3F35]/45">
       <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#5C6B9C]/[0.06] text-[#5C6B9C]">
         {icon}
       </div>
 
-      <span className="text-[10px] font-medium">
-        {text}
-      </span>
+      <span className="text-[10px] font-medium">{text}</span>
     </div>
   );
 }

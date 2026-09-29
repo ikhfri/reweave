@@ -50,6 +50,12 @@ const content = {
     terms:
       "Dengan masuk, kamu menyetujui Terms of Service dan Privacy Policy Moodify.",
 
+    validation: {
+      emptyEmail: "Email tidak boleh kosong.",
+      invalidEmail: "Format email tidak valid.",
+      emptyPassword: "Password tidak boleh kosong.",
+    },
+
     errors: {
       loginFailed: "Email atau password salah.",
       general: "Terjadi kesalahan. Silakan coba lagi.",
@@ -89,6 +95,12 @@ const content = {
     terms:
       "By signing in, you agree to Moodify's Terms of Service and Privacy Policy.",
 
+    validation: {
+      emptyEmail: "Email cannot be empty.",
+      invalidEmail: "Invalid email format.",
+      emptyPassword: "Password cannot be empty.",
+    },
+
     errors: {
       loginFailed: "Invalid email or password.",
       general: "Something went wrong. Please try again.",
@@ -102,8 +114,7 @@ export default function LoginPage() {
 
   const localeParam = params.locale;
 
-  const locale: Locale =
-    localeParam === "en" ? "en" : "id";
+  const locale: Locale = localeParam === "en" ? "en" : "id";
 
   const isEnglish = locale === "en";
 
@@ -115,34 +126,51 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState("");
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setError("");
+    setErrorField("");
+
+    if (!email.trim()) {
+      setError(t.validation.emptyEmail);
+      setErrorField("email");
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError(t.validation.invalidEmail);
+      setErrorField("email");
+      return;
+    }
+
+    if (!password) {
+      setError(t.validation.emptyPassword);
+      setErrorField("password");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.message || t.errors.loginFailed,
-        );
-
+        if (response.status === 500) {
+          setError(t.errors.general);
+          setErrorField("general");
+        } else {
+          setError(t.errors.loginFailed);
+          // Jika login gagal (salah email/pass), beri warna merah ke keduanya
+          setErrorField("all");
+        }
         return;
       }
 
@@ -151,10 +179,10 @@ export default function LoginPage() {
       } else {
         router.push(`/${locale}/onboarding`);
       }
-
       router.refresh();
     } catch {
       setError(t.errors.general);
+      setErrorField("general");
     } finally {
       setIsLoading(false);
     }
@@ -296,9 +324,7 @@ export default function LoginPage() {
                 </div>
 
                 <h2 className="text-[32px] font-semibold tracking-[-0.045em] text-[#4A3F35]">
-                  {isEnglish
-                    ? "Sign in to Moodify"
-                    : "Masuk ke Moodify"}
+                  {isEnglish ? "Sign in to Moodify" : "Masuk ke Moodify"}
                 </h2>
 
                 <p className="mt-3 text-sm leading-6 text-[#4A3F35]/50">
@@ -308,10 +334,7 @@ export default function LoginPage() {
 
               {/* FORM */}
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-5"
-              >
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 {/* EMAIL */}
 
                 <div>
@@ -334,34 +357,15 @@ export default function LoginPage() {
                       type="email"
                       autoComplete="email"
                       value={email}
-                      onChange={(event) =>
-                        setEmail(event.target.value)
-                      }
+                      onChange={(event) => setEmail(event.target.value)}
                       placeholder={t.emailPlaceholder}
                       required
                       disabled={isLoading}
-                      className="
-                        h-[52px]
-                        w-full
-                        rounded-2xl
-                        border
-                        border-[#4A3F35]/10
-                        bg-[#FDFBF7]
-                        pl-11
-                        pr-4
-                        text-sm
-                        text-[#4A3F35]
-                        outline-none
-                        transition
-                        placeholder:text-[#4A3F35]/30
-                        hover:border-[#C1D5C0]
-                        focus:border-[#E2725B]
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-[#E2725B]/10
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                      "
+                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        errorField === "email" || errorField === "all"
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/10"
+                          : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
+                      }`}
                     />
                   </div>
                 </div>
@@ -395,57 +399,26 @@ export default function LoginPage() {
                     <input
                       id="password"
                       name="password"
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       value={password}
-                      onChange={(event) =>
-                        setPassword(event.target.value)
-                      }
-                      placeholder={
-                        t.passwordPlaceholder
-                      }
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder={t.passwordPlaceholder}
                       required
                       disabled={isLoading}
-                      className="
-                        h-[52px]
-                        w-full
-                        rounded-2xl
-                        border
-                        border-[#4A3F35]/10
-                        bg-[#FDFBF7]
-                        pl-11
-                        pr-12
-                        text-sm
-                        text-[#4A3F35]
-                        outline-none
-                        transition
-                        placeholder:text-[#4A3F35]/30
-                        hover:border-[#C1D5C0]
-                        focus:border-[#E2725B]
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-[#E2725B]/10
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                      "
+                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-12 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        errorField === "password" || errorField === "all"
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/10"
+                          : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
+                      }`}
                     />
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowPassword(
-                          (previous) => !previous,
-                        )
-                      }
+                      onClick={() => setShowPassword((previous) => !previous)}
                       disabled={isLoading}
                       aria-label={
-                        showPassword
-                          ? t.hidePassword
-                          : t.showPassword
+                        showPassword ? t.hidePassword : t.showPassword
                       }
                       className="
                         absolute
@@ -471,10 +444,7 @@ export default function LoginPage() {
                           strokeWidth={1.8}
                         />
                       ) : (
-                        <Eye
-                          className="h-[17px] w-[17px]"
-                          strokeWidth={1.8}
-                        />
+                        <Eye className="h-[17px] w-[17px]" strokeWidth={1.8} />
                       )}
                     </button>
                   </div>
@@ -484,9 +454,7 @@ export default function LoginPage() {
 
                 {error && (
                   <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
-                    <p className="text-xs leading-5 text-red-600">
-                      {error}
-                    </p>
+                    <p className="text-xs leading-5 text-red-600">{error}</p>
                   </div>
                 )}
 
@@ -518,11 +486,7 @@ export default function LoginPage() {
                     disabled:opacity-60
                   "
                 >
-                  <span>
-                    {isLoading
-                      ? t.loggingIn
-                      : t.login}
-                  </span>
+                  <span>{isLoading ? t.loggingIn : t.login}</span>
 
                   {!isLoading && (
                     <ArrowRight
@@ -536,9 +500,7 @@ export default function LoginPage() {
               {/* REGISTER */}
 
               <div className="mt-8 flex items-center justify-center gap-1.5 text-sm">
-                <span className="text-[#4A3F35]/45">
-                  {t.noAccount}
-                </span>
+                <span className="text-[#4A3F35]/45">{t.noAccount}</span>
 
                 <Link
                   href={`/${locale}/register`}
@@ -570,9 +532,7 @@ export default function LoginPage() {
                   href={`/${locale}`}
                   className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#4A3F35]/30 transition hover:text-[#5C6B9C]"
                 >
-                  {isEnglish
-                    ? "Back to Moodify"
-                    : "Kembali ke Moodify"}
+                  {isEnglish ? "Back to Moodify" : "Kembali ke Moodify"}
                 </Link>
               </div>
             </div>
