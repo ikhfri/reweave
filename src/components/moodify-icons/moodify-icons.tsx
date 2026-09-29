@@ -58,6 +58,353 @@ export function HomeIcon({
 }
 
 /* =========================================================
+   AUTH / FORM ICONS
+   Small utility icons for authentication pages
+========================================================= */
+
+/* =========================================================
+   EYE
+========================================================= */
+
+export function EyeIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      {...baseProps}
+      {...props}
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M8.5 24C12.1 17.9 17.3 14.5 24 14.5C30.7 14.5 35.9 17.9 39.5 24C35.9 30.1 30.7 33.5 24 33.5C17.3 33.5 12.1 30.1 8.5 24Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <circle
+        cx="24"
+        cy="24"
+        r="4.5"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
+
+/* =========================================================
+   EYE OFF
+========================================================= */
+
+export function EyeOffIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      {...baseProps}
+      {...props}
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M10 10L38 38"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M8.5 24C11.1 19.6 14.6 16.5 18.8 15"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M29.2 15C33.4 16.5 36.9 19.6 39.5 24C36 30 30.8 33.5 24 33.5C21.2 33.5 18.7 32.8 16.5 31.6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M21.2 21.2C20.5 22 20 22.9 20 24C20 26.2 21.8 28 24 28C25.1 28 26 27.5 26.8 26.8"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* =========================================================
+   LOCK
+========================================================= */
+
+export function LockIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      {...baseProps}
+      {...props}
+      className={className}
+      aria-hidden="true"
+    >
+      <rect
+        x="13"
+        y="21"
+        width="22"
+        height="17"
+        rx="4"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+
+      <path
+        d="M18 21V16.5C18 12.9 20.7 10 24 10C27.3 10 30 12.9 30 16.5V21"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+
+      <circle
+        cx="24"
+        cy="28"
+        r="2"
+        fill="currentColor"
+      />
+
+      <path
+        d="M24 30V33"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* =========================================================
+   MAIL
+========================================================= */
+
+export function MailIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      {...baseProps}
+      {...props}
+      className={className}
+      aria-hidden="true"
+    >
+      <rect
+        x="9"
+        y="13"
+        width="30"
+        height="22"
+        rx="5"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+
+      <path
+        d="M11.5 16L24 25.5L36.5 16"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M11.5 32L20 25.5M36.5 32L28 25.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* =========================================================
+   SHIELD
+========================================================= */
+
+export function ShieldIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      {...baseProps}
+      {...props}
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M24 8.5L36 13V22.5C36 30 31.2 35.5 24 39C16.8 35.5 12 30 12 22.5V13L24 8.5Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M18.5 24L22.2 27.7L29.8 20.2"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function BellIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M24 7.5C17.65 7.5 12.5 12.65 12.5 19V24.2C12.5 26.55 11.65 28.82 10.1 30.58L7.8 33.2C6.55 34.62 7.55 36.9 9.45 36.9H38.55C40.45 36.9 41.45 34.62 40.2 33.2L37.9 30.58C36.35 28.82 35.5 26.55 35.5 24.2V19C35.5 12.65 30.35 7.5 24 7.5Z"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M19 37C19.8 39.35 21.55 40.5 24 40.5C26.45 40.5 28.2 39.35 29 37"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function GlobeIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <circle
+        cx="24"
+        cy="24"
+        r="17"
+        stroke="currentColor"
+        strokeWidth="2.2"
+      />
+
+      <path
+        d="M7.5 24H40.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M24 7C28.6 11.7 31 17.4 31 24C31 30.6 28.6 36.3 24 41"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M24 7C19.4 11.7 17 17.4 17 24C17 30.6 19.4 36.3 24 41"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M10.5 15.5C14.35 17.15 19 18 24 18C29 18 33.65 17.15 37.5 15.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M10.5 32.5C14.35 30.85 19 30 24 30C29 30 33.65 30.85 37.5 32.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function SaveIcon({
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M9 8.5H32.5L39 15V39.5H9V8.5Z"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M15 8.5V20H32V8.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M15 39.5V28H33V39.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M19 13H28"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* =========================================================
    CHECK-IN
    Heart + calm expression
 ========================================================= */

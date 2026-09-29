@@ -4,15 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+
 import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  Mail,
-  ShieldCheck,
-  UserRound,
-} from "lucide-react";
+  ArrowRightIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  ShieldIcon,
+  UserIcon,
+} from "@/components/moodify-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/i18n/config";
@@ -39,9 +40,16 @@ const content = {
 
     subtitle: "Mulai perjalanan untuk lebih memahami dirimu.",
 
-    name: "Nama",
+    name: "Nama lengkap",
 
     namePlaceholder: "Masukkan nama kamu",
+
+    nickname: "Nama panggilan",
+
+    nicknamePlaceholder: "Opsional, misalnya Ikhsan",
+
+    nicknameHint:
+      "Bebas menggunakan nama yang nyaman untuk digunakan di Moodify.",
 
     email: "Email",
 
@@ -55,11 +63,17 @@ const content = {
 
     validation: {
       emptyName: "Nama tidak boleh kosong.",
+
       emptyEmail: "Email tidak boleh kosong.",
+
       invalidEmail: "Format email tidak valid.",
+
       unsupportedEmail:
         "Gunakan penyedia email umum (contoh: Gmail, Yahoo, Outlook).",
+
       emptyPassword: "Password tidak boleh kosong.",
+
+      shortPassword: "Password harus memiliki minimal 8 karakter.",
     },
 
     showPassword: "Tampilkan password",
@@ -81,6 +95,14 @@ const content = {
       registerFailed: "Gagal membuat akun.",
 
       general: "Terjadi kesalahan. Silakan coba lagi.",
+    },
+
+    features: {
+      personal: "Personal",
+
+      private: "Privat",
+
+      thoughtful: "Terjaga",
     },
   },
 
@@ -105,9 +127,16 @@ const content = {
 
     subtitle: "Start your journey toward understanding yourself better.",
 
-    name: "Name",
+    name: "Full name",
 
     namePlaceholder: "Enter your name",
+
+    nickname: "Nickname",
+
+    nicknamePlaceholder: "Optional, e.g. Ikhsan",
+
+    nicknameHint:
+      "Use any name that feels comfortable for you on Moodify.",
 
     email: "Email",
 
@@ -121,11 +150,17 @@ const content = {
 
     validation: {
       emptyName: "Name cannot be empty.",
+
       emptyEmail: "Email cannot be empty.",
+
       invalidEmail: "Invalid email format.",
+
       unsupportedEmail:
         "Please use a standard email provider (e.g., Gmail, Yahoo, Outlook).",
+
       emptyPassword: "Password cannot be empty.",
+
+      shortPassword: "Password must contain at least 8 characters.",
     },
 
     showPassword: "Show password",
@@ -148,6 +183,14 @@ const content = {
 
       general: "Something went wrong. Please try again.",
     },
+
+    features: {
+      personal: "Personal",
+
+      private: "Private",
+
+      thoughtful: "Thoughtful",
+    },
   },
 };
 
@@ -162,6 +205,7 @@ export default function RegisterPage() {
   const t = content[locale];
 
   const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -175,28 +219,44 @@ export default function RegisterPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
-    setErrorField(""); // Reset error field
 
-    if (!name.trim()) {
+    setError("");
+    setErrorField("");
+
+    /*
+     * =========================================================
+     * FRONTEND VALIDATION
+     * =========================================================
+     */
+
+    const trimmedName = name.trim();
+    const trimmedNickname = nickname.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!trimmedName) {
       setError(t.validation.emptyName);
       setErrorField("name");
       return;
     }
 
-    if (!email.trim()) {
+    if (!normalizedEmail) {
       setError(t.validation.emptyEmail);
       setErrorField("email");
       return;
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
+    if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
       setError(t.validation.invalidEmail);
       setErrorField("email");
       return;
     }
 
-    const domain = email.split("@")[1]?.toLowerCase();
+    /*
+     * Keep the same provider restriction from the original page.
+     */
+
+    const domain = normalizedEmail.split("@")[1]?.toLowerCase();
+
     const allowedDomains = [
       "gmail.com",
       "yahoo.com",
@@ -206,7 +266,7 @@ export default function RegisterPage() {
       "icloud.com",
     ];
 
-    if (!allowedDomains.includes(domain)) {
+    if (!domain || !allowedDomains.includes(domain)) {
       setError(t.validation.unsupportedEmail);
       setErrorField("email");
       return;
@@ -219,40 +279,113 @@ export default function RegisterPage() {
     }
 
     if (password.length < 8) {
-      setError(t.passwordRequirement);
+      setError(t.validation.shortPassword);
       setErrorField("password");
       return;
     }
+
+    /*
+     * =========================================================
+     * REGISTER
+     * =========================================================
+     */
 
     setIsLoading(true);
 
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          name: trimmedName,
+
+          nickname: trimmedNickname || "",
+
+          email: normalizedEmail,
+
+          password,
+        }),
       });
 
       const data = await response.json();
 
+      /*
+       * =======================================================
+       * ERROR RESPONSE
+       * =======================================================
+       */
+
       if (!response.ok) {
+        /*
+         * Zod field errors
+         */
         if (data.errors?.fieldErrors) {
-          const firstKey = Object.keys(data.errors.fieldErrors)[0];
-          const firstErrorField = data.errors.fieldErrors[firstKey] as string[];
+          const fieldErrors = data.errors.fieldErrors;
+
+          const firstKey = Object.keys(fieldErrors)[0];
+
+          const firstErrorField = fieldErrors[
+            firstKey
+          ] as string[] | undefined;
+
           if (firstErrorField && firstErrorField.length > 0) {
             setError(firstErrorField[0]);
-            setErrorField(firstKey); // Set field dari backend (name/email/password)
+            setErrorField(firstKey);
             return;
           }
         }
+
+        /*
+         * Generic backend error
+         */
         setError(data.message || t.errors.registerFailed);
+        setErrorField("general");
+
+        return;
+      }
+
+      /*
+       * =======================================================
+       * SUCCESS
+       * =======================================================
+       *
+       * Register flow:
+       *
+       * Register
+       *    ↓
+       * Create account
+       *    ↓
+       * Create session
+       *    ↓
+       * Create verification OTP
+       *    ↓
+       * Send email
+       *    ↓
+       * Verify Email
+       *    ↓
+       * Onboarding
+       */
+
+      if (!data.user?.id) {
+        setError(t.errors.general);
         setErrorField("general");
         return;
       }
 
-      router.push(`/${locale}/onboarding`);
+      router.push(
+        `/${locale}/verify-email?userId=${encodeURIComponent(
+          data.user.id
+        )}`
+      );
+
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("REGISTER_PAGE_ERROR", error);
+
       setError(t.errors.general);
       setErrorField("general");
     } finally {
@@ -283,7 +416,9 @@ export default function RegisterPage() {
           ==================================================== */}
 
           <div className="relative z-10 flex min-h-screen flex-col justify-between p-12 xl:p-16">
-            {/* BRAND */}
+            {/* =================================================
+                BRAND
+            ================================================== */}
 
             <Link
               href={`/${locale}`}
@@ -291,7 +426,7 @@ export default function RegisterPage() {
               aria-label="Moodify"
             >
               <Image
-                src="/moodify-logo.png"
+                src="/Moodify-logo.png"
                 alt="Moodify"
                 width={180}
                 height={55}
@@ -300,7 +435,9 @@ export default function RegisterPage() {
               />
             </Link>
 
-            {/* CENTER */}
+            {/* =================================================
+                CENTER
+            ================================================== */}
 
             <div className="max-w-[520px]">
               {/* EYEBROW */}
@@ -335,34 +472,35 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* SMALL FEATURE ROW */}
+              {/* =================================================
+                  SMALL FEATURE ROW
+              ================================================== */}
 
-              <div className="mt-10 flex items-center gap-3">
+              <div className="mt-10 flex flex-wrap items-center gap-3">
                 <BrandPoint
-                  icon={<UserRound className="h-4 w-4" strokeWidth={1.8} />}
-                  text={locale === "en" ? "Personal" : "Personal"}
+                  icon={<UserIcon className="h-4 w-4" />}
+                  text={t.features.personal}
                 />
 
                 <BrandPoint
-                  icon={<LockKeyhole className="h-4 w-4" strokeWidth={1.8} />}
-                  text={locale === "en" ? "Private" : "Privat"}
+                  icon={<LockIcon className="h-4 w-4" />}
+                  text={t.features.private}
                 />
 
                 <BrandPoint
-                  icon={<ShieldCheck className="h-4 w-4" strokeWidth={1.8} />}
-                  text={locale === "en" ? "Thoughtful" : "Terjaga"}
+                  icon={<ShieldIcon className="h-4 w-4" />}
+                  text={t.features.thoughtful}
                 />
               </div>
             </div>
 
-            {/* BOTTOM PRIVACY */}
+            {/* =================================================
+                BOTTOM PRIVACY
+            ================================================== */}
 
             <div className="flex max-w-md items-center gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#C1D5C0]/35">
-                <ShieldCheck
-                  className="h-4 w-4 text-[#5C6B9C]"
-                  strokeWidth={1.8}
-                />
+                <ShieldIcon className="h-4 w-4 text-[#5C6B9C]" />
               </div>
 
               <div>
@@ -396,7 +534,7 @@ export default function RegisterPage() {
               aria-label="Moodify"
             >
               <Image
-                src="/moodify-logo.png"
+                src="/Moodify-logo.png"
                 alt="Moodify"
                 width={150}
                 height={45}
@@ -422,14 +560,11 @@ export default function RegisterPage() {
                   HEADER
               ================================================== */}
 
-              <div className="mb-9">
+              <div className="mb-8">
                 {/* ICON */}
 
                 <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FBC4AB]/30">
-                  <UserRound
-                    className="h-[18px] w-[18px] text-[#5C6B9C]"
-                    strokeWidth={1.8}
-                  />
+                  <UserIcon className="h-[18px] w-[18px] text-[#5C6B9C]" />
                 </div>
 
                 {/* TITLE */}
@@ -449,7 +584,11 @@ export default function RegisterPage() {
                   FORM
               ================================================== */}
 
-              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-5"
+                noValidate
+              >
                 {/* =================================================
                     NAME
                 ================================================== */}
@@ -463,9 +602,8 @@ export default function RegisterPage() {
                   </label>
 
                   <div className="relative">
-                    <UserRound
+                    <UserIcon
                       className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
-                      strokeWidth={1.8}
                     />
 
                     <input
@@ -474,7 +612,9 @@ export default function RegisterPage() {
                       type="text"
                       autoComplete="name"
                       value={name}
-                      onChange={(event) => setName(event.target.value)}
+                      onChange={(event) =>
+                        setName(event.target.value)
+                      }
                       placeholder={t.namePlaceholder}
                       required
                       disabled={isLoading}
@@ -485,6 +625,48 @@ export default function RegisterPage() {
                       }`}
                     />
                   </div>
+                </div>
+
+                {/* =================================================
+                    NICKNAME
+                ================================================== */}
+
+                <div>
+                  <label
+                    htmlFor="nickname"
+                    className="mb-2 block text-xs font-semibold text-[#4A3F35]/75"
+                  >
+                    {t.nickname}
+                  </label>
+
+                  <div className="relative">
+                    <UserIcon
+                      className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
+                    />
+
+                    <input
+                      id="nickname"
+                      name="nickname"
+                      type="text"
+                      autoComplete="nickname"
+                      value={nickname}
+                      onChange={(event) =>
+                        setNickname(event.target.value)
+                      }
+                      placeholder={t.nicknamePlaceholder}
+                      maxLength={50}
+                      disabled={isLoading}
+                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        errorField === "nickname"
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
+                          : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
+                      }`}
+                    />
+                  </div>
+
+                  <p className="mt-2 text-[11px] leading-4 text-[#4A3F35]/35">
+                    {t.nicknameHint}
+                  </p>
                 </div>
 
                 {/* =================================================
@@ -500,9 +682,8 @@ export default function RegisterPage() {
                   </label>
 
                   <div className="relative">
-                    <Mail
+                    <MailIcon
                       className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
-                      strokeWidth={1.8}
                     />
 
                     <input
@@ -511,7 +692,9 @@ export default function RegisterPage() {
                       type="email"
                       autoComplete="email"
                       value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      onChange={(event) =>
+                        setEmail(event.target.value)
+                      }
                       placeholder={t.emailPlaceholder}
                       required
                       disabled={isLoading}
@@ -537,9 +720,8 @@ export default function RegisterPage() {
                   </label>
 
                   <div className="relative">
-                    <LockKeyhole
+                    <LockIcon
                       className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
-                      strokeWidth={1.8}
                     />
 
                     <input
@@ -548,7 +730,9 @@ export default function RegisterPage() {
                       type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
                       value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      onChange={(event) =>
+                        setPassword(event.target.value)
+                      }
                       placeholder={t.passwordPlaceholder}
                       required
                       minLength={8}
@@ -560,14 +744,22 @@ export default function RegisterPage() {
                       }`}
                     />
 
-                    {/* PASSWORD TOGGLE */}
+                    {/* =================================================
+                        PASSWORD TOGGLE
+                    ================================================== */}
 
                     <button
                       type="button"
-                      onClick={() => setShowPassword((previous) => !previous)}
+                      onClick={() =>
+                        setShowPassword(
+                          (previous) => !previous
+                        )
+                      }
                       disabled={isLoading}
                       aria-label={
-                        showPassword ? t.hidePassword : t.showPassword
+                        showPassword
+                          ? t.hidePassword
+                          : t.showPassword
                       }
                       className="
                         absolute
@@ -588,12 +780,9 @@ export default function RegisterPage() {
                       "
                     >
                       {showPassword ? (
-                        <EyeOff
-                          className="h-[17px] w-[17px]"
-                          strokeWidth={1.8}
-                        />
+                        <EyeOffIcon className="h-[17px] w-[17px]" />
                       ) : (
-                        <Eye className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                        <EyeIcon className="h-[17px] w-[17px]" />
                       )}
                     </button>
                   </div>
@@ -610,8 +799,13 @@ export default function RegisterPage() {
                 ================================================== */}
 
                 {error && (
-                  <div className="rounded-2xl border border-[#E2725B]/30 bg-[#E2725B]/10 px-4 py-3">
-                    <p className="text-xs leading-5 text-[#C95F4B]">{error}</p>
+                  <div
+                    role="alert"
+                    className="rounded-2xl border border-[#E2725B]/30 bg-[#E2725B]/10 px-4 py-3"
+                  >
+                    <p className="text-xs leading-5 text-[#C95F4B]">
+                      {error}
+                    </p>
                   </div>
                 )}
 
@@ -645,13 +839,14 @@ export default function RegisterPage() {
                     disabled:opacity-60
                   "
                 >
-                  <span>{isLoading ? t.registering : t.register}</span>
+                  <span>
+                    {isLoading
+                      ? t.registering
+                      : t.register}
+                  </span>
 
                   {!isLoading && (
-                    <ArrowRight
-                      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                      strokeWidth={1.8}
-                    />
+                    <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                   )}
                 </button>
               </form>
@@ -661,7 +856,9 @@ export default function RegisterPage() {
               ================================================== */}
 
               <div className="mt-8 flex items-center justify-center gap-1.5 text-sm">
-                <span className="text-[#4A3F35]/45">{t.alreadyAccount}</span>
+                <span className="text-[#4A3F35]/45">
+                  {t.alreadyAccount}
+                </span>
 
                 <Link
                   href={`/${locale}/login`}
@@ -677,10 +874,7 @@ export default function RegisterPage() {
 
               <div className="mt-9 border-t border-[#4A3F35]/[0.07] pt-6">
                 <div className="flex items-start gap-3">
-                  <ShieldCheck
-                    className="mt-0.5 h-4 w-4 shrink-0 text-[#5C6B9C]/60"
-                    strokeWidth={1.8}
-                  />
+                  <ShieldIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#5C6B9C]/60" />
 
                   <p className="text-[10px] leading-5 text-[#4A3F35]/35">
                     {t.privacyNote}
@@ -697,7 +891,9 @@ export default function RegisterPage() {
                   href={`/${locale}`}
                   className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#4A3F35]/30 transition hover:text-[#5C6B9C]"
                 >
-                  {locale === "en" ? "Back to Moodify" : "Kembali ke Moodify"}
+                  {locale === "en"
+                    ? "Back to Moodify"
+                    : "Kembali ke Moodify"}
                 </Link>
               </div>
             </div>
@@ -712,14 +908,22 @@ export default function RegisterPage() {
    BRAND POINT
 ================================================================ */
 
-function BrandPoint({ icon, text }: { icon: React.ReactNode; text: string }) {
+function BrandPoint({
+  icon,
+  text,
+}: {
+  icon: React.ReactNode;
+  text: string;
+}) {
   return (
     <div className="flex items-center gap-2 text-[#4A3F35]/45">
       <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#5C6B9C]/[0.06] text-[#5C6B9C]">
         {icon}
       </div>
 
-      <span className="text-[10px] font-medium">{text}</span>
+      <span className="text-[10px] font-medium">
+        {text}
+      </span>
     </div>
   );
 }

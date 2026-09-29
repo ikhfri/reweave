@@ -68,6 +68,7 @@ type DashboardData = {
   user: {
     id: string;
     name: string;
+    nickname: string | null;
   };
 
   today: {
@@ -194,9 +195,11 @@ function EmotionArtwork({
 export default function DashboardClient({
   locale,
   userName,
+  nickname
 }: {
   locale: Locale;
   userName: string;
+  nickname: string | null;
 }) {
   const isEnglish = locale === "en";
 
@@ -208,6 +211,14 @@ export default function DashboardClient({
 
   const [error, setError] =
     useState("");
+
+  // Prioritaskan nickname dari data dashboard setelah API selesai.
+  // Jika belum tersedia, gunakan nickname dari server props.
+  // Jika nickname kosong/null, fallback ke nama lengkap.
+  const displayName =
+    data?.user.nickname?.trim() ||
+    nickname?.trim() ||
+    userName.trim();
 
   /* =======================================================
      LOAD DASHBOARD
@@ -547,10 +558,10 @@ export default function DashboardClient({
                   : "Sebentar untuk dirimu"}
               </p>
 
-              <h1 className="mt-3 text-[34px] font-semibold leading-[1.12] tracking-[-0.045em] text-[#4A3F35] sm:text-[46px]">
-                {getGreeting(isEnglish)},{" "}
-                {userName}.
-              </h1>
+           <h1 className="mt-3 text-[34px] font-semibold leading-[1.12] tracking-[-0.045em] text-[#4A3F35] sm:text-[46px]">
+  {getGreeting(isEnglish)},{" "}
+  {displayName}.
+</h1>
 
               <p className="mt-4 max-w-xl text-[14px] leading-7 text-[#4A3F35]/55 sm:text-[15px]">
                 {isEnglish

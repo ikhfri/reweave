@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getLocalDayRange } from "@/lib/date/timezone";
 
 const checkInSchema = z
   .object({
@@ -41,6 +42,7 @@ const checkInSchema = z
   })
   .superRefine((data, ctx) => {
     const hasEmotions = data.emotions.length > 0;
+
     const hasDescription =
       typeof data.emotionDescription === "string" &&
       data.emotionDescription.trim().length > 0;
@@ -102,7 +104,8 @@ export async function POST(request: Request) {
     const cleanedEmotionDescription =
       emotionDescription?.trim() || null;
 
-    const cleanedNote = note?.trim() || null;
+    const cleanedNote =
+      note?.trim() || null;
 
     // --------------------------------------------------
     // 3. Validate duplicate emotions
@@ -112,9 +115,8 @@ export async function POST(request: Request) {
       (emotion) => emotion.name,
     );
 
-    const uniqueEmotionSlugs = new Set(
-      emotionSlugs,
-    );
+    const uniqueEmotionSlugs =
+      new Set(emotionSlugs);
 
     if (
       uniqueEmotionSlugs.size !==
@@ -150,11 +152,12 @@ export async function POST(request: Request) {
           })
         : [];
 
-    const foundEmotionSlugs = new Set(
-      emotionRecords.map(
-        (emotion) => emotion.slug,
-      ),
-    );
+    const foundEmotionSlugs =
+      new Set(
+        emotionRecords.map(
+          (emotion) => emotion.slug,
+        ),
+      );
 
     const missingEmotions =
       emotionSlugs.filter(
@@ -178,9 +181,8 @@ export async function POST(request: Request) {
     // 5. Validate duplicate contexts
     // --------------------------------------------------
 
-    const uniqueContextSlugs = new Set(
-      contexts,
-    );
+    const uniqueContextSlugs =
+      new Set(contexts);
 
     if (
       uniqueContextSlugs.size !==
@@ -216,11 +218,12 @@ export async function POST(request: Request) {
           })
         : [];
 
-    const foundContextSlugs = new Set(
-      contextRecords.map(
-        (context) => context.slug,
-      ),
-    );
+    const foundContextSlugs =
+      new Set(
+        contextRecords.map(
+          (context) => context.slug,
+        ),
+      );
 
     const missingContexts =
       contexts.filter(
@@ -246,21 +249,47 @@ export async function POST(request: Request) {
 
     const now = new Date();
 
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
+    /*
+     * Use the user's configured timezone instead
+     * of relying on the server timezone.
+     *
+     * Default:
+     * Asia/Jakarta
+     */
 
-    const endOfDay = new Date(now);
-    endOfDay.setHours(23, 59, 59, 999);
+    const preference =
+      await prisma.userPreference.findUnique({
+        where: {
+          userId: user.id,
+        },
+        select: {
+          timezone: true,
+        },
+      });
+
+    const timezone =
+      preference?.timezone ||
+      "Asia/Jakarta";
+
+    const {
+      start: startOfDay,
+      end: endOfDay,
+    } = getLocalDayRange(
+      now,
+      timezone,
+    );
 
     const existingCheckin =
       await prisma.dailyCheckin.findFirst({
         where: {
           userId: user.id,
+
           checkinDate: {
             gte: startOfDay,
-            lte: endOfDay,
+            lt: endOfDay,
           },
         },
+
         select: {
           id: true,
         },
@@ -272,7 +301,8 @@ export async function POST(request: Request) {
           success: false,
           message:
             "You have already completed today's check-in.",
-          checkinId: existingCheckin.id,
+          checkinId:
+            existingCheckin.id,
         },
         { status: 409 },
       );
@@ -293,16 +323,19 @@ export async function POST(request: Request) {
      * The AI analysis can later interpret the
      * EmotionDescription and provide the emotional insight.
      */
-    const totalIntensity = emotions.reduce(
-      (total, emotion) =>
-        total + emotion.intensity,
-      0,
-    );
+
+    const totalIntensity =
+      emotions.reduce(
+        (total, emotion) =>
+          total + emotion.intensity,
+        0,
+      );
 
     const overallIntensity =
       emotions.length > 0
         ? Math.round(
-            totalIntensity / emotions.length,
+            totalIntensity /
+              emotions.length,
           )
         : 0;
 
@@ -310,128 +343,165 @@ export async function POST(request: Request) {
     // 9. Create transaction
     // --------------------------------------------------
 
-    const result = await prisma.$transaction(
-      async (tx) => {
-        // ----------------------------------------------
-        // Daily Check-in
-        // ----------------------------------------------
+    const result =
+      await prisma.$transaction(
+        async (tx) => {
+          // ----------------------------------------------
+          // Daily Check-in
+          // ----------------------------------------------
 
-        const checkin =
-          await tx.dailyCheckin.create({
-            data: {
-              userId: user.id,
-              checkinDate: now,
-              overallIntensity,
-              note: cleanedNote,
-            },
-          });
-
-        // ----------------------------------------------
-        // Emotion map
-        // ----------------------------------------------
-
-        const emotionRecordMap = new Map(
-          emotionRecords.map((emotion) => [
-            emotion.slug,
-            emotion,
-          ]),
-        );
-
-        // ----------------------------------------------
-        // Check-in emotions
-        // ----------------------------------------------
-
-        if (emotions.length > 0) {
-          await tx.checkinEmotion.createMany({
-            data: emotions.map(
-              (emotion, index) => {
-                const emotionRecord =
-                  emotionRecordMap.get(
-                    emotion.name,
-                  );
-
-                if (!emotionRecord) {
-                  throw new Error(
-                    `Emotion not found: ${emotion.name}`,
-                  );
-                }
-
-                return {
-                  checkinId: checkin.id,
-                  emotionId: emotionRecord.id,
-                  position: index + 1,
-                  intensity: emotion.intensity,
-                  note:
-                    emotion.note?.trim() ||
-                    null,
-                };
-              },
-            ),
-          });
-        }
-
-        // ----------------------------------------------
-        // Check-in contexts
-        // ----------------------------------------------
-
-        if (contextRecords.length > 0) {
-          await tx.checkinContext.createMany({
-            data: contextRecords.map(
-              (context) => ({
-                checkinId: checkin.id,
-                contextId: context.id,
-              }),
-            ),
-          });
-        }
-
-        // ----------------------------------------------
-        // Emotion Description
-        //
-        // Used when the user does not know
-        // what emotion they are experiencing.
-        // ----------------------------------------------
-
-        let emotionDescriptionRecord = null;
-
-        if (cleanedEmotionDescription) {
-          emotionDescriptionRecord =
-            await tx.emotionDescription.create({
+          const checkin =
+            await tx.dailyCheckin.create({
               data: {
                 userId: user.id,
-                checkinId: checkin.id,
-                description:
-                  cleanedEmotionDescription,
+
+                /*
+                 * Keep the real timestamp.
+                 *
+                 * The timezone is only used when
+                 * determining which local day this
+                 * timestamp belongs to.
+                 */
+                checkinDate: now,
+
+                overallIntensity,
+
+                note: cleanedNote,
               },
             });
-        }
 
-        // ----------------------------------------------
-        // Daily Story → DiaryEntry
-        // ----------------------------------------------
+          // ----------------------------------------------
+          // Emotion map
+          // ----------------------------------------------
 
-        let diaryEntry = null;
+          const emotionRecordMap =
+            new Map(
+              emotionRecords.map(
+                (emotion) => [
+                  emotion.slug,
+                  emotion,
+                ],
+              ),
+            );
 
-        if (cleanedNote) {
-          diaryEntry =
-            await tx.diaryEntry.create({
-              data: {
-                userId: user.id,
-                checkinId: checkin.id,
-                content: cleanedNote,
-                entryType: "TEXT",
-              },
+          // ----------------------------------------------
+          // Check-in emotions
+          // ----------------------------------------------
+
+          if (emotions.length > 0) {
+            await tx.checkinEmotion.createMany({
+              data: emotions.map(
+                (emotion, index) => {
+                  const emotionRecord =
+                    emotionRecordMap.get(
+                      emotion.name,
+                    );
+
+                  if (!emotionRecord) {
+                    throw new Error(
+                      `Emotion not found: ${emotion.name}`,
+                    );
+                  }
+
+                  return {
+                    checkinId:
+                      checkin.id,
+
+                    emotionId:
+                      emotionRecord.id,
+
+                    position:
+                      index + 1,
+
+                    intensity:
+                      emotion.intensity,
+
+                    note:
+                      emotion.note?.trim() ||
+                      null,
+                  };
+                },
+              ),
             });
-        }
+          }
 
-        return {
-          checkin,
-          diaryEntry,
-          emotionDescription:
-            emotionDescriptionRecord,
-        };
-      },
-    );
+          // ----------------------------------------------
+          // Check-in contexts
+          // ----------------------------------------------
+
+          if (contextRecords.length > 0) {
+            await tx.checkinContext.createMany({
+              data: contextRecords.map(
+                (context) => ({
+                  checkinId:
+                    checkin.id,
+
+                  contextId:
+                    context.id,
+                }),
+              ),
+            });
+          }
+
+          // ----------------------------------------------
+          // Emotion Description
+          //
+          // Used when the user does not know
+          // what emotion they are experiencing.
+          // ----------------------------------------------
+
+          let emotionDescriptionRecord =
+            null;
+
+          if (cleanedEmotionDescription) {
+            emotionDescriptionRecord =
+              await tx.emotionDescription.create({
+                data: {
+                  userId: user.id,
+
+                  checkinId:
+                    checkin.id,
+
+                  description:
+                    cleanedEmotionDescription,
+                },
+              });
+          }
+
+          // ----------------------------------------------
+          // Daily Story → DiaryEntry
+          // ----------------------------------------------
+
+          let diaryEntry = null;
+
+          if (cleanedNote) {
+            diaryEntry =
+              await tx.diaryEntry.create({
+                data: {
+                  userId: user.id,
+
+                  checkinId:
+                    checkin.id,
+
+                  content:
+                    cleanedNote,
+
+                  entryType:
+                    "TEXT",
+                },
+              });
+          }
+
+          return {
+            checkin,
+
+            diaryEntry,
+
+            emotionDescription:
+              emotionDescriptionRecord,
+          };
+        },
+      );
 
     // --------------------------------------------------
     // 10. Response
@@ -440,10 +510,16 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
+
         message:
           "Check-in saved successfully.",
-        checkin: result.checkin,
-        diaryEntry: result.diaryEntry,
+
+        checkin:
+          result.checkin,
+
+        diaryEntry:
+          result.diaryEntry,
+
         emotionDescription:
           result.emotionDescription,
       },

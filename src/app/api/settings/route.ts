@@ -12,6 +12,13 @@ const updateSettingsSchema = z.object({
     .max(100, "Nama terlalu panjang")
     .optional(),
 
+  nickname: z
+    .string()
+    .trim()
+    .max(50, "Nickname terlalu panjang")
+    .nullable()
+    .optional(),
+
   language: z.enum(["ID", "EN"]).optional(),
 
   communicationStyle: z
@@ -43,7 +50,10 @@ const updateSettingsSchema = z.object({
 
   dailyCheckinTime: z
     .string()
-    .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Format waktu harus HH:mm")
+    .regex(
+      /^([01]\d|2[0-3]):([0-5]\d)$/,
+      "Format waktu harus HH:mm",
+    )
     .nullable()
     .optional(),
 });
@@ -54,8 +64,12 @@ export async function GET() {
 
     if (!user) {
       return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 },
+        {
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        },
       );
     }
 
@@ -66,10 +80,12 @@ export async function GET() {
       select: {
         id: true,
         name: true,
+        nickname: true,
         email: true,
         gender: true,
         dateOfBirth: true,
         avatarUrl: true,
+
         preference: {
           select: {
             language: true,
@@ -85,8 +101,12 @@ export async function GET() {
 
     if (!settings) {
       return NextResponse.json(
-        { message: "User tidak ditemukan" },
-        { status: 404 },
+        {
+          message: "User tidak ditemukan",
+        },
+        {
+          status: 404,
+        },
       );
     }
 
@@ -110,6 +130,7 @@ export async function GET() {
       settings: {
         id: settings.id,
         name: settings.name,
+        nickname: settings.nickname,
         email: settings.email,
         gender: settings.gender,
         dateOfBirth: settings.dateOfBirth,
@@ -118,11 +139,18 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("GET /api/settings error:", error);
+    console.error(
+      "GET /api/settings error:",
+      error,
+    );
 
     return NextResponse.json(
-      { message: "Gagal mengambil pengaturan" },
-      { status: 500 },
+      {
+        message: "Gagal mengambil pengaturan",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }
@@ -133,27 +161,37 @@ export async function PATCH(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 },
+        {
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        },
       );
     }
 
     const body = await request.json();
 
-    const parsed = updateSettingsSchema.safeParse(body);
+    const parsed =
+      updateSettingsSchema.safeParse(body);
 
     if (!parsed.success) {
       return NextResponse.json(
         {
-          message: "Data pengaturan tidak valid",
-          errors: parsed.error.flatten(),
+          message:
+            "Data pengaturan tidak valid",
+          errors:
+            parsed.error.flatten(),
         },
-        { status: 400 },
+        {
+          status: 400,
+        },
       );
     }
 
     const {
       name,
+      nickname,
       language,
       communicationStyle,
       supportPreference,
@@ -162,96 +200,161 @@ export async function PATCH(request: Request) {
       dailyCheckinTime,
     } = parsed.data;
 
-    const result = await prisma.$transaction(async (tx) => {
-      if (name !== undefined) {
-        await tx.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            name,
-          },
-        });
-      }
+    const result =
+      await prisma.$transaction(
+        async (tx) => {
+          /**
+           * Update profile
+           */
+          if (
+            name !== undefined ||
+            nickname !== undefined
+          ) {
+            await tx.user.update({
+              where: {
+                id: user.id,
+              },
+              data: {
+                ...(name !== undefined && {
+                  name,
+                }),
 
-      const preference = await tx.userPreference.upsert({
-        where: {
-          userId: user.id,
-        },
-        create: {
-          userId: user.id,
-          ...(language !== undefined && { language }),
-          ...(communicationStyle !== undefined && {
-            communicationStyle,
-          }),
-          ...(supportPreference !== undefined && {
-            supportPreference,
-          }),
-          ...(journalingPreference !== undefined && {
-            journalingPreference,
-          }),
-          ...(notificationEnabled !== undefined && {
-            notificationEnabled,
-          }),
-          ...(dailyCheckinTime !== undefined && {
-            dailyCheckinTime,
-          }),
-        },
-        update: {
-          ...(language !== undefined && { language }),
-          ...(communicationStyle !== undefined && {
-            communicationStyle,
-          }),
-          ...(supportPreference !== undefined && {
-            supportPreference,
-          }),
-          ...(journalingPreference !== undefined && {
-            journalingPreference,
-          }),
-          ...(notificationEnabled !== undefined && {
-            notificationEnabled,
-          }),
-          ...(dailyCheckinTime !== undefined && {
-            dailyCheckinTime,
-          }),
-        },
-        select: {
-          language: true,
-          communicationStyle: true,
-          supportPreference: true,
-          journalingPreference: true,
-          notificationEnabled: true,
-          dailyCheckinTime: true,
-        },
-      });
+                ...(nickname !== undefined && {
+                  nickname:
+                    nickname === ""
+                      ? null
+                      : nickname,
+                }),
+              },
+            });
+          }
 
-      const updatedUser = await tx.user.findUnique({
-        where: {
-          id: user.id,
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      });
+          /**
+           * Update preferences
+           */
+          const preference =
+            await tx.userPreference.upsert({
+              where: {
+                userId: user.id,
+              },
 
-      return {
-        user: updatedUser,
-        preference,
-      };
-    });
+              create: {
+                userId: user.id,
+
+                ...(language !== undefined && {
+                  language,
+                }),
+
+                ...(communicationStyle !==
+                  undefined && {
+                  communicationStyle,
+                }),
+
+                ...(supportPreference !==
+                  undefined && {
+                  supportPreference,
+                }),
+
+                ...(journalingPreference !==
+                  undefined && {
+                  journalingPreference,
+                }),
+
+                ...(notificationEnabled !==
+                  undefined && {
+                  notificationEnabled,
+                }),
+
+                ...(dailyCheckinTime !==
+                  undefined && {
+                  dailyCheckinTime,
+                }),
+              },
+
+              update: {
+                ...(language !== undefined && {
+                  language,
+                }),
+
+                ...(communicationStyle !==
+                  undefined && {
+                  communicationStyle,
+                }),
+
+                ...(supportPreference !==
+                  undefined && {
+                  supportPreference,
+                }),
+
+                ...(journalingPreference !==
+                  undefined && {
+                  journalingPreference,
+                }),
+
+                ...(notificationEnabled !==
+                  undefined && {
+                  notificationEnabled,
+                }),
+
+                ...(dailyCheckinTime !==
+                  undefined && {
+                  dailyCheckinTime,
+                }),
+              },
+
+              select: {
+                language: true,
+                communicationStyle: true,
+                supportPreference: true,
+                journalingPreference: true,
+                notificationEnabled: true,
+                dailyCheckinTime: true,
+              },
+            });
+
+          /**
+           * Get updated user
+           */
+          const updatedUser =
+            await tx.user.findUnique({
+              where: {
+                id: user.id,
+              },
+
+              select: {
+                id: true,
+                name: true,
+                nickname: true,
+                email: true,
+              },
+            });
+
+          return {
+            user: updatedUser,
+            preference,
+          };
+        },
+      );
 
     return NextResponse.json({
-      message: "Pengaturan berhasil disimpan",
+      message:
+        "Pengaturan berhasil disimpan",
       settings: result,
     });
   } catch (error) {
-    console.error("PATCH /api/settings error:", error);
+    console.error(
+      "PATCH /api/settings error:",
+      error,
+    );
 
     return NextResponse.json(
-      { message: "Gagal menyimpan pengaturan" },
-      { status: 500 },
+      {
+        message:
+          "Gagal menyimpan pengaturan",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }

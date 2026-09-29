@@ -4,14 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+
 import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  Mail,
-  ShieldCheck,
-} from "lucide-react";
+  ArrowRightIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  ShieldIcon,
+} from "@/components/moodify-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/i18n/config";
@@ -117,7 +118,6 @@ export default function LoginPage() {
   const locale: Locale = localeParam === "en" ? "en" : "id";
 
   const isEnglish = locale === "en";
-
   const t = content[locale];
 
   const [email, setEmail] = useState("");
@@ -125,11 +125,13 @@ export default function LoginPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const [error, setError] = useState("");
   const [errorField, setErrorField] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setError("");
     setErrorField("");
 
@@ -139,7 +141,7 @@ export default function LoginPage() {
       return;
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
       setError(t.validation.invalidEmail);
       setErrorField("email");
       return;
@@ -156,29 +158,75 @@ export default function LoginPage() {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
       });
 
       const data = await response.json();
 
+      /*
+       * Password benar tetapi email belum diverifikasi.
+       *
+       * Backend mengembalikan:
+       *
+       * {
+       *   success: false,
+       *   code: "EMAIL_NOT_VERIFIED",
+       *   user: {
+       *     id: "...",
+       *     email: "...",
+       *   }
+       * }
+       */
+      if (
+        response.status === 403 &&
+        data.code === "EMAIL_NOT_VERIFIED" &&
+        data.user?.id
+      ) {
+        router.push(
+          `/${locale}/verify-email?userId=${encodeURIComponent(
+            data.user.id
+          )}`
+        );
+
+        return;
+      }
+
+      /*
+       * Login gagal.
+       */
       if (!response.ok) {
         if (response.status === 500) {
           setError(t.errors.general);
           setErrorField("general");
         } else {
           setError(t.errors.loginFailed);
-          // Jika login gagal (salah email/pass), beri warna merah ke keduanya
           setErrorField("all");
         }
+
         return;
       }
 
+      /*
+       * Login berhasil.
+       *
+       * Jika onboarding sudah selesai:
+       *   → dashboard
+       *
+       * Jika belum:
+       *   → onboarding
+       */
       if (data.user?.onboardingCompleted) {
         router.push(`/${locale}/dashboard`);
       } else {
         router.push(`/${locale}/onboarding`);
       }
+
       router.refresh();
     } catch {
       setError(t.errors.general);
@@ -188,6 +236,12 @@ export default function LoginPage() {
     }
   }
 
+  const emailHasError =
+    errorField === "email" || errorField === "all";
+
+  const passwordHasError =
+    errorField === "password" || errorField === "all";
+
   return (
     <main className="min-h-screen bg-[#FDFBF7] text-[#4A3F35]">
       <div className="grid min-h-screen lg:grid-cols-[0.92fr_1.08fr]">
@@ -196,7 +250,7 @@ export default function LoginPage() {
         ====================================================== */}
 
         <section className="relative hidden min-h-screen overflow-hidden bg-[#FDFBF7] lg:block">
-          {/* Subtle organic shapes */}
+          {/* Organic background shapes */}
 
           <div className="absolute -left-32 -top-32 h-[360px] w-[360px] rounded-full bg-[#FBC4AB]/20" />
 
@@ -213,7 +267,7 @@ export default function LoginPage() {
               aria-label="Moodify"
             >
               <Image
-                src="/moodify-logo.png"
+                src="/Moodify-logo.png"
                 alt="Moodify"
                 width={180}
                 height={55}
@@ -237,7 +291,7 @@ export default function LoginPage() {
                 {t.description}
               </p>
 
-              {/* Small brand statement */}
+              {/* Brand statement */}
 
               <div className="mt-10 flex max-w-md items-start gap-4 border-l-2 border-[#E2725B]/40 pl-5">
                 <div>
@@ -260,10 +314,7 @@ export default function LoginPage() {
 
             <div className="flex max-w-md items-center gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#C1D5C0]/35">
-                <ShieldCheck
-                  className="h-4 w-4 text-[#5C6B9C]"
-                  strokeWidth={1.8}
-                />
+                <ShieldIcon className="h-4 w-4 text-[#5C6B9C]" />
               </div>
 
               <div>
@@ -295,7 +346,7 @@ export default function LoginPage() {
               aria-label="Moodify"
             >
               <Image
-                src="/moodify-logo.png"
+                src="/Moodify-logo.png"
                 alt="Moodify"
                 width={150}
                 height={45}
@@ -317,10 +368,7 @@ export default function LoginPage() {
 
               <div className="mb-9">
                 <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FBC4AB]/30">
-                  <LockKeyhole
-                    className="h-[18px] w-[18px] text-[#5C6B9C]"
-                    strokeWidth={1.8}
-                  />
+                  <LockIcon className="h-[18px] w-[18px] text-[#5C6B9C]" />
                 </div>
 
                 <h2 className="text-[32px] font-semibold tracking-[-0.045em] text-[#4A3F35]">
@@ -334,7 +382,11 @@ export default function LoginPage() {
 
               {/* FORM */}
 
-              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-5"
+                noValidate
+              >
                 {/* EMAIL */}
 
                 <div>
@@ -346,9 +398,8 @@ export default function LoginPage() {
                   </label>
 
                   <div className="relative">
-                    <Mail
+                    <MailIcon
                       className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
-                      strokeWidth={1.8}
                     />
 
                     <input
@@ -357,12 +408,19 @@ export default function LoginPage() {
                       type="email"
                       autoComplete="email"
                       value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+
+                        if (errorField === "email") {
+                          setError("");
+                          setErrorField("");
+                        }
+                      }}
                       placeholder={t.emailPlaceholder}
                       required
                       disabled={isLoading}
                       className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
-                        errorField === "email" || errorField === "all"
+                        emailHasError
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/10"
                           : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
                       }`}
@@ -381,6 +439,10 @@ export default function LoginPage() {
                       {t.password}
                     </label>
 
+                    {/* Forgot password belum aktif.
+                        Akan kita sambungkan ketika flow OTP
+                        reset password dibuat. */}
+
                     <button
                       type="button"
                       disabled
@@ -391,9 +453,8 @@ export default function LoginPage() {
                   </div>
 
                   <div className="relative">
-                    <LockKeyhole
+                    <LockIcon
                       className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
-                      strokeWidth={1.8}
                     />
 
                     <input
@@ -402,12 +463,19 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      onChange={(event) => {
+                        setPassword(event.target.value);
+
+                        if (errorField === "password") {
+                          setError("");
+                          setErrorField("");
+                        }
+                      }}
                       placeholder={t.passwordPlaceholder}
                       required
                       disabled={isLoading}
                       className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-12 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
-                        errorField === "password" || errorField === "all"
+                        passwordHasError
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/10"
                           : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
                       }`}
@@ -415,10 +483,14 @@ export default function LoginPage() {
 
                     <button
                       type="button"
-                      onClick={() => setShowPassword((previous) => !previous)}
+                      onClick={() =>
+                        setShowPassword((previous) => !previous)
+                      }
                       disabled={isLoading}
                       aria-label={
-                        showPassword ? t.hidePassword : t.showPassword
+                        showPassword
+                          ? t.hidePassword
+                          : t.showPassword
                       }
                       className="
                         absolute
@@ -439,12 +511,9 @@ export default function LoginPage() {
                       "
                     >
                       {showPassword ? (
-                        <EyeOff
-                          className="h-[17px] w-[17px]"
-                          strokeWidth={1.8}
-                        />
+                        <EyeOffIcon className="h-[17px] w-[17px]" />
                       ) : (
-                        <Eye className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                        <EyeIcon className="h-[17px] w-[17px]" />
                       )}
                     </button>
                   </div>
@@ -453,8 +522,13 @@ export default function LoginPage() {
                 {/* ERROR */}
 
                 {error && (
-                  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
-                    <p className="text-xs leading-5 text-red-600">{error}</p>
+                  <div
+                    role="alert"
+                    className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3"
+                  >
+                    <p className="text-xs leading-5 text-red-600">
+                      {error}
+                    </p>
                   </div>
                 )}
 
@@ -486,13 +560,12 @@ export default function LoginPage() {
                     disabled:opacity-60
                   "
                 >
-                  <span>{isLoading ? t.loggingIn : t.login}</span>
+                  <span>
+                    {isLoading ? t.loggingIn : t.login}
+                  </span>
 
                   {!isLoading && (
-                    <ArrowRight
-                      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                      strokeWidth={1.8}
-                    />
+                    <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                   )}
                 </button>
               </form>
@@ -500,7 +573,9 @@ export default function LoginPage() {
               {/* REGISTER */}
 
               <div className="mt-8 flex items-center justify-center gap-1.5 text-sm">
-                <span className="text-[#4A3F35]/45">{t.noAccount}</span>
+                <span className="text-[#4A3F35]/45">
+                  {t.noAccount}
+                </span>
 
                 <Link
                   href={`/${locale}/register`}
@@ -514,10 +589,7 @@ export default function LoginPage() {
 
               <div className="mt-9 border-t border-[#4A3F35]/[0.07] pt-6">
                 <div className="flex items-start gap-3">
-                  <ShieldCheck
-                    className="mt-0.5 h-4 w-4 shrink-0 text-[#5C6B9C]/60"
-                    strokeWidth={1.8}
-                  />
+                  <ShieldIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#5C6B9C]/60" />
 
                   <p className="text-[10px] leading-5 text-[#4A3F35]/35">
                     {t.terms}
@@ -532,7 +604,9 @@ export default function LoginPage() {
                   href={`/${locale}`}
                   className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#4A3F35]/30 transition hover:text-[#5C6B9C]"
                 >
-                  {isEnglish ? "Back to Moodify" : "Kembali ke Moodify"}
+                  {isEnglish
+                    ? "Back to Moodify"
+                    : "Kembali ke Moodify"}
                 </Link>
               </div>
             </div>

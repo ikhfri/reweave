@@ -13,4 +13,12 @@ export {
   UserIcon,
   WellbeingIcon,
   MoodifyMark,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  ShieldIcon,
+  BellIcon,
+  GlobeIcon,
+  SaveIcon,
 } from "./moodify-icons";
