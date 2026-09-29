@@ -1,19 +1,29 @@
-import { getCurrentUser } from "@/lib/auth";
-import { isValidLocale, type Locale } from "@/i18n/config";
 import { redirect } from "next/navigation";
+
+import { getCurrentUser } from "@/lib/auth";
+import {
+  isValidLocale,
+  type Locale,
+} from "@/i18n/config";
 
 import DashboardClient from "./dashboard-client";
 
+type Props = {
+  params: Promise<{
+    locale: string;
+  }>;
+};
+
 export default async function DashboardPage({
   params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
+}: Props) {
+  const { locale: localeParam } = await params;
 
-  if (!isValidLocale(locale)) {
+  if (!isValidLocale(localeParam)) {
     redirect("/id/dashboard");
   }
+
+  const locale = localeParam as Locale;
 
   const user = await getCurrentUser();
 
@@ -27,8 +37,9 @@ export default async function DashboardPage({
 
   return (
     <DashboardClient
-      locale={locale as Locale}
+      locale={locale}
       userName={user.name}
+      nickname={user.nickname ?? null}
     />
   );
 }
