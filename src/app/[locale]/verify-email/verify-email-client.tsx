@@ -246,7 +246,7 @@ export default function VerifyEmailClient({
           <section className="w-full rounded-[28px] border border-[#4A3F35]/10 bg-white p-7 shadow-[0_20px_60px_rgba(74,63,53,0.08)] sm:p-9">
             <div className="mb-8 flex justify-center">
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.webp"
                 alt="Moodify"
                 width={150}
                 height={48}
@@ -283,7 +283,7 @@ export default function VerifyEmailClient({
           <div className="relative hidden min-h-[620px] overflow-hidden bg-[#FBC4AB]/35 p-10 lg:flex lg:flex-col lg:justify-between">
             <div className="relative z-10">
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.webp"
                 alt="Moodify"
                 width={150}
                 height={48}
@@ -319,7 +319,7 @@ export default function VerifyEmailClient({
             <div className="mx-auto w-full max-w-[430px]">
               <div className="mb-9 lg:hidden">
                 <Image
-                  src="/Moodify-logo.png"
+                  src="/moodify-logo.webp"
                   alt="Moodify"
                   width={150}
                   height={48}

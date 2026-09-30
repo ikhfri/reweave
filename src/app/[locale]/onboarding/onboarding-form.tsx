@@ -275,7 +275,7 @@ export default function OnboardingForm({
 
           <div className="flex items-center">
             <Image
-              src="/Moodify-logo.png"
+              src="/moodify-logo.webp"
               alt="Moodify"
               width={150}
               height={48}

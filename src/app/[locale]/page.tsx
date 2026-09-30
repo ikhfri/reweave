@@ -45,7 +45,7 @@ export default async function LandingPage({ params }: PageProps) {
             aria-label="Moodify"
           >
             <Image
-              src="/moodify-logo.png"
+              src="/moodify-logo.webp"
               alt="Moodify"
               width={150}
               height={45}
@@ -728,11 +728,11 @@ export default async function LandingPage({ params }: PageProps) {
                 className="inline-flex items-center"
               >
                 <Image
-                  src="/moodify-logo.png"
+                  src="/moodify-logo.webp"
                   alt="Moodify"
                   width={130}
                   height={40}
-                  className="h-8 w-auto object-contain"
+                  className="h-16 w-auto object-contain"
                 />
               </Link>
 

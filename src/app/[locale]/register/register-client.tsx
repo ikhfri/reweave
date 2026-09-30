@@ -453,7 +453,7 @@ export default function RegisterClient({
               aria-label="Moodify"
             >
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.webp"
                 alt="Moodify"
                 width={180}
                 height={55}
@@ -561,7 +561,7 @@ export default function RegisterClient({
               aria-label="Moodify"
             >
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.webp"
                 alt="Moodify"
                 width={150}
                 height={45}

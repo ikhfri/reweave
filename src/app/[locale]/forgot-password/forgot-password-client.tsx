@@ -191,7 +191,7 @@ export default function ForgotPasswordClient({
             {/* Logo */}
             <div className="mb-7 flex justify-center sm:mb-8">
               <Image
-                src="/Moodify-logo.png"
+                src="/moodify-logo.webp"
                 alt="Moodify"
                 width={132}
                 height={132}
