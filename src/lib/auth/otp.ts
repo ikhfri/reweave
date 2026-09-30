@@ -11,6 +11,12 @@ export function generateOtp(): string {
   return randomInt(100000, 1000000).toString();
 }
 
+/**
+ * ============================================================
+ * EMAIL VERIFICATION
+ * ============================================================
+ */
+
 export async function createEmailVerificationOtp(userId: string) {
   const now = new Date();
 
@@ -20,7 +26,7 @@ export async function createEmailVerificationOtp(userId: string) {
       purpose: "EMAIL_VERIFICATION",
       createdAt: {
         gte: new Date(
-          now.getTime() - OTP_RESEND_COOLDOWN_SECONDS * 1000
+          now.getTime() - OTP_RESEND_COOLDOWN_SECONDS * 1000,
         ),
       },
     },
@@ -34,7 +40,7 @@ export async function createEmailVerificationOtp(userId: string) {
       (now.getTime() - latestOtp.createdAt.getTime()) / 1000;
 
     const remainingSeconds = Math.ceil(
-      OTP_RESEND_COOLDOWN_SECONDS - elapsedSeconds
+      OTP_RESEND_COOLDOWN_SECONDS - elapsedSeconds,
     );
 
     throw new Error(`OTP_COOLDOWN:${remainingSeconds}`);
@@ -55,7 +61,7 @@ export async function createEmailVerificationOtp(userId: string) {
   const otpHash = await hashPassword(otp);
 
   const expiresAt = new Date(
-    now.getTime() + OTP_EXPIRATION_MINUTES * 60 * 1000
+    now.getTime() + OTP_EXPIRATION_MINUTES * 60 * 1000,
   );
 
   const verification = await prisma.otpVerification.create({
@@ -77,7 +83,7 @@ export async function createEmailVerificationOtp(userId: string) {
 
 export async function verifyEmailOtp(
   userId: string,
-  otp: string
+  otp: string,
 ) {
   const verification = await prisma.otpVerification.findFirst({
     where: {
@@ -113,7 +119,7 @@ export async function verifyEmailOtp(
 
   const valid = await verifyPassword(
     otp,
-    verification.otpHash
+    verification.otpHash,
   );
 
   if (!valid) {
@@ -156,5 +162,152 @@ export async function verifyEmailOtp(
 
   return {
     success: true,
+  };
+}
+
+/**
+ * ============================================================
+ * PASSWORD RESET
+ * ============================================================
+ */
+
+export async function createPasswordResetOtp(userId: string) {
+  const now = new Date();
+
+  const latestOtp = await prisma.otpVerification.findFirst({
+    where: {
+      userId,
+      purpose: "RESET_PASSWORD",
+      createdAt: {
+        gte: new Date(
+          now.getTime() - OTP_RESEND_COOLDOWN_SECONDS * 1000,
+        ),
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (latestOtp) {
+    const elapsedSeconds =
+      (now.getTime() - latestOtp.createdAt.getTime()) / 1000;
+
+    const remainingSeconds = Math.ceil(
+      OTP_RESEND_COOLDOWN_SECONDS - elapsedSeconds,
+    );
+
+    throw new Error(`OTP_COOLDOWN:${remainingSeconds}`);
+  }
+
+  /**
+   * Invalidate OTP reset password sebelumnya.
+   *
+   * verifiedAt dipakai sebagai tanda OTP sudah tidak aktif.
+   */
+  await prisma.otpVerification.updateMany({
+    where: {
+      userId,
+      purpose: "RESET_PASSWORD",
+      verifiedAt: null,
+    },
+    data: {
+      verifiedAt: now,
+    },
+  });
+
+  const otp = generateOtp();
+  const otpHash = await hashPassword(otp);
+
+  const expiresAt = new Date(
+    now.getTime() + OTP_EXPIRATION_MINUTES * 60 * 1000,
+  );
+
+  const verification = await prisma.otpVerification.create({
+    data: {
+      userId,
+      otpHash,
+      purpose: "RESET_PASSWORD",
+      expiresAt,
+      lastSentAt: now,
+    },
+  });
+
+  return {
+    id: verification.id,
+    otp,
+    expiresAt,
+  };
+}
+
+export async function verifyPasswordResetOtp(
+  userId: string,
+  otp: string,
+) {
+  const verification = await prisma.otpVerification.findFirst({
+    where: {
+      userId,
+      purpose: "RESET_PASSWORD",
+      verifiedAt: null,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!verification) {
+    return {
+      success: false,
+      reason: "NOT_FOUND" as const,
+    };
+  }
+
+  if (verification.expiresAt < new Date()) {
+    return {
+      success: false,
+      reason: "EXPIRED" as const,
+    };
+  }
+
+  if (verification.attempts >= OTP_MAX_ATTEMPTS) {
+    return {
+      success: false,
+      reason: "TOO_MANY_ATTEMPTS" as const,
+    };
+  }
+
+  const valid = await verifyPassword(
+    otp,
+    verification.otpHash,
+  );
+
+  if (!valid) {
+    await prisma.otpVerification.update({
+      where: {
+        id: verification.id,
+      },
+      data: {
+        attempts: {
+          increment: 1,
+        },
+      },
+    });
+
+    return {
+      success: false,
+      reason: "INVALID" as const,
+    };
+  }
+
+  /**
+   * Jangan langsung mengubah password di sini.
+   *
+   * Function ini hanya memvalidasi OTP.
+   * Password baru akan diubah oleh API reset-password
+   * setelah OTP berhasil diverifikasi.
+   */
+  return {
+    success: true,
+    verificationId: verification.id,
   };
 }
