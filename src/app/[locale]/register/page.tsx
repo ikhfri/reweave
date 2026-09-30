@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 import {
@@ -83,6 +83,9 @@ const content = {
     register: "Buat akun",
 
     registering: "Membuat akun...",
+    googleRegister: "Daftar dengan Google",
+    googleRegistering: "Menghubungkan...",
+    orContinueWith: "atau lanjutkan dengan",
 
     alreadyAccount: "Sudah punya akun?",
 
@@ -93,7 +96,9 @@ const content = {
 
     errors: {
       registerFailed: "Gagal membuat akun.",
-
+      googleFailed: "Pendaftaran dengan Google gagal. Silakan coba lagi.",
+      googleConflict:
+        "Akun Google ini sudah terhubung dengan akun Moodify.",
       general: "Terjadi kesalahan. Silakan coba lagi.",
     },
 
@@ -170,6 +175,9 @@ const content = {
     register: "Create account",
 
     registering: "Creating account...",
+    googleRegister: "Continue with Google",
+    googleRegistering: "Connecting...",
+    orContinueWith: "or continue with",
 
     alreadyAccount: "Already have an account?",
 
@@ -180,7 +188,9 @@ const content = {
 
     errors: {
       registerFailed: "Failed to create your account.",
-
+      googleFailed: "Google sign-up failed. Please try again.",
+      googleConflict:
+        "This Google account is already connected to a Moodify account.",
       general: "Something went wrong. Please try again.",
     },
 
@@ -197,6 +207,7 @@ const content = {
 export default function RegisterPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const localeParam = params.locale;
 
@@ -212,10 +223,23 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const [error, setError] = useState("");
 
   const [errorField, setErrorField] = useState("");
+
+  const googleError = searchParams.get("error");
+
+  const googleErrorMessage =
+    googleError === "google_account_conflict"
+      ? t.errors.googleConflict
+      : googleError === "google_auth_failed" ||
+          googleError === "google_config"
+        ? t.errors.googleFailed
+        : "";
+
+  const displayedError = error || googleErrorMessage;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -617,7 +641,7 @@ export default function RegisterPage() {
                       }
                       placeholder={t.namePlaceholder}
                       required
-                      disabled={isLoading}
+                      disabled={isLoading || isGoogleLoading}
                       className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "name"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
@@ -655,7 +679,7 @@ export default function RegisterPage() {
                       }
                       placeholder={t.nicknamePlaceholder}
                       maxLength={50}
-                      disabled={isLoading}
+                      disabled={isLoading || isGoogleLoading}
                       className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "nickname"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
@@ -697,7 +721,7 @@ export default function RegisterPage() {
                       }
                       placeholder={t.emailPlaceholder}
                       required
-                      disabled={isLoading}
+                      disabled={isLoading || isGoogleLoading}
                       className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "email"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
@@ -736,7 +760,7 @@ export default function RegisterPage() {
                       placeholder={t.passwordPlaceholder}
                       required
                       minLength={8}
-                      disabled={isLoading}
+                      disabled={isLoading || isGoogleLoading}
                       className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-12 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "password"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
@@ -755,7 +779,7 @@ export default function RegisterPage() {
                           (previous) => !previous
                         )
                       }
-                      disabled={isLoading}
+                      disabled={isLoading || isGoogleLoading}
                       aria-label={
                         showPassword
                           ? t.hidePassword
@@ -798,13 +822,13 @@ export default function RegisterPage() {
                     ERROR
                 ================================================== */}
 
-                {error && (
+                {displayedError && (
                   <div
                     role="alert"
                     className="rounded-2xl border border-[#E2725B]/30 bg-[#E2725B]/10 px-4 py-3"
                   >
                     <p className="text-xs leading-5 text-[#C95F4B]">
-                      {error}
+                      {displayedError}
                     </p>
                   </div>
                 )}
@@ -815,7 +839,7 @@ export default function RegisterPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isGoogleLoading}
                   className="
                     group
                     flex
@@ -850,6 +874,104 @@ export default function RegisterPage() {
                   )}
                 </button>
               </form>
+
+              {/* =================================================
+                  GOOGLE OAUTH
+              ================================================== */}
+
+              <div className="mt-5">
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute inset-x-0 h-px bg-[#4A3F35]/[0.07]" />
+                  <span className="relative bg-white px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[#4A3F35]/30">
+                    {t.orContinueWith}
+                  </span>
+                </div>
+
+                <a
+                  href={`/api/auth/google?locale=${locale}`}
+                  onClick={(event) => {
+                    if (isLoading || isGoogleLoading) {
+                      event.preventDefault();
+                      return;
+                    }
+
+                    setError("");
+                    setErrorField("");
+                    setIsGoogleLoading(true);
+                  }}
+                  aria-disabled={isLoading || isGoogleLoading}
+                  className="
+                    mt-5
+                    flex
+                    h-[52px]
+                    w-full
+                    items-center
+                    justify-center
+                    gap-3
+                    rounded-2xl
+                    border
+                    border-[#4A3F35]/10
+                    bg-white
+                    px-5
+                    text-sm
+                    font-semibold
+                    text-[#4A3F35]
+                    shadow-[0_1px_2px_rgba(74,63,53,0.03)]
+                    transition
+                    hover:border-[#C1D5C0]
+                    hover:bg-[#FDFBF7]
+                    active:scale-[0.995]
+                    focus:outline-none
+                    focus:ring-4
+                    focus:ring-[#5C6B9C]/10
+                    aria-disabled:pointer-events-none
+                    aria-disabled:opacity-60
+                  "
+                >
+                  {isGoogleLoading ? (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="h-4 w-4 animate-spin rounded-full border-2 border-[#4A3F35]/15 border-t-[#5C6B9C]"
+                      />
+                      <span>{t.googleRegistering}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="grid size-5 place-items-center"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="size-5"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21.8 12.23c0-.79-.07-1.55-.2-2.27H12v4.3h5.5a4.7 4.7 0 0 1-2.04 3.09v2.57h3.3c1.93-1.78 3.04-4.4 3.04-7.69Z"
+                            fill="#4285F4"
+                          />
+                          <path
+                            d="M12 22c2.76 0 5.08-.91 6.77-2.46l-3.3-2.57c-.91.61-2.07.97-3.47.97-2.67 0-4.93-1.8-5.74-4.22H2.85v2.65A10.22 10.22 0 0 0 12 22Z"
+                            fill="#34A853"
+                          />
+                          <path
+                            d="M6.26 13.72A6.14 6.14 0 0 1 5.94 12c0-.6.11-1.18.32-1.72V7.63H2.85A10 10 0 0 0 2 12c0 1.61.38 3.13 1.05 4.37l3.21-2.65Z"
+                            fill="#FBBC05"
+                          />
+                          <path
+                            d="M12 6.06c1.5 0 2.84.52 3.9 1.54l2.92-2.92C17.08 3.08 14.76 2 12 2a10.22 10.22 0 0 0-9.15 5.63l3.21 2.65C6.93 7.86 9.2 6.06 12 6.06Z"
+                            fill="#EA4335"
+                          />
+                        </svg>
+                      </span>
+
+                      <span>{t.googleRegister}</span>
+                    </>
+                  )}
+                </a>
+              </div>
 
               {/* =================================================
                   LOGIN

@@ -72,6 +72,11 @@ enum OtpPurpose {
   RESET_PASSWORD
 }
 
+enum AuthProvider {
+  PASSWORD
+  GOOGLE
+}
+
 model OtpVerification {
   id         String     @id @default(cuid())
   userId     String
@@ -99,6 +104,8 @@ model User {
   dateOfBirth  DateTime?
   avatarUrl    String?
 emailVerifiedAt  DateTime?
+authProvider AuthProvider @default(PASSWORD)
+googleId     String? @unique
 
   onboardingCompleted Boolean @default(false)
 
