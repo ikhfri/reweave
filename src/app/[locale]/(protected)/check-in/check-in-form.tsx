@@ -616,18 +616,30 @@ export default function CheckInForm({
                       )
                     }
                     disabled={disabled}
+                    style={
+                      selected
+                        ? {
+                            backgroundColor: `${getEmotionColor(emotion.slug)}35`,
+                          }
+                        : undefined
+                    }
                     className={[
                       "group relative min-h-[105px] border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
-                      selected
-                        ? "bg-[#fbc4ab]/40"
-                        : "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10",
+                      !selected
+                        ? "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10"
+                        : "",
                       disabled
                         ? "cursor-not-allowed opacity-30"
                         : "",
                     ].join(" ")}
                   >
                     {selected && (
-                      <span className="absolute left-0 top-0 h-full w-1 bg-[#e2725b]" />
+                      <span
+                        className="absolute left-0 top-0 h-full w-1"
+                        style={{
+                          backgroundColor: getEmotionColor(emotion.slug),
+                        }}
+                      />
                     )}
 
                     <div className="flex h-full flex-col justify-between gap-5">
@@ -642,19 +654,24 @@ export default function CheckInForm({
                             />
 
                           <span
-                            className={[
-                              "text-[10px] font-semibold uppercase tracking-[0.12em]",
-                              selected
-                                ? "text-[#e2725b]"
-                                : "text-[#4a3f35]/25",
-                            ].join(" ")}
+                            className="text-[10px] font-semibold uppercase tracking-[0.12em]"
+                            style={{
+                              color: selected
+                                ? getEmotionColor(emotion.slug)
+                                : undefined,
+                            }}
                           >
                             {emotion.category}
                           </span>
                         </div>
 
                         {selected && (
-                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e2725b]">
+                          <span
+                            className="flex h-5 w-5 items-center justify-center rounded-full"
+                            style={{
+                              backgroundColor: getEmotionColor(emotion.slug),
+                            }}
+                          >
                             <CheckIcon className="h-3 w-3 text-white" />
                           </span>
                         )}
@@ -725,7 +742,14 @@ export default function CheckInForm({
                             </div>
 
                             <div>
-                              <span className="mb-1 block h-1.5 w-8 rounded-full bg-[#e2725b]" />
+                              <span
+                                className="mb-1 block h-1.5 w-8 rounded-full"
+                                style={{
+                                  backgroundColor: getEmotionColor(
+                                    emotion.slug,
+                                  ),
+                                }}
+                              />
 
                               <h3 className="text-lg font-semibold">
                               {getEmotionLabel(
@@ -797,12 +821,29 @@ export default function CheckInForm({
                                       )
                                     }
                                     className={[
-                                      "h-2 flex-1 rounded-full transition-all",
+                                      "h-2 flex-1 rounded-full transition-all duration-200",
                                       level <=
                                       selectedEmotion.intensity
-                                        ? "bg-[#e2725b]"
+                                        ? ""
                                         : "bg-[#4a3f35]/10",
                                     ].join(" ")}
+                                    style={
+                                      level <=
+                                      selectedEmotion.intensity
+                                        ? {
+                                            backgroundColor:
+                                              ({
+                                                1: "#7FAF7B",
+                                                2: "#A8C58A",
+                                                3: "#D9C65B",
+                                                4: "#F2A65A",
+                                                5: "#E2725B",
+                                              } as const)[
+                                                level as 1 | 2 | 3 | 4 | 5
+                                              ],
+                                          }
+                                        : undefined
+                                    }
                                     aria-label={`Intensity ${level}`}
                                   />
                                 ),
@@ -1284,6 +1325,25 @@ const emotionImages: Record<string, string> = {
 
 function getEmotionImage(slug: string) {
   return emotionImages[slug.toLowerCase()] ?? "/emotions-emoji/calm.png";
+}
+
+const emotionColors: Record<string, string> = {
+  happy: "#fbc4ab",
+  loved: "#c39986",
+  excited: "#8f7163",
+  hopeful: "#d6e3d5",
+  calm: "#b1c5b1",
+  tired: "#879c87",
+  anxious: "#d66f5a",
+  stressed: "#a64d3b",
+  angry: "#782e20",
+  lonely: "#7182a4",
+  sad: "#475677",
+  overwhelmed: "#39405b",
+};
+
+function getEmotionColor(slug: string) {
+  return emotionColors[slug.toLowerCase()] ?? "#fbc4ab";
 }
 
 // =========================================================
