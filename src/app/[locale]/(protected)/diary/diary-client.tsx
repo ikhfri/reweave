@@ -273,6 +273,10 @@ function LoadingSpinner({
   );
 }
 
+// =========================================================
+// EMOTION HELPERS (ARTWORK, COLORS, & TRANSLATIONS)
+// =========================================================
+
 const emotionArtwork: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
   sad: "/emotions-emoji/sad.png",
@@ -285,6 +289,8 @@ const emotionArtwork: Record<string, string> = {
   lonely: "/emotions-emoji/lonely.png",
   grateful: "/emotions-emoji/grateful.png",
   frustrated: "/emotions-emoji/frustrated.png",
+  hopeful: "/emotions-emoji/hopeful.png",
+  loved: "/emotions-emoji/loved.png",
   overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
@@ -298,6 +304,45 @@ function getEmotionArtwork(slug: string) {
     emotionArtwork[normalized] ??
     "/emotions-emoji/calm.png"
   );
+}
+
+const emotionColors: Record<string, string> = {
+  happy: "#FBC4AB",
+  loved: "#C39986",
+  excited: "#8F7163",
+  hopeful: "#D6E3D5",
+  calm: "#B1C5B1",
+  tired: "#879C87",
+  anxious: "#D66F5A",
+  stressed: "#A64D3B",
+  angry: "#782E20",
+  lonely: "#7182A4",
+  sad: "#475677",
+  overwhelmed: "#39405B",
+};
+
+function getEmotionColor(slug: string) {
+  return emotionColors[slug?.toLowerCase()] ?? "#FBC4AB";
+}
+
+const emotionTranslations: Record<string, { en: string; id: string }> = {
+  happy: { en: "Happy", id: "Bahagia" },
+  loved: { en: "Loved", id: "Dicintai" },
+  excited: { en: "Excited", id: "Antusias" },
+  hopeful: { en: "Hopeful", id: "Penuh Harapan" },
+  calm: { en: "Calm", id: "Tenang" },
+  tired: { en: "Tired", id: "Lelah" },
+  anxious: { en: "Anxious", id: "Cemas" },
+  stressed: { en: "Stressed", id: "Tertekan" },
+  angry: { en: "Angry", id: "Marah" },
+  lonely: { en: "Lonely", id: "Kesepian" },
+  sad: { en: "Sad", id: "Sedih" },
+  overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
+};
+
+function getEmotionLabel(slug: string, isEnglish: boolean) {
+  const translation = emotionTranslations[slug?.toLowerCase()];
+  return translation ? (isEnglish ? translation.en : translation.id) : slug;
 }
 
 function EmotionArtwork({
@@ -319,6 +364,10 @@ function EmotionArtwork({
     />
   );
 }
+
+// =========================================================
+// MAIN PAGE COMPONENT
+// =========================================================
 
 export default function DiaryClient({
   locale,
@@ -892,24 +941,16 @@ function DiaryEntry({
                     (item) => (
                       <span
                         key={`${diary.id}-${item.emotion.slug}`}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#FBC4AB]/25 px-2.5 py-1 text-[9px] font-semibold text-[#5C6B9C]"
+                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-semibold text-[#4A3F35]"
+                        style={{ backgroundColor: `${getEmotionColor(item.emotion.slug)}25` }}
                       >
                         <EmotionArtwork
-                          slug={
-                            item.emotion
-                              .slug
-                          }
-                          name={
-                            item.emotion
-                              .name
-                          }
+                          slug={item.emotion.slug}
+                          name={getEmotionLabel(item.emotion.slug, !isId)}
                           size={22}
                         />
 
-                        {
-                          item.emotion
-                            .name
-                        }
+                        {getEmotionLabel(item.emotion.slug, !isId)}
                       </span>
                     ),
                   )}

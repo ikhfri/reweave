@@ -37,38 +37,22 @@ type DiaryEntry = {
 
 type Analysis = {
   id: string;
-
   summary: string;
-
   validationMessage: string | null;
-
   stressScore: number | null;
-
   sentiment: string | null;
-
   emotionalState: string | null;
-
   possibleTriggers: unknown;
-
   thinkingPatterns: unknown;
-
   recommendations: unknown;
-
   riskLevel: string;
-
   model?: string | null;
-
   createdAt?: Date | string;
-
   updatedAt?: Date | string;
-
   checkin: {
     id?: string;
-
     emotions: CheckinEmotion[];
-
     contexts: CheckinContext[];
-
     diaryEntries: DiaryEntry[];
   } | null;
 };
@@ -78,12 +62,57 @@ type Props = {
   analysis: Analysis;
 };
 
+/*
+ * ============================================================
+ * TRANSLATION HELPERS
+ * ============================================================
+ */
+
+const emotionTranslations: Record<string, { en: string; id: string }> = {
+  happy: { en: "Happy", id: "Bahagia" },
+  loved: { en: "Loved", id: "Dicintai" },
+  excited: { en: "Excited", id: "Antusias" },
+  hopeful: { en: "Hopeful", id: "Penuh Harapan" },
+  calm: { en: "Calm", id: "Tenang" },
+  tired: { en: "Tired", id: "Lelah" },
+  anxious: { en: "Anxious", id: "Cemas" },
+  stressed: { en: "Stressed", id: "Tertekan" },
+  angry: { en: "Angry", id: "Marah" },
+  lonely: { en: "Lonely", id: "Kesepian" },
+  sad: { en: "Sad", id: "Sedih" },
+  overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
+};
+
+function getEmotionLabel(slug: string, fallbackName: string, isEnglish: boolean) {
+  const translation = emotionTranslations[slug?.toLowerCase()];
+  return translation ? (isEnglish ? translation.en : translation.id) : fallbackName;
+}
+
+const contextTranslations: Record<string, { en: string; id: string }> = {
+  family: { en: "Family", id: "Keluarga" },
+  financial: { en: "Financial", id: "Keuangan" },
+  "life changes": { en: "Life Changes", id: "Perubahan Hidup" },
+  "life-changes": { en: "Life Changes", id: "Perubahan Hidup" },
+  other: { en: "Other", id: "Lainnya" },
+  "physical health": { en: "Physical Health", id: "Kesehatan Fisik" },
+  "physical-health": { en: "Physical Health", id: "Kesehatan Fisik" },
+  relationship: { en: "Relationship", id: "Hubungan" },
+  "school / work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+  "school-work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+  sleep: { en: "Sleep", id: "Tidur" },
+  social: { en: "Social", id: "Sosial" },
+};
+
+function getContextLabel(slug: string, fallbackName: string, isEnglish: boolean) {
+  const translation = contextTranslations[slug?.toLowerCase()];
+  return translation ? (isEnglish ? translation.en : translation.id) : fallbackName;
+}
+
 export default function AIAnalysisResult({
   locale,
   analysis,
 }: Props) {
   const router = useRouter();
-
   const isEnglish = locale === "en";
 
   /*
@@ -162,13 +191,10 @@ export default function AIAnalysisResult({
       switch (value) {
         case "POSITIVE":
           return "Positive";
-
         case "NEGATIVE":
           return "Negative";
-
         case "NEUTRAL":
           return "Neutral";
-
         default:
           return analysis.sentiment;
       }
@@ -177,13 +203,10 @@ export default function AIAnalysisResult({
     switch (value) {
       case "POSITIVE":
         return "Positif";
-
       case "NEGATIVE":
         return "Negatif";
-
       case "NEUTRAL":
         return "Netral";
-
       default:
         return analysis.sentiment;
     }
@@ -195,12 +218,10 @@ export default function AIAnalysisResult({
         return isEnglish
           ? "Needs attention"
           : "Perlu perhatian";
-
       case "MODERATE":
         return isEnglish
           ? "Moderate"
           : "Sedang";
-
       default:
         return isEnglish
           ? "Low"
@@ -399,7 +420,8 @@ export default function AIAnalysisResult({
                 >
                   <div>
                     <p className="text-[16px] font-semibold">
-                      {item.emotion.name}
+                      {/* Diterjemahkan secara dinamis */}
+                      {getEmotionLabel(item.emotion.slug, item.emotion.name, isEnglish)}
                     </p>
 
                     <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#4A3F35]/30">
@@ -457,7 +479,8 @@ export default function AIAnalysisResult({
                   key={item.id}
                   className="border-b border-[#C1D5C0] pb-1 text-sm text-[#4A3F35]/65"
                 >
-                  {item.context.name}
+                  {/* Diterjemahkan secara dinamis */}
+                  {getContextLabel(item.context.slug, item.context.name, isEnglish)}
                 </span>
               ))}
             </div>

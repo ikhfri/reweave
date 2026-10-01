@@ -31,10 +31,7 @@ type Props = {
   userName: string;
 };
 
-export default function CheckInForm({
-  locale,
-  userName,
-}: Props) {
+export default function CheckInForm({ locale, userName }: Props) {
   const router = useRouter();
 
   const isEnglish = locale === "en";
@@ -46,43 +43,53 @@ export default function CheckInForm({
   const [emotions, setEmotions] = useState<Emotion[]>([]);
   const [contexts, setContexts] = useState<Context[]>([]);
 
-  const [isLoadingOptions, setIsLoadingOptions] =
-    useState(true);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
 
   // =========================================================
   // FORM STATE
   // =========================================================
 
-  const [selectedEmotions, setSelectedEmotions] =
-    useState<SelectedEmotion[]>([]);
+  const [selectedEmotions, setSelectedEmotions] = useState<SelectedEmotion[]>(
+    [],
+  );
 
-  const [selectedContexts, setSelectedContexts] =
-    useState<string[]>([]);
+  const [selectedContexts, setSelectedContexts] = useState<string[]>([]);
 
   const [note, setNote] = useState("");
 
-  const [emotionDescription, setEmotionDescription] =
-    useState("");
+  const [emotionDescription, setEmotionDescription] = useState("");
 
-  const [unknownEmotionMode, setUnknownEmotionMode] =
-    useState(false);
+  const [unknownEmotionMode, setUnknownEmotionMode] = useState(false);
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [error, setError] = useState("");
 
-  const [savedCheckinId, setSavedCheckinId] =
-    useState<string | null>(null);
+  const [savedCheckinId, setSavedCheckinId] = useState<string | null>(null);
 
   const [aiError, setAiError] = useState("");
 
-  const [isAnalyzing, setIsAnalyzing] =
-    useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // =========================================================
   // LOAD EMOTIONS + CONTEXTS
   // =========================================================
+
+  // Array urutan sesuai desain palet
+  const emotionOrder = [
+    "happy",
+    "loved",
+    "excited", // Afeksi & Energi Positif
+    "hopeful",
+    "calm",
+    "tired", // Pemulihan Kognitif & Istirahat
+    "anxious",
+    "stressed",
+    "angry", // Distres Akut
+    "lonely",
+    "sad",
+    "overwhelmed", // Depresi & Penarikan Diri
+  ];
 
   useEffect(() => {
     let cancelled = false;
@@ -92,43 +99,36 @@ export default function CheckInForm({
         setIsLoadingOptions(true);
         setError("");
 
-        const response = await fetch(
-          "/api/check-ins/options",
-          {
-            method: "GET",
-            cache: "no-store",
-          },
-        );
+        const response = await fetch("/api/check-ins/options", {
+          method: "GET",
+          cache: "no-store",
+        });
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            data.message ||
-              "Failed to load check-in options.",
-          );
+          throw new Error(data.message || "Failed to load check-in options.");
         }
 
         if (cancelled) {
           return;
         }
 
-        setEmotions(
-          Array.isArray(data.emotions)
-            ? data.emotions
-            : [],
-        );
+        // --- BAGIAN YANG DIUBAH (SORTING) ---
+        const fetchedEmotions = Array.isArray(data.emotions)
+          ? data.emotions
+          : [];
 
-        setContexts(
-          Array.isArray(data.contexts)
-            ? data.contexts
-            : [],
-        );
+        const sortedEmotions = [...fetchedEmotions].sort((a, b) => {
+          return emotionOrder.indexOf(a.slug) - emotionOrder.indexOf(b.slug);
+        });
+
+        setEmotions(sortedEmotions);
+        // ------------------------------------
+
+        setContexts(Array.isArray(data.contexts) ? data.contexts : []);
       } catch (loadError) {
-        console.error(
-          "Failed to load check-in options:",
-          loadError,
-        );
+        console.error("Failed to load check-in options:", loadError);
 
         if (!cancelled) {
           setError(
@@ -157,14 +157,10 @@ export default function CheckInForm({
 
   function toggleEmotion(slug: string) {
     setSelectedEmotions((current) => {
-      const alreadySelected = current.some(
-        (emotion) => emotion.slug === slug,
-      );
+      const alreadySelected = current.some((emotion) => emotion.slug === slug);
 
       if (alreadySelected) {
-        return current.filter(
-          (emotion) => emotion.slug !== slug,
-        );
+        return current.filter((emotion) => emotion.slug !== slug);
       }
 
       if (current.length >= 3) {
@@ -183,19 +179,11 @@ export default function CheckInForm({
   }
 
   function getSelectedEmotion(slug: string) {
-    return selectedEmotions.find(
-      (emotion) => emotion.slug === slug,
-    );
+    return selectedEmotions.find((emotion) => emotion.slug === slug);
   }
 
-  function updateIntensity(
-    slug: string,
-    intensity: number,
-  ) {
-    const safeIntensity = Math.min(
-      5,
-      Math.max(1, intensity),
-    );
+  function updateIntensity(slug: string, intensity: number) {
+    const safeIntensity = Math.min(5, Math.max(1, intensity));
 
     setSelectedEmotions((current) =>
       current.map((emotion) =>
@@ -209,10 +197,7 @@ export default function CheckInForm({
     );
   }
 
-  function updateEmotionNote(
-    slug: string,
-    emotionNote: string,
-  ) {
+  function updateEmotionNote(slug: string, emotionNote: string) {
     setSelectedEmotions((current) =>
       current.map((emotion) =>
         emotion.slug === slug
@@ -257,38 +242,26 @@ export default function CheckInForm({
   // AI ANALYSIS
   // =========================================================
 
-  async function analyzeCheckin(
-    checkinId: string,
-  ) {
+  async function analyzeCheckin(checkinId: string) {
     setIsAnalyzing(true);
     setAiError("");
 
     try {
-      const analysisResponse = await fetch(
-        "/api/ai/analyze",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            checkinId,
-            language:
-              locale === "id"
-                ? "id"
-                : "en",
-          }),
+      const analysisResponse = await fetch("/api/ai/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          checkinId,
+          language: locale === "id" ? "id" : "en",
+        }),
+      });
 
-      const analysisData =
-        await analysisResponse.json();
+      const analysisData = await analysisResponse.json();
 
       if (!analysisResponse.ok) {
-        console.error(
-          "AI analysis error:",
-          analysisData,
-        );
+        console.error("AI analysis error:", analysisData);
 
         if (
           analysisResponse.status === 503 ||
@@ -314,10 +287,7 @@ export default function CheckInForm({
 
       return true;
     } catch (analysisError) {
-      console.error(
-        "AI analysis error:",
-        analysisError,
-      );
+      console.error("AI analysis error:", analysisError);
 
       setAiError(
         isEnglish
@@ -339,10 +309,7 @@ export default function CheckInForm({
     setError("");
     setAiError("");
 
-    if (
-      !unknownEmotionMode &&
-      selectedEmotions.length === 0
-    ) {
+    if (!unknownEmotionMode && selectedEmotions.length === 0) {
       setError(
         isEnglish
           ? "Please select at least one emotion."
@@ -352,10 +319,7 @@ export default function CheckInForm({
       return;
     }
 
-    if (
-      unknownEmotionMode &&
-      emotionDescription.trim().length === 0
-    ) {
+    if (unknownEmotionMode && emotionDescription.trim().length === 0) {
       setError(
         isEnglish
           ? "Please describe what you are feeling."
@@ -370,64 +334,43 @@ export default function CheckInForm({
     try {
       // 1. SAVE CHECK-IN
 
-      const checkinResponse = await fetch(
-        "/api/check-ins",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emotions: unknownEmotionMode
-              ? []
-              : selectedEmotions.map(
-                  (emotion) => ({
-                    name: emotion.slug,
-                    intensity: emotion.intensity,
-                    note:
-                      emotion.note.trim() || null,
-                  }),
-                ),
-            contexts: selectedContexts,
-            note: note.trim() || null,
-            emotionDescription: unknownEmotionMode
-              ? emotionDescription.trim()
-              : null,
-          }),
+      const checkinResponse = await fetch("/api/check-ins", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          emotions: unknownEmotionMode
+            ? []
+            : selectedEmotions.map((emotion) => ({
+                name: emotion.slug,
+                intensity: emotion.intensity,
+                note: emotion.note.trim() || null,
+              })),
+          contexts: selectedContexts,
+          note: note.trim() || null,
+          emotionDescription: unknownEmotionMode
+            ? emotionDescription.trim()
+            : null,
+        }),
+      });
 
-      const checkinData =
-        await checkinResponse.json();
+      const checkinData = await checkinResponse.json();
 
       if (!checkinResponse.ok) {
-        console.error(
-          "Check-in API error:",
-          checkinData,
-        );
+        console.error("Check-in API error:", checkinData);
 
         // If today's check-in already exists,
         // reuse it so AI analysis can be retried.
-        if (
-          checkinResponse.status === 409 &&
-          checkinData?.checkinId
-        ) {
-          const existingCheckinId =
-            checkinData.checkinId;
+        if (checkinResponse.status === 409 && checkinData?.checkinId) {
+          const existingCheckinId = checkinData.checkinId;
 
-          setSavedCheckinId(
-            existingCheckinId,
-          );
+          setSavedCheckinId(existingCheckinId);
 
-          const success =
-            await analyzeCheckin(
-              existingCheckinId,
-            );
+          const success = await analyzeCheckin(existingCheckinId);
 
           if (success) {
-            router.push(
-              `/${locale}/check-in/result/${existingCheckinId}`,
-            );
+            router.push(`/${locale}/check-in/result/${existingCheckinId}`);
 
             router.refresh();
           }
@@ -445,14 +388,10 @@ export default function CheckInForm({
         return;
       }
 
-      const checkinId =
-        checkinData?.checkin?.id;
+      const checkinId = checkinData?.checkin?.id;
 
       if (!checkinId) {
-        console.error(
-          "Check-in ID missing:",
-          checkinData,
-        );
+        console.error("Check-in ID missing:", checkinData);
 
         setError(
           isEnglish
@@ -467,23 +406,17 @@ export default function CheckInForm({
 
       // 2. GENERATE AI ANALYSIS
 
-      const success =
-        await analyzeCheckin(checkinId);
+      const success = await analyzeCheckin(checkinId);
 
       // 3. GO TO AI RESULT
 
       if (success) {
-        router.push(
-          `/${locale}/check-in/result/${checkinId}`,
-        );
+        router.push(`/${locale}/check-in/result/${checkinId}`);
 
         router.refresh();
       }
     } catch (submitError) {
-      console.error(
-        "Failed to submit check-in:",
-        submitError,
-      );
+      console.error("Failed to submit check-in:", submitError);
 
       setError(
         isEnglish
@@ -534,9 +467,7 @@ export default function CheckInForm({
           <span className="h-px w-8 bg-[#e2725b]" />
 
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
-            {isEnglish
-              ? "Daily check-in"
-              : "Check-in harian"}
+            {isEnglish ? "Daily check-in" : "Check-in harian"}
           </p>
         </div>
 
@@ -554,7 +485,6 @@ export default function CheckInForm({
       </header>
 
       <div className="space-y-16">
-
         {/* ===================================================
             EMOTIONS
         ==================================================== */}
@@ -595,26 +525,15 @@ export default function CheckInForm({
           ) : (
             <div className="grid grid-cols-2 border-l border-t border-[#4a3f35]/10 sm:grid-cols-3 lg:grid-cols-4">
               {emotions.map((emotion) => {
-                const selected = Boolean(
-                  getSelectedEmotion(
-                    emotion.slug,
-                  ),
-                );
+                const selected = Boolean(getSelectedEmotion(emotion.slug));
 
-                const disabled =
-                  !selected &&
-                  selectedEmotions.length >=
-                    3;
+                const disabled = !selected && selectedEmotions.length >= 3;
 
                 return (
                   <button
                     key={emotion.id}
                     type="button"
-                    onClick={() =>
-                      toggleEmotion(
-                        emotion.slug,
-                      )
-                    }
+                    onClick={() => toggleEmotion(emotion.slug)}
                     disabled={disabled}
                     style={
                       selected
@@ -625,12 +544,8 @@ export default function CheckInForm({
                     }
                     className={[
                       "group relative min-h-[105px] border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
-                      !selected
-                        ? "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10"
-                        : "",
-                      disabled
-                        ? "cursor-not-allowed opacity-30"
-                        : "",
+                      !selected ? "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10" : "",
+                      disabled ? "cursor-not-allowed opacity-30" : "",
                     ].join(" ")}
                   >
                     {selected && (
@@ -645,13 +560,13 @@ export default function CheckInForm({
                     <div className="flex h-full flex-col justify-between gap-5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <Image
-                              src={getEmotionImage(emotion.slug)}
-                              alt={getEmotionLabel(emotion)}
-                              width={52}
-                              height={52}
-                              className="h-full w-full object-contain"
-                            />
+                          <Image
+                            src={getEmotionImage(emotion.slug)}
+                            alt={getEmotionLabel(emotion, isEnglish)}
+                            width={52}
+                            height={52}
+                            className="h-full w-full object-contain"
+                          />
 
                           <span
                             className="text-[10px] font-semibold uppercase tracking-[0.12em]"
@@ -661,7 +576,7 @@ export default function CheckInForm({
                                 : undefined,
                             }}
                           >
-                            {emotion.category}
+                            {getCategoryLabel(emotion.category, isEnglish)}
                           </span>
                         </div>
 
@@ -678,9 +593,7 @@ export default function CheckInForm({
                       </div>
 
                       <span className="text-sm font-medium text-[#4a3f35]">
-                        {getEmotionLabel(
-                          emotion,
-                        )}
+                        {getEmotionLabel(emotion, isEnglish)}
                       </span>
                     </div>
                   </button>
@@ -697,239 +610,201 @@ export default function CheckInForm({
                 <div className="h-px flex-1 bg-[#4a3f35]/10" />
 
                 <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#4a3f35]/35">
-                  {isEnglish
-                    ? "A little deeper"
-                    : "Sedikit lebih dalam"}
-
+                  {isEnglish ? "A little deeper" : "Sedikit lebih dalam"}
                 </span>
 
                 <div className="h-px flex-1 bg-[#4a3f35]/10" />
               </div>
 
               <div className="space-y-8">
-                {selectedEmotions.map(
-                  (selectedEmotion) => {
-                    const emotion =
-                      emotions.find(
-                        (item) =>
-                          item.slug ===
-                          selectedEmotion.slug,
-                      );
+                {selectedEmotions.map((selectedEmotion) => {
+                  const emotion = emotions.find(
+                    (item) => item.slug === selectedEmotion.slug,
+                  );
 
-                    if (!emotion) {
-                      return null;
-                    }
+                  if (!emotion) {
+                    return null;
+                  }
 
-                    return (
-                      <article
-                        key={
-                          selectedEmotion.slug
-                        }
-                        className="grid gap-6 border-b border-[#4a3f35]/10 pb-8 lg:grid-cols-[0.7fr_1.3fr]"
-                      >
-                        {/* EMOTION INFO */}
+                  return (
+                    <article
+                      key={selectedEmotion.slug}
+                      className="grid gap-6 border-b border-[#4a3f35]/10 pb-8 lg:grid-cols-[0.7fr_1.3fr]"
+                    >
+                      {/* EMOTION INFO */}
 
-                        <div>
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fbc4ab]/25 p-1.5">
-                              <Image
-                                src={getEmotionImage(emotion.slug)}
-                                alt={getEmotionLabel(emotion)}
-                                width={52}
-                                height={52}
-                                className="h-full w-full object-contain"
-                              />
-                            </div>
-
-                            <div>
-                              <span
-                                className="mb-1 block h-1.5 w-8 rounded-full"
-                                style={{
-                                  backgroundColor: getEmotionColor(
-                                    emotion.slug,
-                                  ),
-                                }}
-                              />
-
-                              <h3 className="text-lg font-semibold">
-                              {getEmotionLabel(
-                                emotion,
-                              )}
-                              </h3>
-                            </div>
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="flex h-14 w-14 items-center justify-center rounded-2xl p-1.5"
+                            style={{
+                              backgroundColor: `${getEmotionColor(emotion.slug)}25`,
+                            }}
+                          >
+                            <Image
+                              src={getEmotionImage(emotion.slug)}
+                              alt={getEmotionLabel(emotion, isEnglish)}
+                              width={52}
+                              height={52}
+                              className="h-full w-full object-contain"
+                            />
                           </div>
 
-                          {emotion.description && (
-                            <p className="mt-3 max-w-sm text-sm leading-6 text-[#4a3f35]/50">
-                              {emotion.description}
-                            </p>
-                          )}
+                          <div>
+                            <span
+                              className="mb-1 block h-1.5 w-8 rounded-full"
+                              style={{
+                                backgroundColor: getEmotionColor(emotion.slug),
+                              }}
+                            />
+
+                            <h3 className="text-lg font-semibold">
+                              {getEmotionLabel(emotion, isEnglish)}
+                            </h3>
+                          </div>
                         </div>
 
-                        {/* INTENSITY + NOTE */}
+                        {emotion.description && (
+                          <p className="mt-3 max-w-sm text-sm leading-6 text-[#4a3f35]/50">
+                            {emotion.description}
+                          </p>
+                        )}
+                      </div>
 
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
-                              {isEnglish
-                                ? "Intensity"
-                                : "Intensitas"}
-                            </span>
+                      {/* INTENSITY + NOTE */}
 
-                            <span className="text-sm font-semibold text-[#e2725b]">
-                              {
-                                selectedEmotion.intensity
-                              }
-                              /5
-                            </span>
-                          </div>
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
+                            {isEnglish ? "Intensity" : "Intensitas"}
+                          </span>
 
-                          <div className="mt-4 flex items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                updateIntensity(
-                                  selectedEmotion.slug,
-                                  selectedEmotion.intensity -
-                                    1,
-                                )
-                              }
-                              disabled={
-                                selectedEmotion.intensity <=
-                                1
-                              }
-                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
-                              aria-label={
-                                isEnglish
-                                  ? "Decrease intensity"
-                                  : "Kurangi intensitas"
-                              }
-                            >
-                              <MinusIcon className="h-3.5 w-3.5" />
-                            </button>
+                          <span className="text-sm font-semibold text-[#e2725b]">
+                            {selectedEmotion.intensity}
+                            /5
+                          </span>
+                        </div>
 
-                            <div className="flex flex-1 gap-1.5">
-                              {[1, 2, 3, 4, 5].map(
-                                (level) => (
-                                  <button
-                                    key={level}
-                                    type="button"
-                                    onClick={() =>
-                                      updateIntensity(
-                                        selectedEmotion.slug,
-                                        level,
-                                      )
-                                    }
-                                    className={[
-                                      "h-2 flex-1 rounded-full transition-all duration-200",
-                                      level <=
-                                      selectedEmotion.intensity
-                                        ? ""
-                                        : "bg-[#4a3f35]/10",
-                                    ].join(" ")}
-                                    style={
-                                      level <=
-                                      selectedEmotion.intensity
-                                        ? {
-                                            backgroundColor:
-                                              ({
-                                                1: "#7FAF7B",
-                                                2: "#A8C58A",
-                                                3: "#D9C65B",
-                                                4: "#F2A65A",
-                                                5: "#E2725B",
-                                              } as const)[
-                                                level as 1 | 2 | 3 | 4 | 5
-                                              ],
-                                          }
-                                        : undefined
-                                    }
-                                    aria-label={`Intensity ${level}`}
-                                  />
-                                ),
-                              )}
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                updateIntensity(
-                                  selectedEmotion.slug,
-                                  selectedEmotion.intensity +
-                                    1,
-                                )
-                              }
-                              disabled={
-                                selectedEmotion.intensity >=
-                                5
-                              }
-                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
-                              aria-label={
-                                isEnglish
-                                  ? "Increase intensity"
-                                  : "Tambah intensitas"
-                              }
-                            >
-                              <PlusIcon className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-
-                          <div className="mt-2 flex justify-between text-[10px] text-[#4a3f35]/35">
-                            <span>
-                              {isEnglish
-                                ? "Very low"
-                                : "Sangat rendah"}
-                            </span>
-
-                            <span>
-                              {isEnglish
-                                ? "Very high"
-                                : "Sangat tinggi"}
-                            </span>
-                          </div>
-
-                          <label
-                            htmlFor={`emotion-note-${selectedEmotion.slug}`}
-                            className="mt-7 block text-xs font-semibold uppercase tracking-[0.1em] text-[#5c6b9c]"
-                          >
-                            {isEnglish
-                              ? "What is behind it?"
-                              : "Apa yang ada di baliknya?"}
-                          </label>
-
-                          <textarea
-                            id={`emotion-note-${selectedEmotion.slug}`}
-                            value={
-                              selectedEmotion.note
-                            }
-                            onChange={(event) =>
-                              updateEmotionNote(
+                        <div className="mt-4 flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateIntensity(
                                 selectedEmotion.slug,
-                                event.target.value,
+                                selectedEmotion.intensity - 1,
                               )
                             }
-                            maxLength={500}
-                            rows={2}
-                            placeholder={
+                            disabled={selectedEmotion.intensity <= 1}
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
+                            aria-label={
                               isEnglish
-                                ? "What made you feel this way?"
-                                : "Apa yang membuatmu merasa seperti ini?"
+                                ? "Decrease intensity"
+                                : "Kurangi intensitas"
                             }
-                            className="mt-3 w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-6 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
-                          />
+                          >
+                            <MinusIcon className="h-3.5 w-3.5" />
+                          </button>
 
-                          <div className="mt-1 text-right text-[10px] text-[#4a3f35]/30">
-                            {
-                              selectedEmotion.note
-                                .length
-                            }
-                            /500
+                          <div className="flex flex-1 gap-1.5">
+                            {[1, 2, 3, 4, 5].map((level) => (
+                              <button
+                                key={level}
+                                type="button"
+                                onClick={() =>
+                                  updateIntensity(selectedEmotion.slug, level)
+                                }
+                                className={[
+                                  "h-2 flex-1 rounded-full transition-all duration-200",
+                                  level <= selectedEmotion.intensity
+                                    ? ""
+                                    : "bg-[#4a3f35]/10",
+                                ].join(" ")}
+                                style={
+                                  level <= selectedEmotion.intensity
+                                    ? {
+                                        backgroundColor: (
+                                          {
+                                            1: "#7FAF7B",
+                                            2: "#A8C58A",
+                                            3: "#D9C65B",
+                                            4: "#F2A65A",
+                                            5: "#E2725B",
+                                          } as const
+                                        )[level as 1 | 2 | 3 | 4 | 5],
+                                      }
+                                    : undefined
+                                }
+                                aria-label={`Intensity ${level}`}
+                              />
+                            ))}
                           </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateIntensity(
+                                selectedEmotion.slug,
+                                selectedEmotion.intensity + 1,
+                              )
+                            }
+                            disabled={selectedEmotion.intensity >= 5}
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
+                            aria-label={
+                              isEnglish
+                                ? "Increase intensity"
+                                : "Tambah intensitas"
+                            }
+                          >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                      </article>
-                    );
-                  },
-                )}
+
+                        <div className="mt-2 flex justify-between text-[10px] text-[#4a3f35]/35">
+                          <span>
+                            {isEnglish ? "Very low" : "Sangat rendah"}
+                          </span>
+
+                          <span>
+                            {isEnglish ? "Very high" : "Sangat tinggi"}
+                          </span>
+                        </div>
+
+                        <label
+                          htmlFor={`emotion-note-${selectedEmotion.slug}`}
+                          className="mt-7 block text-xs font-semibold uppercase tracking-[0.1em] text-[#5c6b9c]"
+                        >
+                          {isEnglish
+                            ? "What is behind it?"
+                            : "Apa yang ada di baliknya?"}
+                        </label>
+
+                        <textarea
+                          id={`emotion-note-${selectedEmotion.slug}`}
+                          value={selectedEmotion.note}
+                          onChange={(event) =>
+                            updateEmotionNote(
+                              selectedEmotion.slug,
+                              event.target.value,
+                            )
+                          }
+                          maxLength={500}
+                          rows={2}
+                          placeholder={
+                            isEnglish
+                              ? "What made you feel this way?"
+                              : "Apa yang membuatmu merasa seperti ini?"
+                          }
+                          className="mt-3 w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-6 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
+                        />
+
+                        <div className="mt-1 text-right text-[10px] text-[#4a3f35]/30">
+                          {selectedEmotion.note.length}
+                          /500
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -979,9 +854,7 @@ export default function CheckInForm({
                   <textarea
                     value={emotionDescription}
                     onChange={(event) =>
-                      setEmotionDescription(
-                        event.target.value,
-                      )
+                      setEmotionDescription(event.target.value)
                     }
                     maxLength={2000}
                     rows={7}
@@ -1044,20 +917,13 @@ export default function CheckInForm({
           ) : (
             <div className="flex flex-wrap gap-x-7 gap-y-5 border-y border-[#4a3f35]/10 py-7">
               {contexts.map((context) => {
-                const selected =
-                  selectedContexts.includes(
-                    context.slug,
-                  );
+                const selected = selectedContexts.includes(context.slug);
 
                 return (
                   <button
                     key={context.id}
                     type="button"
-                    onClick={() =>
-                      toggleContext(
-                        context.slug,
-                      )
-                    }
+                    onClick={() => toggleContext(context.slug)}
                     className="group inline-flex items-center gap-3 text-left"
                   >
                     <span
@@ -1068,9 +934,7 @@ export default function CheckInForm({
                           : "border-[#4a3f35]/20 group-hover:border-[#e2725b]",
                       ].join(" ")}
                     >
-                      {selected && (
-                        <CheckIcon className="h-3 w-3 text-white" />
-                      )}
+                      {selected && <CheckIcon className="h-3 w-3 text-white" />}
                     </span>
 
                     <span
@@ -1081,9 +945,7 @@ export default function CheckInForm({
                           : "text-[#4a3f35]/55 group-hover:text-[#4a3f35]",
                       ].join(" ")}
                     >
-                      {getContextLabel(
-                        context,
-                      )}
+                      {getContextLabel(context, isEnglish)}
                     </span>
                   </button>
                 );
@@ -1104,9 +966,7 @@ export default function CheckInForm({
               </p>
 
               <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                {isEnglish
-                  ? "Tell your story"
-                  : "Ceritakan harimu"}
+                {isEnglish ? "Tell your story" : "Ceritakan harimu"}
               </h2>
             </div>
 
@@ -1125,17 +985,13 @@ export default function CheckInForm({
                 <MessageIcon className="h-5 w-5 text-[#e2725b]" />
 
                 <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
-                  {isEnglish
-                    ? "Your daily story"
-                    : "Cerita harianmu"}
+                  {isEnglish ? "Your daily story" : "Cerita harianmu"}
                 </span>
               </div>
 
               <textarea
                 value={note}
-                onChange={(event) =>
-                  setNote(event.target.value)
-                }
+                onChange={(event) => setNote(event.target.value)}
                 maxLength={2000}
                 rows={8}
                 placeholder={
@@ -1180,22 +1036,14 @@ export default function CheckInForm({
             <button
               type="button"
               onClick={async () => {
-                if (
-                  !savedCheckinId ||
-                  isAnalyzing
-                ) {
+                if (!savedCheckinId || isAnalyzing) {
                   return;
                 }
 
-                const success =
-                  await analyzeCheckin(
-                    savedCheckinId,
-                  );
+                const success = await analyzeCheckin(savedCheckinId);
 
                 if (success) {
-                  router.push(
-                    `/${locale}/check-in/result/${savedCheckinId}`,
-                  );
+                  router.push(`/${locale}/check-in/result/${savedCheckinId}`);
 
                   router.refresh();
                 }
@@ -1207,17 +1055,13 @@ export default function CheckInForm({
                 <>
                   <SpinnerIcon className="h-4 w-4 animate-spin" />
 
-                  {isEnglish
-                    ? "Analyzing..."
-                    : "Menganalisis..."}
+                  {isEnglish ? "Analyzing..." : "Menganalisis..."}
                 </>
               ) : (
                 <>
                   <SparkleIcon className="h-4 w-4" />
 
-                  {isEnglish
-                    ? "Try AI analysis again"
-                    : "Coba analisis lagi"}
+                  {isEnglish ? "Try AI analysis again" : "Coba analisis lagi"}
                 </>
               )}
             </button>
@@ -1230,9 +1074,7 @@ export default function CheckInForm({
 
         {error && (
           <div className="border-l-2 border-red-400 bg-red-50/70 px-5 py-4">
-            <p className="text-sm leading-6 text-red-600">
-              {error}
-            </p>
+            <p className="text-sm leading-6 text-red-600">{error}</p>
           </div>
         )}
 
@@ -1268,10 +1110,8 @@ export default function CheckInForm({
               disabled={
                 isSubmitting ||
                 isAnalyzing ||
-                (!unknownEmotionMode &&
-                  selectedEmotions.length === 0) ||
-                (unknownEmotionMode &&
-                  emotionDescription.trim().length === 0)
+                (!unknownEmotionMode && selectedEmotions.length === 0) ||
+                (unknownEmotionMode && emotionDescription.trim().length === 0)
               }
               className="group inline-flex h-12 w-full items-center justify-center gap-3 bg-[#e2725b] px-7 text-sm font-semibold text-white transition-all hover:bg-[#4a3f35] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
@@ -1289,9 +1129,7 @@ export default function CheckInForm({
                 </>
               ) : (
                 <>
-                  {isEnglish
-                    ? "Save check-in"
-                    : "Simpan check-in"}
+                  {isEnglish ? "Save check-in" : "Simpan check-in"}
 
                   <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </>
@@ -1310,16 +1148,16 @@ export default function CheckInForm({
 
 const emotionImages: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
-  sad: "/emotions-emoji/sad.png",
-  angry: "/emotions-emoji/angry.png",
-  anxious: "/emotions-emoji/anxious.png",
-  stressed: "/emotions-emoji/stressed.png",
+  loved: "/emotions-emoji/loved.png",
+  excited: "/emotions-emoji/excited.png",
+  hopeful: "/emotions-emoji/hopeful.png",
   calm: "/emotions-emoji/calm.png",
   tired: "/emotions-emoji/tired.png",
-  excited: "/emotions-emoji/excited.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  angry: "/emotions-emoji/angry.png",
   lonely: "/emotions-emoji/lonely.png",
-  grateful: "/emotions-emoji/grateful.png",
-  frustrated: "/emotions-emoji/frustrated.png",
+  sad: "/emotions-emoji/sad.png",
   overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
@@ -1328,45 +1166,95 @@ function getEmotionImage(slug: string) {
 }
 
 const emotionColors: Record<string, string> = {
-  happy: "#fbc4ab",
-  loved: "#c39986",
-  excited: "#8f7163",
-  hopeful: "#d6e3d5",
-  calm: "#b1c5b1",
-  tired: "#879c87",
-  anxious: "#d66f5a",
-  stressed: "#a64d3b",
-  angry: "#782e20",
-  lonely: "#7182a4",
+  happy: "#FBC4AB",
+  loved: "#C39986",
+  excited: "#8F7163",
+  hopeful: "#D6E3D5",
+  calm: "#B1C5B1",
+  tired: "#879C87",
+  anxious: "#D66F5A",
+  stressed: "#A64D3B",
+  angry: "#782E20",
+  lonely: "#7182A4",
   sad: "#475677",
-  overwhelmed: "#39405b",
+  overwhelmed: "#39405B",
 };
 
 function getEmotionColor(slug: string) {
-  return emotionColors[slug.toLowerCase()] ?? "#fbc4ab";
+  return emotionColors[slug.toLowerCase()] ?? "#FBC4AB";
 }
 
 // =========================================================
 // LABEL HELPERS
 // =========================================================
 
-function getEmotionLabel(
-  emotion: Emotion,
-) {
-  // Database remains the source of truth.
-  // Until localized fields are added to the schema,
-  // use the database name directly.
+const emotionTranslations: Record<string, { en: string; id: string }> = {
+  happy: { en: "Happy", id: "Bahagia" },
+  loved: { en: "Loved", id: "Dicintai" },
+  excited: { en: "Excited", id: "Antusias" },
+  hopeful: { en: "Hopeful", id: "Penuh Harapan" },
+  calm: { en: "Calm", id: "Tenang" },
+  tired: { en: "Tired", id: "Lelah" },
+  anxious: { en: "Anxious", id: "Cemas" },
+  stressed: { en: "Stressed", id: "Tertekan" },
+  angry: { en: "Angry", id: "Marah" },
+  lonely: { en: "Lonely", id: "Kesepian" },
+  sad: { en: "Sad", id: "Sedih" },
+  overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
+};
 
-  return emotion.name;
+function getEmotionLabel(emotion: Emotion, isEnglish: boolean) {
+  const translation = emotionTranslations[emotion.slug.toLowerCase()];
+  if (translation) {
+    return isEnglish ? translation.en : translation.id;
+  }
+  return emotion.name; // Fallback ke database jika tidak ada di kamus
 }
 
-function getContextLabel(
-  context: Context,
-) {
-  // Database remains the source of truth.
-  // Until localized fields are added to the schema,
-  // use the database name directly.
+const categoryTranslations: Record<string, { en: string; id: string }> = {
+  "positive affection": { en: "Positive Affection", id: "Afeksi Positif" },
+  "cognitive recovery": { en: "Cognitive Recovery", id: "Pemulihan Kognitif" },
+  "acute distress": { en: "Acute Distress", id: "Distres Akut" },
+  "depression & withdrawal": {
+    en: "Depression & Withdrawal",
+    id: "Depresi & Penarikan Diri",
+  },
+};
 
+function getCategoryLabel(categoryName: string, isEnglish: boolean) {
+  const translation = categoryTranslations[categoryName.toLowerCase()];
+  if (translation) {
+    return isEnglish ? translation.en : translation.id;
+  }
+  return categoryName;
+}
+
+const contextTranslations: Record<string, { en: string; id: string }> = {
+  family: { en: "Family", id: "Keluarga" },
+  financial: { en: "Financial", id: "Keuangan" },
+  "life changes": { en: "Life Changes", id: "Perubahan Hidup" },
+  "life-changes": { en: "Life Changes", id: "Perubahan Hidup" }, // Jaga-jaga jika format slug memakai strip
+  other: { en: "Other", id: "Lainnya" },
+  "physical health": { en: "Physical Health", id: "Kesehatan Fisik" },
+  "physical-health": { en: "Physical Health", id: "Kesehatan Fisik" },
+  relationship: { en: "Relationship", id: "Hubungan" },
+  "school / work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+  "school-work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+  sleep: { en: "Sleep", id: "Tidur" },
+  social: { en: "Social", id: "Sosial" },
+  
+  // Konteks tambahan jika sewaktu-waktu ada di database
+  work: { en: "Work", id: "Pekerjaan" },
+  health: { en: "Health", id: "Kesehatan" },
+  friends: { en: "Friends", id: "Teman" },
+  weather: { en: "Weather", id: "Cuaca" },
+};
+
+function getContextLabel(context: Context, isEnglish: boolean) {
+  const translation = contextTranslations[context.slug.toLowerCase()];
+  if (translation) {
+    return isEnglish ? translation.en : translation.id;
+  }
   return context.name;
 }
 
@@ -1398,7 +1286,13 @@ function Icon({
 function CheckIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M5 12.5 9.2 17 19 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M5 12.5 9.2 17 19 7"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Icon>
   );
 }
@@ -1406,7 +1300,12 @@ function CheckIcon(props: IconProps) {
 function HeartIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M12 20.2S4.2 15.4 4.2 9.7C4.2 6.8 6.2 5 8.7 5c1.5 0 2.7.7 3.3 1.8C12.6 5.7 13.8 5 15.3 5c2.5 0 4.5 1.8 4.5 4.7 0 5.7-7.8 10.5-7.8 10.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path
+        d="M12 20.2S4.2 15.4 4.2 9.7C4.2 6.8 6.2 5 8.7 5c1.5 0 2.7.7 3.3 1.8C12.6 5.7 13.8 5 15.3 5c2.5 0 4.5 1.8 4.5 4.7 0 5.7-7.8 10.5-7.8 10.5Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
     </Icon>
   );
 }
@@ -1414,8 +1313,19 @@ function HeartIcon(props: IconProps) {
 function ArrowRightIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M4 12h15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m13 6 6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M4 12h15"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="m13 6 6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Icon>
   );
 }
@@ -1423,7 +1333,12 @@ function ArrowRightIcon(props: IconProps) {
 function MinusIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M6 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M6 12h12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </Icon>
   );
 }
@@ -1431,7 +1346,12 @@ function MinusIcon(props: IconProps) {
 function PlusIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M12 6v12M6 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M12 6v12M6 12h12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </Icon>
   );
 }
@@ -1439,7 +1359,12 @@ function PlusIcon(props: IconProps) {
 function MessageIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M5.2 6.4A3.4 3.4 0 0 1 8.6 3h6.8a3.4 3.4 0 0 1 3.4 3.4v4.8a3.4 3.4 0 0 1-3.4 3.4h-3.2l-4.4 3v-3H8.6a3.4 3.4 0 0 1-3.4-3.4V6.4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path
+        d="M5.2 6.4A3.4 3.4 0 0 1 8.6 3h6.8a3.4 3.4 0 0 1 3.4 3.4v4.8a3.4 3.4 0 0 1-3.4 3.4h-3.2l-4.4 3v-3H8.6a3.4 3.4 0 0 1-3.4-3.4V6.4Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
     </Icon>
   );
 }
@@ -1447,8 +1372,18 @@ function MessageIcon(props: IconProps) {
 function SparkleIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="m12 3 1.15 5.85L19 10l-5.85 1.15L12 17l-1.15-5.85L5 10l5.85-1.15L12 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="m19 16 .55 2.45L22 19l-2.45.55L19 22l-.55-2.45L16 19l2.45-.55L19 16Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path
+        d="m12 3 1.15 5.85L19 10l-5.85 1.15L12 17l-1.15-5.85L5 10l5.85-1.15L12 3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m19 16 .55 2.45L22 19l-2.45.55L19 22l-.55-2.45L16 19l2.45-.55L19 16Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
     </Icon>
   );
 }
@@ -1456,8 +1391,12 @@ function SparkleIcon(props: IconProps) {
 function SpinnerIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M12 3a9 9 0 1 0 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M12 3a9 9 0 1 0 9 9"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </Icon>
   );
 }
-

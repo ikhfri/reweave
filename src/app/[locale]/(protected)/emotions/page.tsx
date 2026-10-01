@@ -41,6 +41,19 @@ const emotions: EmotionItem[] = [
   },
 
   {
+    slug: "loved",
+    nameId: "Dicintai",
+    nameEn: "Loved",
+    category: "positive",
+    descriptionId:
+      "Perasaan dihargai dan dicintai oleh orang lain.",
+    descriptionEn:
+      "A feeling of being valued and cared for by others.",
+    image: "/emotions-emoji/loved.png",
+    color: "#C39986",
+  },
+
+  {
     slug: "excited",
     nameId: "Antusias",
     nameEn: "Excited",
@@ -57,7 +70,7 @@ const emotions: EmotionItem[] = [
     slug: "grateful",
     nameId: "Bersyukur",
     nameEn: "Grateful",
-    category: "positive",
+    category: "calm",
     descriptionId:
       "Perasaan menghargai hal baik, bantuan, atau sesuatu yang berarti dalam hidup.",
     descriptionEn:
@@ -131,18 +144,18 @@ const emotions: EmotionItem[] = [
     color: "#782E20",
   },
 
-  {
-    slug: "frustrated",
-    nameId: "Frustrasi",
-    nameEn: "Frustrated",
-    category: "difficult",
-    descriptionId:
-      "Perasaan kesal atau terhambat ketika sesuatu tidak berjalan seperti yang diharapkan.",
-    descriptionEn:
-      "A feeling of irritation or difficulty when something does not go as expected.",
-    image: "/emotions-emoji/frustrated.png",
-    color: "#A64D3B",
-  },
+  // {
+  //   slug: "frustrated",
+  //   nameId: "Frustrasi",
+  //   nameEn: "Frustrated",
+  //   category: "difficult",
+  //   descriptionId:
+  //     "Perasaan kesal atau terhambat ketika sesuatu tidak berjalan seperti yang diharapkan.",
+  //   descriptionEn:
+  //     "A feeling of irritation or difficulty when something does not go as expected.",
+  //   image: "/emotions-emoji/frustrated.png",
+  //   color: "#A64D3B",
+  // },
 
   {
     slug: "lonely",
