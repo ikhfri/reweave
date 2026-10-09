@@ -258,19 +258,19 @@ export default function OnboardingForm({
       ====================================================== */}
 
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-[#FBC4AB]/20 blur-3xl" />
+        <div className="absolute -left-40 -top-40 h-105 w-105 rounded-full bg-[#FBC4AB]/20 blur-3xl" />
 
-        <div className="absolute -bottom-52 -right-40 h-[520px] w-[520px] rounded-full bg-[#C1D5C0]/20 blur-3xl" />
+        <div className="absolute -bottom-52 -right-40 h-130 w-130 rounded-full bg-[#C1D5C0]/20 blur-3xl" />
 
-        <div className="absolute right-[22%] top-[22%] h-28 w-28 rounded-full border border-[#5C6B9C]/[0.06]" />
+        <div className="absolute right-[22%] top-[22%] h-28 w-28 rounded-full border border-[#5C6B9C]/6" />
       </div>
 
       {/* =====================================================
           TOP BAR
       ====================================================== */}
 
-      <header className="relative z-20 border-b border-[#4A3F35]/[0.06] bg-[#FDFBF7]/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 sm:px-8 lg:px-10">
+      <header className="relative z-20 border-b border-[#4A3F35]/6 bg-[#FDFBF7]/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8 lg:px-10">
           {/* BRAND */}
 
           <div className="flex items-center">
@@ -340,7 +340,7 @@ export default function OnboardingForm({
 
           {/* PROGRESS */}
 
-          <div className="mt-4 h-1 overflow-hidden rounded-full bg-[#4A3F35]/[0.06]">
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-[#4A3F35]/6">
             <div
               className="h-full rounded-full bg-[#E2725B] transition-all duration-500 ease-out"
               style={{
@@ -599,7 +599,7 @@ export default function OnboardingForm({
               font-medium
               text-[#4A3F35]/45
               transition
-              hover:bg-[#4A3F35]/[0.04]
+              hover:bg-[#4A3F35]/4
               hover:text-[#4A3F35]/75
               disabled:pointer-events-none
               disabled:opacity-0
@@ -888,7 +888,7 @@ function SelectionCard({
         ${
           selected
             ? "border-[#E2725B]/45 bg-[#FFF8F4] shadow-[0_8px_25px_rgba(226,114,91,0.08)]"
-            : "border-[#4A3F35]/[0.08] bg-white hover:border-[#C1D5C0] hover:bg-[#FCFCF9]"
+            : "border-[#4A3F35]/8 bg-white hover:border-[#C1D5C0] hover:bg-[#FCFCF9]"
         }
       `}
     >

@@ -33,12 +33,10 @@ export default async function LandingPage({ params }: PageProps) {
     <main className="min-h-screen overflow-x-hidden bg-[#FDFBF7] text-[#4A3F35]">
       {/* =========================================================
           NAVBAR
-      ========================================================== */}
+      ========================================================= */}
 
-      <header className="sticky top-0 z-50 border-b border-[#4A3F35]/[0.07] bg-[#FDFBF7]/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-          {/* LOGO */}
-
+      <header className="sticky top-0 z-50 border-b border-[#4A3F35]/6 bg-[#FDFBF7]/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <Link
             href={`/${typedLocale}`}
             className="flex shrink-0 items-center"
@@ -54,48 +52,44 @@ export default async function LandingPage({ params }: PageProps) {
             />
           </Link>
 
-          {/* DESKTOP NAV */}
-
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav className="hidden items-center gap-8 md:flex">
             <a
               href="#features"
-              className="text-sm font-medium text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
+              className="text-sm text-[#4A3F35]/50 transition hover:text-[#4A3F35]"
             >
-              {isEnglish ? "Features" : "Fitur"}
+              {isEnglish ? "Inside" : "Isi"}
             </a>
 
             <a
               href="#how-it-works"
-              className="text-sm font-medium text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
+              className="text-sm text-[#4A3F35]/50 transition hover:text-[#4A3F35]"
             >
               {isEnglish ? "How it works" : "Cara kerja"}
             </a>
 
             <a
               href="#privacy"
-              className="text-sm font-medium text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
+              className="text-sm text-[#4A3F35]/50 transition hover:text-[#4A3F35]"
             >
               {isEnglish ? "Privacy" : "Privasi"}
             </a>
           </nav>
 
-          {/* AUTH ACTIONS */}
-
           <div className="flex items-center gap-2">
             <Link
               href={`/${typedLocale}/login`}
-              className="hidden rounded-xl px-4 py-2.5 text-sm font-medium text-[#4A3F35]/65 transition hover:bg-[#4A3F35]/[0.04] hover:text-[#4A3F35] sm:inline-flex"
+              className="hidden rounded-xl px-4 py-2.5 text-sm text-[#4A3F35]/60 transition hover:bg-[#4A3F35]/4 hover:text-[#4A3F35] sm:inline-flex"
             >
               {isEnglish ? "Login" : "Masuk"}
             </Link>
 
             <Link
               href={`/${typedLocale}/register`}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#5C6B9C] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
+              className="group inline-flex items-center gap-2 rounded-xl bg-[#5C6B9C] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
             >
-              {isEnglish ? "Register" : "Daftar"}
+              {isEnglish ? "Start free" : "Mulai gratis"}
 
-              <ArrowRightIcon className="h-4 w-4" />
+              <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
@@ -103,303 +97,153 @@ export default async function LandingPage({ params }: PageProps) {
 
       {/* =========================================================
           HERO
-      ========================================================== */}
+      ========================================================= */}
 
-      <section className="relative overflow-hidden">
-        {/* Decorative background */}
+      {/* HERO */}
+<section className="relative overflow-hidden">
+  <div className="pointer-events-none absolute -right-56 -top-48 h-150 w-150 rounded-full bg-[#FBC4AB]/25 blur-3xl" />
 
-        <div className="pointer-events-none absolute -right-52 -top-48 h-[560px] w-[560px] rounded-full bg-[#FBC4AB]/25 blur-3xl" />
+  <div className="pointer-events-none absolute -left-48 -bottom-45 h-130 w-130 rounded-full bg-[#C1D5C0]/25 blur-3xl" />
 
-        <div className="pointer-events-none absolute -left-52 bottom-0 h-[480px] w-[480px] rounded-full bg-[#C1D5C0]/20 blur-3xl" />
+  <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:pb-32 lg:pt-28">
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-24 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[1fr_0.9fr] lg:px-10 lg:pb-32 lg:pt-28">
-          {/* HERO CONTENT */}
+    {/* COPY */}
+    <div className="relative z-10 max-w-2xl">
+      <div className="mb-7 flex items-center gap-3">
+        <span className="h-px w-8 bg-[#E2725B]" />
 
-          <div className="max-w-2xl">
-            {/* Badge */}
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4A3F35]/45">
+          {isEnglish
+            ? "A quieter place for your thoughts"
+            : "Ruang kecil untuk pikiranmu"}
+        </span>
+      </div>
 
-            {/* Heading */}
+      <h1 className="max-w-175 text-[48px] font-semibold leading-[0.99] tracking-[-0.065em] sm:text-[62px] lg:text-[76px]">
+        {isEnglish ? (
+          <>
+            Know what
+            <br />
+            you actually feel.
+          </>
+        ) : (
+          <>
+            Tahu apa yang
+            <br />
+            kamu rasakan.
+          </>
+        )}
+      </h1>
 
-            <h1 className="mt-7 max-w-[720px] text-[48px] font-semibold leading-[1.02] tracking-[-0.06em] text-[#4A3F35] sm:text-[60px] lg:text-[72px]">
-              {isEnglish ? (
-                <>
-                  Understand
-                  <br />
-                  what you feel.
-                </>
-              ) : (
-                <>
-                  Pahami apa
-                  <br />
-                  yang kamu rasa.
-                </>
-              )}
-            </h1>
+      <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4A3F35]/58 sm:text-[16px]">
+        {isEnglish
+          ? "A private place to check in, write things down, and slowly understand the patterns behind your days."
+          : "Tempat pribadi buat check-in, menulis, dan perlahan memahami pola yang muncul dari hari-harimu."}
+      </p>
 
-            {/* Description */}
+      <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+        <Link
+          href={`/${typedLocale}/register`}
+          className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-6 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
+        >
+          {isEnglish ? "Start free" : "Mulai gratis"}
 
-            <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4A3F35]/60 sm:text-[16px]">
-              {isEnglish
-                ? "Moodify gives you a private space to check in, write what is on your mind, and understand your emotional patterns over time."
-                : "Moodify memberi kamu ruang pribadi untuk melakukan check-in, menulis apa yang ada di pikiranmu, dan memahami pola emosimu dari waktu ke waktu."}
-            </p>
+          <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
 
-            {/* HERO BUTTONS */}
+        <Link
+          href={`/${typedLocale}/login`}
+          className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white/55 px-6 text-sm font-medium text-[#4A3F35]/65 transition hover:bg-white hover:text-[#4A3F35]"
+        >
+          {isEnglish
+            ? "I already have an account"
+            : "Sudah punya akun"}
+        </Link>
+      </div>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={`/${typedLocale}/register`}
-                className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-6 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
-              >
-                {isEnglish ? "Start for free" : "Mulai sekarang"}
+      <div className="mt-8 flex items-center gap-2 text-xs text-[#4A3F35]/38">
+        <LockKeyhole
+          className="h-3.5 w-3.5"
+          strokeWidth={1.7}
+        />
 
-                <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
+        <span>
+          {isEnglish
+            ? "Your thoughts stay private."
+            : "Pikiranmu tetap pribadi."}
+        </span>
+      </div>
+    </div>
 
-              <Link
-                href={`/${typedLocale}/login`}
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white/60 px-6 text-sm font-medium text-[#4A3F35]/70 transition hover:bg-white hover:text-[#4A3F35]"
-              >
-                {isEnglish
-                  ? "I already have an account"
-                  : "Saya sudah punya akun"}
-              </Link>
-            </div>
+    {/* HERO VISUAL — PNG */}
+    <div className="relative mx-auto w-full max-w-140 lg:ml-auto">
+      <div className="pointer-events-none absolute -right-24 -top-20 h-80 w-80 rounded-full bg-[#FBC4AB]/30 blur-3xl" />
 
-            {/* Small privacy message */}
+      <div className="pointer-events-none absolute -bottom-16 -left-20 h-72 w-72 rounded-full bg-[#C1D5C0]/35 blur-3xl" />
 
-            <div className="mt-8 flex items-center gap-2 text-xs text-[#4A3F35]/40">
-              <LockKeyhole className="h-3.5 w-3.5" strokeWidth={1.8} />
+      <div className="relative">
+        <Image
+          src="/hero-visual.png"
+          alt={
+            isEnglish
+              ? "A quiet Moodify journal page"
+              : "Halaman jurnal Moodify yang tenang"
+          }
+          width={900}
+          height={900}
+          priority
+          className="
+            relative z-10
+            h-auto
+            w-full
+            object-contain
+            drop-shadow-[0_35px_55px_rgba(74,63,53,0.14)]
+          "
+        />
 
-              <span>
-                {isEnglish
-                  ? "A calm and private space for your everyday reflections."
-                  : "Ruang yang tenang dan privat untuk refleksimu setiap hari."}
-              </span>
-            </div>
-          </div>
+       
+      </div>
+    </div>
 
-          {/* HERO VISUAL */}
-
-          <div className="relative mx-auto w-full max-w-[510px] lg:ml-auto">
-            <div className="relative min-h-[500px] rounded-[40px] border border-[#4A3F35]/[0.06] bg-gradient-to-br from-[#FBC4AB]/45 via-white/40 to-[#C1D5C0]/35 p-5 sm:p-8">
-              {/* Decorative circles */}
-
-              <div className="absolute -right-3 top-6 h-18 w-18 rounded-full bg-[#C1D5C0]/60 sm:-right-6 sm:top-10 sm:h-20 sm:w-20" />
-
-              <div className="absolute -bottom-3 left-4 h-20 w-20 rounded-full bg-[#5C6B9C]/10 sm:-bottom-5 sm:left-8 sm:h-28 sm:w-28" />
-
-              {/* Main App Preview */}
-
-              <div className="relative mt-3 rounded-[28px] border border-white bg-[#FDFBF7]/95 p-5 shadow-[0_28px_80px_rgba(74,63,53,0.13)] sm:p-7">
-                {/* Header */}
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
-                      {isEnglish ? "Daily check-in" : "Check-in hari ini"}
-                    </p>
-
-                    <p className="mt-1.5 text-lg font-semibold tracking-[-0.025em]">
-                      {isEnglish
-                        ? "How are you feeling?"
-                        : "Apa yang kamu rasakan?"}
-                    </p>
-                  </div>
-
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FBC4AB]/35">
-                    <WellbeingIcon
-                      className="h-4 w-4 text-[#E2725B]"
-                      strokeWidth={1.8}
-                    />
-                  </div>
-                </div>
-
-                {/* Emotions */}
-
-                <div className="mt-7 grid grid-cols-3 gap-2.5">
-                  <div className="rounded-2xl border border-[#E2725B]/20 bg-[#E2725B]/[0.07] p-3 text-center">
-                    <Image
-                      src="/emotions-emoji/calm.png"
-                      alt=""
-                      width={42}
-                      height={42}
-                      className="mx-auto object-contain mix-blend-multiply"
-                    />
-
-                    <p className="mt-2 text-[10px] font-medium">
-                      {isEnglish ? "Calm" : "Tenang"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-[#5C6B9C]/15 bg-[#5C6B9C]/[0.06] p-3 text-center">
-                    <Image
-                      src="/emotions-emoji/happy.png"
-                      alt=""
-                      width={42}
-                      height={42}
-                      className="mx-auto object-contain mix-blend-multiply"
-                    />
-
-                    <p className="mt-2 text-[10px] font-medium">
-                      {isEnglish ? "Okay" : "Baik"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-[#C1D5C0]/60 bg-[#C1D5C0]/15 p-3 text-center">
-                    <Image
-                      src="/emotions-emoji/tired.png"
-                      alt=""
-                      width={42}
-                      height={42}
-                      className="mx-auto object-contain mix-blend-multiply"
-                    />
-
-                    <p className="mt-2 text-[10px] font-medium">
-                      {isEnglish ? "Low" : "Lelah"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Emotional Rhythm */}
-
-                <div className="mt-7 rounded-2xl bg-[#4A3F35]/[0.035] p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
-                      {isEnglish ? "Your rhythm" : "Ritme emosimu"}
-                    </p>
-
-                    <InsightIcon className="h-3.5 w-3.5 text-[#5C6B9C]" />
-                  </div>
-
-                  <div className="mt-5 flex h-20 items-end gap-2">
-                    <div
-                      className="flex-1 rounded-t-md bg-[#E2725B]/35"
-                      style={{ height: "48%" }}
-                    />
-
-                    <div
-                      className="flex-1 rounded-t-md bg-[#E2725B]/50"
-                      style={{ height: "72%" }}
-                    />
-
-                    <div
-                      className="flex-1 rounded-t-md bg-[#E2725B]/30"
-                      style={{ height: "42%" }}
-                    />
-
-                    <div
-                      className="flex-1 rounded-t-md bg-[#5C6B9C]/55"
-                      style={{ height: "86%" }}
-                    />
-
-                    <div
-                      className="flex-1 rounded-t-md bg-[#5C6B9C]/40"
-                      style={{ height: "65%" }}
-                    />
-
-                    <div
-                      className="flex-1 rounded-t-md bg-[#C1D5C0]"
-                      style={{ height: "54%" }}
-                    />
-
-                    <div
-                      className="flex-1 rounded-t-md bg-[#E2725B]/45"
-                      style={{ height: "76%" }}
-                    />
-                  </div>
-
-                  <div className="mt-2 flex justify-between text-[8px] text-[#4A3F35]/30">
-                    <span>Mon</span>
-                    <span>Tue</span>
-                    <span>Wed</span>
-                    <span>Thu</span>
-                    <span>Fri</span>
-                    <span>Sat</span>
-                    <span>Sun</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Reflection Card */}
-
-              <div className="absolute -bottom-3 left-1 w-[215px] rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-[0_18px_50px_rgba(74,63,53,0.12)] sm:-bottom-5 sm:-left-8 sm:w-[235px] sm:p-4">
-                <div className="flex items-center gap-2 sm:gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5C6B9C]/10 sm:h-8 sm:w-8">
-                    <InsightIcon className="h-3.5 w-3.5 text-[#5C6B9C] sm:h-4 sm:w-4" />
-                  </div>
-
-                  <div>
-                    <p className="text-[9px] font-semibold sm:text-[10px]">
-                      {isEnglish ? "A gentle reflection" : "Refleksi kecil"}
-                    </p>
-
-                    <p className="text-[8px] text-[#4A3F35]/40 sm:text-[9px]">
-                      {isEnglish
-                        ? "Based on your check-in"
-                        : "Dari check-in kamu"}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="mt-2.5 text-[9px] leading-relaxed text-[#4A3F35]/55 sm:mt-3 sm:text-[10px] sm:leading-5">
-                  {isEnglish
-                    ? "You seem to be carrying a few things today. Taking a short pause may help."
-                    : "Sepertinya ada beberapa hal yang sedang kamu bawa hari ini. Berhenti sejenak mungkin bisa membantu."}
-                </p>
-              </div>
-
-              {/* Privacy Badge */}
-
-              <div className="absolute right-0 bottom-24 flex items-center gap-1.5 rounded-xl border border-white/80 bg-[#FDFBF7] px-2.5 py-2 shadow-[0_12px_35px_rgba(74,63,53,0.10)] sm:-right-3 sm:bottom-16 sm:gap-2 sm:px-3 sm:py-2.5">
-                <LockKeyhole
-                  className="h-3 w-3 text-[#5C6B9C] sm:h-3.5 sm:w-3.5"
-                  strokeWidth={1.8}
-                />
-                <span className="text-[8px] font-semibold text-[#4A3F35]/60 sm:text-[9px]">
-                  {isEnglish ? "Private space" : "Ruang pribadi"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+  </div>
+</section>
 
       {/* =========================================================
-          TRUST STRIP
-      ========================================================== */}
+          INTRO / TRUST
+      ========================================================= */}
 
-      <section className="border-y border-[#4A3F35]/[0.07] bg-white/40">
+      <section className="border-y border-[#4A3F35]/6 bg-[#F5EFE6]/45">
         <div className="mx-auto grid max-w-7xl md:grid-cols-3">
           <TrustItem
+            number="01"
             icon={<WellbeingIcon className="h-4 w-4" />}
-            title={
-              isEnglish ? "Check in with yourself" : "Check-in dengan dirimu"
-            }
+            title={isEnglish ? "Check in" : "Check-in"}
             description={
               isEnglish
-                ? "Notice your emotions without judgment."
-                : "Kenali emosimu tanpa menghakimi."
+                ? "Name what you feel without having to explain everything."
+                : "Sebutkan apa yang kamu rasakan tanpa harus menjelaskan semuanya."
             }
           />
 
           <TrustItem
+            number="02"
             icon={<DiaryIcon className="h-4 w-4" />}
-            title={isEnglish ? "A private diary" : "Diary pribadi"}
+            title={isEnglish ? "Put it down" : "Tuangkan"}
             description={
               isEnglish
-                ? "Write down what is on your mind."
-                : "Tuliskan apa yang sedang ada di pikiranmu."
+                ? "Write a few words or let the whole story out."
+                : "Tulis beberapa kata atau ceritakan semuanya."
             }
           />
 
           <TrustItem
+            number="03"
             icon={<InsightIcon className="h-4 w-4" />}
-            title={isEnglish ? "Understand your patterns" : "Pahami polamu"}
+            title={isEnglish ? "Look back" : "Lihat kembali"}
             description={
               isEnglish
-                ? "See your emotional rhythm over time."
-                : "Lihat ritme emosimu dari waktu ke waktu."
+                ? "Understand your days through patterns, not pressure."
+                : "Pahami harimu lewat pola, bukan tekanan."
             }
           />
         </div>
@@ -407,157 +251,209 @@ export default async function LandingPage({ params }: PageProps) {
 
       {/* =========================================================
           FEATURES
-      ========================================================== */}
+      ========================================================= */}
 
       <section
         id="features"
-        className="mx-auto max-w-7xl scroll-mt-24 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
+        className="scroll-mt-24 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
       >
-        <div className="max-w-2xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5C6B9C]">
-            {isEnglish
-              ? "Everything in one place"
-              : "Semuanya dalam satu ruang"}
-          </p>
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="h-px w-7 bg-[#E2725B]" />
 
-          <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.045em] sm:text-[44px]">
-            {isEnglish
-              ? "Small moments can tell you a lot."
-              : "Momen kecil bisa memberi banyak cerita."}
-          </h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
+                  {isEnglish ? "Inside Moodify" : "Di dalam Moodify"}
+                </p>
+              </div>
 
-          <p className="mt-5 max-w-xl text-sm leading-7 text-[#4A3F35]/55">
-            {isEnglish
-              ? "Moodify brings your check-ins, reflections, and emotional patterns into one calm space."
-              : "Moodify menyatukan check-in, refleksi, dan pola emosimu dalam satu ruang yang tenang."}
-          </p>
-        </div>
+              <h2 className="mt-5 max-w-lg text-[38px] font-semibold leading-[1.04] tracking-tighter sm:text-[50px]">
+                {isEnglish
+                  ? "A little space to understand yourself."
+                  : "Sedikit ruang untuk memahami dirimu."}
+              </h2>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <FeatureCard
-            icon={<WellbeingIcon className="h-5 w-5" />}
-            number="01"
-            title={isEnglish ? "Daily check-in" : "Check-in harian"}
-            description={
-              isEnglish
-                ? "Choose the emotions that feel closest to you and add context when you want to."
-                : "Pilih emosi yang paling mendekati perasaanmu dan tambahkan konteks jika kamu mau."
-            }
-          />
+              <p className="mt-6 max-w-md text-sm leading-7 text-[#4A3F35]/52">
+                {isEnglish
+                  ? "Nothing complicated. Just a few tools that make it easier to notice what is happening inside your days."
+                  : "Tidak ada yang rumit. Hanya beberapa hal sederhana untuk membantu melihat apa yang sedang terjadi di dalam hari-harimu."}
+              </p>
+            </div>
 
-          <FeatureCard
-            icon={<DiaryIcon className="h-5 w-5" />}
-            number="02"
-            title={isEnglish ? "Digital diary" : "Diary digital"}
-            description={
-              isEnglish
-                ? "Write or record your thoughts so your experiences have a place to live."
-                : "Tulis atau rekam ceritamu agar pengalamanmu punya ruang untuk disimpan."
-            }
-          />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <EditorialFeature
+                number="01"
+                icon={<WellbeingIcon className="h-5 w-5" />}
+                title={isEnglish ? "Daily check-in" : "Check-in harian"}
+                description={
+                  isEnglish
+                    ? "Choose the feeling that comes closest. Add context when you want."
+                    : "Pilih perasaan yang paling mendekati. Tambahkan konteks kalau kamu mau."
+                }
+              />
 
-          <FeatureCard
-            icon={<InsightIcon className="h-5 w-5" />}
-            number="03"
-            title={isEnglish ? "AI reflection" : "Refleksi dengan AI"}
-            description={
-              isEnglish
-                ? "Receive gentle reflections based on the content you choose to submit."
-                : "Dapatkan refleksi berdasarkan konten yang kamu pilih untuk dikirim."
-            }
-          />
+              <EditorialFeature
+                number="02"
+                icon={<DiaryIcon className="h-5 w-5" />}
+                title={isEnglish ? "Personal diary" : "Diary pribadi"}
+                description={
+                  isEnglish
+                    ? "Write, record, or simply leave a few words for yourself."
+                    : "Tulis, rekam, atau tinggalkan beberapa kata untuk dirimu sendiri."
+                }
+              />
 
-          <FeatureCard
-            icon={<InsightIcon className="h-5 w-5" />}
-            number="04"
-            title={isEnglish ? "Emotional insights" : "Insight emosional"}
-            description={
-              isEnglish
-                ? "Look back at your emotional rhythm and notice recurring patterns."
-                : "Lihat kembali ritme emosimu dan perhatikan pola yang berulang."
-            }
-          />
+              <EditorialFeature
+                number="03"
+                icon={<InsightIcon className="h-5 w-5" />}
+                title={isEnglish ? "Reflections" : "Refleksi"}
+                description={
+                  isEnglish
+                    ? "See small observations from what you choose to share."
+                    : "Lihat pengamatan kecil dari apa yang kamu pilih untuk dibagikan."
+                }
+              />
 
-          <FeatureCard
-            icon={<PrivacyIcon className="h-5 w-5" />}
-            number="05"
-            title={isEnglish ? "Privacy controls" : "Kontrol privasi"}
-            description={
-              isEnglish
-                ? "Manage your personal data with export and deletion controls."
-                : "Kelola data pribadimu dengan kontrol export dan penghapusan."
-            }
-          />
+              <EditorialFeature
+                number="04"
+                icon={<ActivityIcon className="h-5 w-5" />}
+                title={isEnglish ? "Gentle activities" : "Aktivitas ringan"}
+                description={
+                  isEnglish
+                    ? "Simple things to try when you need to pause for a moment."
+                    : "Hal sederhana yang bisa dicoba saat kamu butuh berhenti sejenak."
+                }
+              />
+            </div>
+          </div>
 
-          <FeatureCard
-            icon={<ActivityIcon className="h-5 w-5" />}
-            number="06"
-            title={isEnglish ? "Gentle activities" : "Aktivitas yang tenang"}
-            description={
-              isEnglish
-                ? "Find simple activities for moments when you need a pause."
-                : "Temukan aktivitas sederhana saat kamu membutuhkan jeda."
-            }
-          />
+          {/* Wide editorial card */}
+
+          <div className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+            <div className="relative min-h-70 overflow-hidden rounded-[30px] bg-[#5C6B9C] p-8 text-[#FDFBF7] sm:p-10">
+              <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full border border-white/10" />
+
+              <div className="absolute right-16 top-16 h-24 w-24 rounded-full border border-[#FBC4AB]/30" />
+
+              <div className="relative max-w-lg">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#FBC4AB]">
+                  {isEnglish ? "Your history" : "Riwayatmu"}
+                </span>
+
+                <h3 className="mt-5 text-[30px] font-semibold leading-tight tracking-[-0.04em] sm:text-[38px]">
+                  {isEnglish
+                    ? "Today is only one page."
+                    : "Hari ini hanya satu halaman."}
+                </h3>
+
+                <p className="mt-5 max-w-md text-sm leading-7 text-white/60">
+                  {isEnglish
+                    ? "Moodify helps you look at the pages around it, so you can notice what keeps appearing over time."
+                    : "Moodify membantumu melihat halaman-halaman di sekitarnya, supaya kamu bisa memperhatikan apa yang terus muncul dari waktu ke waktu."}
+                </p>
+              </div>
+
+              {/* abstract lines */}
+
+              <div className="absolute bottom-8 right-8 hidden w-48 sm:block">
+                <div className="flex items-end gap-2">
+                  <div className="h-8 flex-1 rounded-t-full bg-white/15" />
+                  <div className="h-14 flex-1 rounded-t-full bg-[#FBC4AB]/35" />
+                  <div className="h-10 flex-1 rounded-t-full bg-white/20" />
+                  <div className="h-20 flex-1 rounded-t-full bg-[#FBC4AB]/50" />
+                  <div className="h-12 flex-1 rounded-t-full bg-white/15" />
+                </div>
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[30px] border border-[#4A3F35]/[0.07] bg-[#F5EFE6] p-8 sm:p-10">
+              <div className="absolute -bottom-12 -right-12 h-36 w-36 rounded-full bg-[#C1D5C0]/60" />
+
+              <div className="relative">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/75 text-[#5C6B9C]">
+                  <PrivacyIcon className="h-5 w-5" />
+                </div>
+
+                <h3 className="mt-7 text-2xl font-semibold tracking-[-0.035em]">
+                  {isEnglish ? "Yours means yours." : "Punyamu tetap milikmu."}
+                </h3>
+
+                <p className="mt-4 text-sm leading-7 text-[#4A3F35]/52">
+                  {isEnglish
+                    ? "Your journal is not a public feed. It belongs to your account."
+                    : "Diary-mu bukan feed publik. Semuanya terhubung ke akunmu."}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* =========================================================
           HOW IT WORKS
-      ========================================================== */}
+      ========================================================= */}
 
       <section
         id="how-it-works"
-        className="scroll-mt-24 bg-[#5C6B9C] text-[#FDFBF7]"
+        className="scroll-mt-24 border-y border-[#4A3F35]/6 bg-[#F1E9DB]"
       >
-        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-28">
-          <div className="grid gap-14 lg:grid-cols-[0.75fr_1.25fr]">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#FBC4AB]">
-                {isEnglish ? "Simple by design" : "Sederhana sejak awal"}
-              </p>
+        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-3">
+              <span className="h-px w-7 bg-[#5C6B9C]" />
 
-              <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.045em] sm:text-[44px]">
-                {isEnglish
-                  ? "A few minutes for yourself."
-                  : "Beberapa menit untuk dirimu sendiri."}
-              </h2>
-
-              <p className="mt-5 max-w-md text-sm leading-7 text-white/65">
-                {isEnglish
-                  ? "You don't need to figure everything out at once. Start with one honest check-in."
-                  : "Kamu tidak perlu memahami semuanya sekaligus. Mulai saja dari satu check-in yang jujur."}
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
+                {isEnglish ? "A simple ritual" : "Ritual sederhana"}
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <StepCard
+            <h2 className="mt-5 text-[38px] font-semibold leading-[1.04] tracking-tighter sm:text-[50px]">
+              {isEnglish
+                ? "No complicated routine."
+                : "Tidak perlu rutinitas yang rumit."}
+            </h2>
+
+            <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
+              {isEnglish
+                ? "Open Moodify when you have a moment. Start wherever you are."
+                : "Buka Moodify saat kamu punya waktu sebentar. Mulai dari mana pun kamu berada."}
+            </p>
+          </div>
+
+          <div className="relative mt-16">
+            {/* timeline */}
+
+            <div className="absolute left-5 top-7 hidden h-px w-[calc(100%-40px)] bg-[#4A3F35]/10 md:block" />
+
+            <div className="grid gap-12 md:grid-cols-3 md:gap-8">
+              <TimelineStep
                 number="01"
                 title={isEnglish ? "Check in" : "Check-in"}
                 description={
                   isEnglish
-                    ? "Tell Moodify what you are feeling today."
-                    : "Ceritakan apa yang kamu rasakan hari ini."
+                    ? "Start with one question: how am I feeling right now?"
+                    : "Mulai dengan satu pertanyaan: bagaimana perasaanku sekarang?"
                 }
               />
 
-              <StepCard
+              <TimelineStep
                 number="02"
-                title={isEnglish ? "Reflect" : "Refleksi"}
+                title={isEnglish ? "Put it into words" : "Tuangkan"}
                 description={
                   isEnglish
-                    ? "Write a thought or let your feelings speak."
-                    : "Tulis ceritamu atau ungkapkan apa yang kamu rasakan."
+                    ? "Write as little or as much as you need. There is no right amount."
+                    : "Tulis sedikit atau sebanyak yang kamu butuhkan. Tidak ada jumlah yang benar."
                 }
               />
 
-              <StepCard
+              <TimelineStep
                 number="03"
-                title={isEnglish ? "Understand" : "Pahami"}
+                title={isEnglish ? "Notice" : "Perhatikan"}
                 description={
                   isEnglish
-                    ? "Look at patterns and gentle insights over time."
-                    : "Lihat pola dan insight emosimu dari waktu ke waktu."
+                    ? "Come back later and see what your days have been trying to tell you."
+                    : "Kembali lagi nanti dan lihat apa yang sedang coba dikatakan oleh hari-harimu."
                 }
               />
             </div>
@@ -567,95 +463,113 @@ export default async function LandingPage({ params }: PageProps) {
 
       {/* =========================================================
           PRIVACY
-      ========================================================== */}
+      ========================================================= */}
 
       <section
         id="privacy"
-        className="scroll-mt-24 border-b border-[#4A3F35]/[0.07]"
+        className="scroll-mt-24 border-b border-[#4A3F35]/6"
       >
         <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
-          <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr]">
-            {/* LEFT */}
+          <div className="grid items-center gap-16 lg:grid-cols-[0.9fr_1.1fr]">
+            {/* Privacy visual */}
 
-            <div className="relative overflow-hidden rounded-[30px] bg-[#C1D5C0]/35 p-8 sm:p-10">
-              <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/30" />
+            <div className="relative min-h-100 overflow-hidden rounded-[34px] bg-[#C1D5C0]/40 p-8 sm:p-10">
+              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/30" />
 
-              <div className="relative">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/75">
-                  <LockKeyhole
-                    className="h-5 w-5 text-[#5C6B9C]"
-                    strokeWidth={1.8}
-                  />
+              <div className="absolute -bottom-20 -left-10 h-52 w-52 rounded-full border-25 border-white/20" />
+
+              <div className="relative flex min-h-82.5 items-center justify-center">
+                <div className="relative w-full max-w-77.5 -rotate-3 rounded-[7px] bg-[#FFFDF8] p-7 shadow-[0_25px_60px_rgba(74,63,53,0.12)]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#4A3F35]/30">
+                      {isEnglish ? "Personal" : "Pribadi"}
+                    </span>
+
+                    <LockKeyhole
+                      className="h-4 w-4 text-[#5C6B9C]"
+                      strokeWidth={1.7}
+                    />
+                  </div>
+
+                  <div className="mt-8 space-y-4">
+                    <div className="h-2 w-[82%] rounded-full bg-[#4A3F35]/[0.07]" />
+                    <div className="h-2 w-[92%] rounded-full bg-[#4A3F35]/[0.07]" />
+                    <div className="h-2 w-[66%] rounded-full bg-[#4A3F35]/[0.07]" />
+                    <div className="h-2 w-[86%] rounded-full bg-[#4A3F35]/[0.07]" />
+                  </div>
+
+                  <div className="mt-10 flex items-center justify-between border-t border-[#4A3F35]/[0.07] pt-5">
+                    <span className="text-[9px] text-[#4A3F35]/35">
+                      {isEnglish
+                        ? "Only visible to you"
+                        : "Hanya terlihat olehmu"}
+                    </span>
+
+                    <div className="h-2 w-2 rounded-full bg-[#C1D5C0]" />
+                  </div>
                 </div>
-
-                <h3 className="mt-7 text-2xl font-semibold tracking-[-0.03em]">
-                  {isEnglish
-                    ? "Your feelings deserve a private space."
-                    : "Perasaanmu layak punya ruang yang privat."}
-                </h3>
-
-                <p className="mt-4 text-sm leading-7 text-[#4A3F35]/60">
-                  {isEnglish
-                    ? "Moodify is designed around personal reflection. Your diary and emotional data are connected to your account and should be treated as personal information."
-                    : "Moodify dirancang untuk refleksi pribadi. Diary dan data emosimu terhubung dengan akunmu dan perlu diperlakukan sebagai informasi pribadi."}
-                </p>
               </div>
             </div>
 
-            {/* RIGHT */}
+            {/* Privacy copy */}
 
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5C6B9C]">
-                {isEnglish ? "Privacy first" : "Privasi terlebih dahulu"}
-              </p>
+              <div className="flex items-center gap-3">
+                <span className="h-px w-7 bg-[#5C6B9C]" />
 
-              <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.045em] sm:text-[44px]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
+                  {isEnglish ? "Privacy" : "Privasi"}
+                </p>
+              </div>
+
+              <h2 className="mt-5 max-w-xl text-[38px] font-semibold leading-[1.04] tracking-tighter sm:text-[50px]">
                 {isEnglish
-                  ? "Built to feel personal, not exposed."
-                  : "Dibuat terasa personal, bukan terbuka untuk semua."}
+                  ? "Some thoughts are meant to stay yours."
+                  : "Ada hal yang memang cukup menjadi milikmu."}
               </h2>
 
-              <p className="mt-5 max-w-xl text-sm leading-7 text-[#4A3F35]/55">
+              <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
                 {isEnglish
-                  ? "You decide what you share with Moodify. The experience is designed to help you reflect without turning your private moments into something public."
-                  : "Kamu yang menentukan apa yang ingin kamu bagikan dengan Moodify. Pengalaman ini dirancang untuk membantumu berefleksi tanpa menjadikan momen pribadimu sesuatu yang terbuka."}
+                  ? "Your diary and check-ins are connected to your account. They are not a public timeline and are not shared with other users."
+                  : "Diary dan check-inmu terhubung ke akunmu. Bukan timeline publik dan tidak dibagikan kepada pengguna lain."}
               </p>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-9 space-y-4">
                 <PrivacyPoint
                   text={
                     isEnglish
-                      ? "Your diary stays connected to your account."
-                      : "Diary kamu tetap terhubung dengan akunmu."
+                      ? "Your entries stay attached to your account."
+                      : "Catatan tetap terhubung dengan akunmu."
                   }
                 />
 
                 <PrivacyPoint
                   text={
                     isEnglish
-                      ? "You can review and manage your personal data."
-                      : "Kamu bisa melihat dan mengelola data pribadimu."
+                      ? "You can export or delete your data."
+                      : "Kamu bisa export atau menghapus datamu."
                   }
                 />
 
                 <PrivacyPoint
                   text={
                     isEnglish
-                      ? "AI reflections are based on content you submit."
-                      : "Refleksi AI berdasarkan konten yang kamu kirim."
+                      ? "AI reflections only use what you choose to submit."
+                      : "Refleksi AI hanya menggunakan apa yang kamu pilih untuk dikirim."
                   }
                 />
               </div>
 
               <Link
                 href={`/${typedLocale}/register`}
-                className="mt-9 inline-flex items-center gap-2 text-sm font-semibold text-[#5C6B9C] transition hover:text-[#4A3F35]"
+                className="group mt-9 inline-flex items-center gap-2 text-sm font-semibold text-[#5C6B9C] transition hover:text-[#4A3F35]"
               >
-                {isEnglish
-                  ? "Create your private space"
-                  : "Buat ruang pribadimu"}
+                {isEnglish ? "Create your space" : "Buat ruangmu"}
 
-                <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
+                <ArrowRight
+                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                  strokeWidth={1.8}
+                />
               </Link>
             </div>
           </div>
@@ -664,30 +578,36 @@ export default async function LandingPage({ params }: PageProps) {
 
       {/* =========================================================
           FINAL CTA
-      ========================================================== */}
+      ========================================================= */}
 
-      <section>
-        <div className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
-          <div className="mx-auto flex  items-center justify-center">
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-105 w-105 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FBC4AB]/20 blur-3xl" />
+
+        <div className="relative mx-auto max-w-4xl px-5 py-28 text-center sm:px-8 lg:py-36">
+          <div className="mx-auto flex items-center justify-center">
             <Image
               src="/moodify-logo.png"
               alt="Moodify"
               width={170}
               height={52}
-              className="h-24 w-auto object-contain"
+              className="h-20 w-auto object-contain"
             />
           </div>
 
-          <h2 className="mx-auto mt-7 max-w-3xl text-[36px] font-semibold leading-tight tracking-[-0.05em] sm:text-[50px]">
+          <p className="mt-8 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5C6B9C]">
+            {isEnglish ? "One page at a time" : "Satu halaman setiap kali"}
+          </p>
+
+          <h2 className="mx-auto mt-5 max-w-3xl text-[40px] font-semibold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
             {isEnglish
-              ? "Start listening to yourself."
-              : "Mulai dengarkan dirimu sendiri."}
+              ? "Start with how you feel today."
+              : "Mulai dari apa yang kamu rasakan hari ini."}
           </h2>
 
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-[#4A3F35]/55">
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
             {isEnglish
-              ? "One check-in can be the beginning of understanding what you need."
-              : "Satu check-in bisa menjadi awal untuk memahami apa yang sebenarnya kamu butuhkan."}
+              ? "No long setup. No perfect words. Just a small place to be honest with yourself."
+              : "Tidak perlu setup panjang. Tidak perlu kata-kata sempurna. Hanya ruang kecil untuk jujur pada diri sendiri."}
           </p>
 
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
@@ -695,7 +615,7 @@ export default async function LandingPage({ params }: PageProps) {
               href={`/${typedLocale}/register`}
               className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-7 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
             >
-              {isEnglish ? "Create your account" : "Buat akun sekarang"}
+              {isEnglish ? "Create account" : "Buat akun"}
 
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
@@ -705,9 +625,9 @@ export default async function LandingPage({ params }: PageProps) {
 
             <Link
               href={`/${typedLocale}/login`}
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white px-7 text-sm font-medium text-[#4A3F35]/70 transition hover:border-[#5C6B9C]/20 hover:text-[#4A3F35]"
+              className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white px-7 text-sm font-medium text-[#4A3F35]/65 transition hover:border-[#5C6B9C]/20 hover:text-[#4A3F35]"
             >
-              {isEnglish ? "Login to Moodify" : "Masuk ke Moodify"}
+              {isEnglish ? "Login" : "Masuk"}
             </Link>
           </div>
         </div>
@@ -715,13 +635,11 @@ export default async function LandingPage({ params }: PageProps) {
 
       {/* =========================================================
           FOOTER
-      ========================================================== */}
+      ========================================================= */}
 
-      <footer className="border-t border-[#4A3F35]/[0.07] bg-white/40">
+      <footer className="border-t border-[#4A3F35]/6 bg-[#F5EFE6]/40">
         <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
           <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-            {/* BRAND */}
-
             <div className="max-w-xs">
               <Link
                 href={`/${typedLocale}`}
@@ -736,62 +654,48 @@ export default async function LandingPage({ params }: PageProps) {
                 />
               </Link>
 
-              <p className="mt-4 text-xs leading-6 text-[#4A3F35]/45">
+              <p className="mt-4 text-xs leading-6 text-[#4A3F35]/42">
                 {isEnglish
-                  ? "A gentle space to check in, reflect, and understand your emotional wellbeing."
-                  : "Ruang yang tenang untuk check-in, berefleksi, dan memahami wellbeing emosionalmu."}
+                  ? "A quiet place to check in, write things down, and understand your days."
+                  : "Ruang tenang untuk check-in, menulis, dan memahami hari-harimu."}
               </p>
             </div>
 
-            {/* LINKS */}
-
             <div className="grid grid-cols-2 gap-x-14 gap-y-8 sm:grid-cols-3">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
-                  {isEnglish ? "Product" : "Produk"}
-                </p>
+              <FooterColumn
+                title={isEnglish ? "Explore" : "Jelajahi"}
+                links={[
+                  {
+                    href: "#features",
+                    label: isEnglish ? "Inside" : "Isi",
+                  },
+                  {
+                    href: "#how-it-works",
+                    label: isEnglish ? "How it works" : "Cara kerja",
+                  },
+                  {
+                    href: "#privacy",
+                    label: isEnglish ? "Privacy" : "Privasi",
+                  },
+                ]}
+              />
 
-                <div className="mt-4 space-y-3">
-                  <a
-                    href="#features"
-                    className="block text-xs text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
-                  >
-                    {isEnglish ? "Features" : "Fitur"}
-                  </a>
-
-                  <a
-                    href="#how-it-works"
-                    className="block text-xs text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
-                  >
-                    {isEnglish ? "How it works" : "Cara kerja"}
-                  </a>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
-                  {isEnglish ? "Account" : "Akun"}
-                </p>
-
-                <div className="mt-4 space-y-3">
-                  <Link
-                    href={`/${typedLocale}/login`}
-                    className="block text-xs text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
-                  >
-                    {isEnglish ? "Login" : "Masuk"}
-                  </Link>
-
-                  <Link
-                    href={`/${typedLocale}/register`}
-                    className="block text-xs text-[#4A3F35]/55 transition hover:text-[#4A3F35]"
-                  >
-                    {isEnglish ? "Register" : "Daftar"}
-                  </Link>
-                </div>
-              </div>
+              <FooterColumn
+                title={isEnglish ? "Account" : "Akun"}
+                links={[
+                  {
+                    href: `/${typedLocale}/login`,
+                    label: isEnglish ? "Login" : "Masuk",
+                  },
+                  {
+                    href: `/${typedLocale}/register`,
+                    label: isEnglish ? "Register" : "Daftar",
+                  },
+                ]}
+              />
 
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/35">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/30">
                   {isEnglish ? "Language" : "Bahasa"}
                 </p>
 
@@ -801,7 +705,7 @@ export default async function LandingPage({ params }: PageProps) {
                     className={`rounded-lg px-2.5 py-1.5 text-xs transition ${
                       !isEnglish
                         ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]"
-                        : "text-[#4A3F35]/45 hover:text-[#4A3F35]"
+                        : "text-[#4A3F35]/40 hover:text-[#4A3F35]"
                     }`}
                   >
                     ID
@@ -812,7 +716,7 @@ export default async function LandingPage({ params }: PageProps) {
                     className={`rounded-lg px-2.5 py-1.5 text-xs transition ${
                       isEnglish
                         ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]"
-                        : "text-[#4A3F35]/45 hover:text-[#4A3F35]"
+                        : "text-[#4A3F35]/40 hover:text-[#4A3F35]"
                     }`}
                   >
                     EN
@@ -822,18 +726,21 @@ export default async function LandingPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-3 border-t border-[#4A3F35]/[0.07] pt-6 text-center sm:flex-row sm:justify-between sm:text-left">
-            <p className="text-[10px] text-[#4A3F35]/35">
+          <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#4A3F35]/6 pt-6 text-center sm:flex-row sm:text-left">
+            <p className="text-[10px] text-[#4A3F35]/30">
               © {new Date().getFullYear()} Moodify.{" "}
-              {isEnglish ? "All rights reserved." : "Semua hak dilindungi."}
+              {isEnglish
+                ? "All rights reserved."
+                : "Semua hak dilindungi."}
             </p>
 
-            <div className="flex items-center justify-center gap-2 text-[10px] text-[#4A3F35]/35">
-              <PrivacyIcon className="h-3 w-3 shrink-0" />
+            <div className="flex items-center gap-2 text-[10px] text-[#4A3F35]/30">
+              <PrivacyIcon className="h-3 w-3" />
+
               <span>
                 {isEnglish
-                  ? "Your wellbeing, your space."
-                  : "Wellbeing kamu, ruang kamu."}
+                  ? "Your data stays with you."
+                  : "Datamu tetap milikmu."}
               </span>
             </div>
           </div>
@@ -843,29 +750,37 @@ export default async function LandingPage({ params }: PageProps) {
   );
 }
 
-/* ===============================================================
+/* =========================================================
    TRUST ITEM
-================================================================ */
+========================================================= */
 
 function TrustItem({
+  number,
   icon,
   title,
   description,
 }: {
+  number: string;
   icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
-    <div className="flex gap-3 border-b border-[#4A3F35]/[0.07] px-5 py-6 last:border-b-0 sm:px-8 md:border-b-0 md:border-r md:last:border-r-0 lg:px-10">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#5C6B9C]/[0.07] text-[#5C6B9C]">
+    <div className="group flex gap-4 border-b border-[#4A3F35]/[0.07] px-5 py-7 last:border-b-0 sm:px-8 md:border-b-0 md:border-r md:last:border-r-0 lg:px-10">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#FDFBF7] text-[#5C6B9C]">
         {icon}
       </div>
 
       <div>
-        <p className="text-xs font-semibold">{title}</p>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-semibold tracking-[0.12em] text-[#E2725B]">
+            {number}
+          </span>
 
-        <p className="mt-1 text-[11px] leading-5 text-[#4A3F35]/45">
+          <p className="text-xs font-semibold">{title}</p>
+        </div>
+
+        <p className="mt-1.5 max-w-xs text-[11px] leading-5 text-[#4A3F35]/43">
           {description}
         </p>
       </div>
@@ -873,47 +788,49 @@ function TrustItem({
   );
 }
 
-/* ===============================================================
-   FEATURE CARD
-================================================================ */
+/* =========================================================
+   EDITORIAL FEATURE
+========================================================= */
 
-function FeatureCard({
-  icon,
+function EditorialFeature({
   number,
+  icon,
   title,
   description,
 }: {
-  icon: React.ReactNode;
   number: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
-    <div className="group rounded-[26px] border border-[#4A3F35]/[0.07] bg-white/60 p-7 transition duration-300 hover:-translate-y-0.5 hover:border-[#5C6B9C]/15 hover:bg-white hover:shadow-[0_22px_60px_rgba(74,63,53,0.08)]">
+    <div className="group relative rounded-[26px] border border-[#4A3F35]/[0.07] bg-white/55 p-7 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-[0_20px_55px_rgba(74,63,53,0.07)]">
       <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5C6B9C]/[0.07] text-[#5C6B9C] transition group-hover:bg-[#5C6B9C] group-hover:text-white">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5EFE6] text-[#5C6B9C] transition group-hover:bg-[#5C6B9C] group-hover:text-white">
           {icon}
         </div>
 
-        <span className="text-[10px] font-semibold tracking-[0.12em] text-[#4A3F35]/20">
+        <span className="text-[9px] font-semibold tracking-[0.16em] text-[#4A3F35]/20">
           {number}
         </span>
       </div>
 
-      <h3 className="mt-6 text-base font-semibold tracking-[-0.02em]">
+      <h3 className="mt-7 text-base font-semibold tracking-[-0.02em]">
         {title}
       </h3>
 
-      <p className="mt-3 text-xs leading-6 text-[#4A3F35]/50">{description}</p>
+      <p className="mt-3 text-xs leading-6 text-[#4A3F35]/48">
+        {description}
+      </p>
     </div>
   );
 }
 
-/* ===============================================================
-   STEP CARD
-================================================================ */
+/* =========================================================
+   TIMELINE STEP
+========================================================= */
 
-function StepCard({
+function TimelineStep({
   number,
   title,
   description,
@@ -923,30 +840,78 @@ function StepCard({
   description: string;
 }) {
   return (
-    <div className="rounded-[22px] border border-white/10 bg-white/[0.08] p-6">
-      <span className="text-[10px] font-semibold tracking-[0.12em] text-[#FBC4AB]">
-        {number}
-      </span>
+    <div className="relative">
+      <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#F1E9DB]">
+        <span className="text-[10px] font-semibold tracking-[0.12em] text-[#5C6B9C]">
+          {number}
+        </span>
+      </div>
 
-      <h3 className="mt-6 text-base font-semibold">{title}</h3>
+      <div className="mt-7">
+        <h3 className="text-xl font-semibold tracking-tight">
+          {title}
+        </h3>
 
-      <p className="mt-3 text-xs leading-6 text-white/55">{description}</p>
+        <p className="mt-3 max-w-xs text-sm leading-7 text-[#4A3F35]/50">
+          {description}
+        </p>
+      </div>
     </div>
   );
 }
 
-/* ===============================================================
+/* =========================================================
    PRIVACY POINT
-================================================================ */
+========================================================= */
 
 function PrivacyPoint({ text }: { text: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C1D5C0]/50">
-        <Check className="h-3 w-3 text-[#4A3F35]" strokeWidth={2} />
+      <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C1D5C0]/55">
+        <Check
+          className="h-3 w-3 text-[#4A3F35]"
+          strokeWidth={2}
+        />
       </div>
 
-      <p className="text-sm text-[#4A3F35]/60">{text}</p>
+      <p className="text-sm text-[#4A3F35]/58">
+        {text}
+      </p>
+    </div>
+  );
+}
+
+/* =========================================================
+   FOOTER COLUMN
+========================================================= */
+
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: {
+    href: string;
+    label: string;
+  }[];
+}) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/30">
+        {title}
+      </p>
+
+      <div className="mt-4 space-y-3">
+        {links.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            className="block text-xs text-[#4A3F35]/48 transition hover:text-[#4A3F35]"
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

@@ -541,7 +541,7 @@ export default function ActivitiesClient({
                       )}
 
                   {selected && (
-                    <span className="absolute bottom-[-13px] left-0 right-0 h-0.5 rounded-full bg-[#e2725b]" />
+                    <span className="absolute -bottom-3.25 left-0 right-0 h-0.5 rounded-full bg-[#e2725b]" />
                   )}
                 </button>
               );
@@ -787,10 +787,10 @@ function HistoryItem({
     <div
       className={[
         "relative flex gap-4 pb-7",
-        !last ? "border-l border-[#4a3f35]/10 ml-[7px]" : "ml-[7px]",
+        !last ? "border-l border-[#4a3f35]/10 ml-1.75" : "ml-1.75",
       ].join(" ")}
     >
-      <div className="-ml-[8px] mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#fdfbf7]">
+      <div className="-ml-2 mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#fdfbf7]">
         <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
       </div>
 

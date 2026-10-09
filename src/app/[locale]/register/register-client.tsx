@@ -250,12 +250,6 @@ export default function RegisterClient({
     setError("");
     setErrorField("");
 
-    /*
-     * =========================================================
-     * FRONTEND VALIDATION
-     * =========================================================
-     */
-
     const trimmedName = name.trim();
     const trimmedNickname = nickname.trim();
     const normalizedEmail = email.trim().toLowerCase();
@@ -278,9 +272,7 @@ export default function RegisterClient({
       return;
     }
 
-    /*
-     * Keep the same provider restriction from the original page.
-     */
+
 
     const domain = normalizedEmail.split("@")[1]?.toLowerCase();
 
@@ -311,11 +303,7 @@ export default function RegisterClient({
       return;
     }
 
-    /*
-     * =========================================================
-     * REGISTER
-     * =========================================================
-     */
+    
 
     setIsLoading(true);
 
@@ -340,16 +328,10 @@ export default function RegisterClient({
 
       const data = await response.json();
 
-      /*
-       * =======================================================
-       * ERROR RESPONSE
-       * =======================================================
-       */
+
 
       if (!response.ok) {
-        /*
-         * Zod field errors
-         */
+
         if (data.errors?.fieldErrors) {
           const fieldErrors = data.errors.fieldErrors;
 
@@ -366,36 +348,11 @@ export default function RegisterClient({
           }
         }
 
-        /*
-         * Generic backend error
-         */
         setError(data.message || t.errors.registerFailed);
         setErrorField("general");
 
         return;
       }
-
-      /*
-       * =======================================================
-       * SUCCESS
-       * =======================================================
-       *
-       * Register flow:
-       *
-       * Register
-       *    ↓
-       * Create account
-       *    ↓
-       * Create session
-       *    ↓
-       * Create verification OTP
-       *    ↓
-       * Send email
-       *    ↓
-       * Verify Email
-       *    ↓
-       * Onboarding
-       */
 
       if (!data.user?.id) {
         setError(t.errors.general);
@@ -432,9 +389,9 @@ export default function RegisterClient({
               SUBTLE BRAND SHAPES
           ==================================================== */}
 
-          <div className="absolute -left-32 -top-32 h-[360px] w-[360px] rounded-full bg-[#FBC4AB]/20" />
+          <div className="absolute -left-32 -top-32 h-90 w-90 rounded-full bg-[#FBC4AB]/20" />
 
-          <div className="absolute -bottom-40 -right-32 h-[500px] w-[500px] rounded-full bg-[#C1D5C0]/25" />
+          <div className="absolute -bottom-40 -right-32 h-125 w-125 rounded-full bg-[#C1D5C0]/25" />
 
           <div className="absolute right-[18%] top-[34%] h-20 w-20 rounded-full border border-[#5C6B9C]/10" />
 
@@ -466,7 +423,7 @@ export default function RegisterClient({
                 CENTER
             ================================================== */}
 
-            <div className="max-w-[520px]">
+            <div className="max-w-130">
               {/* EYEBROW */}
 
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
@@ -582,7 +539,7 @@ export default function RegisterClient({
           ==================================================== */}
 
           <div className="flex flex-1 items-center justify-center px-5 pb-12 pt-4 sm:px-8 lg:px-12">
-            <div className="w-full max-w-[430px]">
+            <div className="w-full max-w-107.5">
               {/* =================================================
                   HEADER
               ================================================== */}
@@ -591,7 +548,7 @@ export default function RegisterClient({
                 {/* ICON */}
 
                 <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FBC4AB]/30">
-                  <UserIcon className="h-[18px] w-[18px] text-[#5C6B9C]" />
+                  <UserIcon className="h-4.5 w-4.5 text-[#5C6B9C]" />
                 </div>
 
                 {/* TITLE */}
@@ -630,7 +587,7 @@ export default function RegisterClient({
 
                   <div className="relative">
                     <UserIcon
-                      className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
+                      className="pointer-events-none absolute left-4 top-1/2 h-4.25 w-4.25 -translate-y-1/2 text-[#4A3F35]/30"
                     />
 
                     <input
@@ -645,7 +602,7 @@ export default function RegisterClient({
                       placeholder={t.namePlaceholder}
                       required
                       disabled={isLoading || isGoogleLoading}
-                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      className={`h-13 w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "name"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
                           : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
@@ -668,7 +625,7 @@ export default function RegisterClient({
 
                   <div className="relative">
                     <UserIcon
-                      className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
+                      className="pointer-events-none absolute left-4 top-1/2 h-4.25 w-4.25 -translate-y-1/2 text-[#4A3F35]/30"
                     />
 
                     <input
@@ -683,7 +640,7 @@ export default function RegisterClient({
                       placeholder={t.nicknamePlaceholder}
                       maxLength={50}
                       disabled={isLoading || isGoogleLoading}
-                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      className={`h-13 w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "nickname"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
                           : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
@@ -710,7 +667,7 @@ export default function RegisterClient({
 
                   <div className="relative">
                     <MailIcon
-                      className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
+                      className="pointer-events-none absolute left-4 top-1/2 h-4.25 w-4.25 -translate-y-1/2 text-[#4A3F35]/30"
                     />
 
                     <input
@@ -725,7 +682,7 @@ export default function RegisterClient({
                       placeholder={t.emailPlaceholder}
                       required
                       disabled={isLoading || isGoogleLoading}
-                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      className={`h-13 w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-4 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "email"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
                           : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
@@ -748,7 +705,7 @@ export default function RegisterClient({
 
                   <div className="relative">
                     <LockIcon
-                      className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#4A3F35]/30"
+                      className="pointer-events-none absolute left-4 top-1/2 h-4.25 w-4.25 -translate-y-1/2 text-[#4A3F35]/30"
                     />
 
                     <input
@@ -764,7 +721,7 @@ export default function RegisterClient({
                       required
                       minLength={8}
                       disabled={isLoading || isGoogleLoading}
-                      className={`h-[52px] w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-12 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      className={`h-13 w-full rounded-2xl border bg-[#FDFBF7] pl-11 pr-12 text-sm text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/30 focus:bg-white focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
                         errorField === "password"
                           ? "border-red-400 focus:border-red-500 focus:ring-red-500/15"
                           : "border-[#4A3F35]/10 hover:border-[#C1D5C0] focus:border-[#E2725B] focus:ring-[#E2725B]/10"
@@ -807,9 +764,9 @@ export default function RegisterClient({
                       "
                     >
                       {showPassword ? (
-                        <EyeOffIcon className="h-[17px] w-[17px]" />
+                        <EyeOffIcon className="h-4.25 w-4.25" />
                       ) : (
-                        <EyeIcon className="h-[17px] w-[17px]" />
+                        <EyeIcon className="h-4.25 w-4.25" />
                       )}
                     </button>
                   </div>
@@ -846,7 +803,7 @@ export default function RegisterClient({
                   className="
                     group
                     flex
-                    h-[52px]
+                    h-13
                     w-full
                     items-center
                     justify-center
@@ -906,7 +863,7 @@ export default function RegisterClient({
                   className="
                     mt-5
                     flex
-                    h-[52px]
+                    h-13
                     w-full
                     items-center
                     justify-center
@@ -1042,7 +999,7 @@ function BrandPoint({
 }) {
   return (
     <div className="flex items-center gap-2 text-[#4A3F35]/45">
-      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#5C6B9C]/[0.06] text-[#5C6B9C]">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#5C6B9C]/6 text-[#5C6B9C]">
         {icon}
       </div>
 

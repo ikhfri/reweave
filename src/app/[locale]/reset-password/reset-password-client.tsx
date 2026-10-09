@@ -317,12 +317,12 @@ export default function ResetPasswordClient({
   }
 
   return (
-    <main className="min-h-[100svh] bg-[#FDFBF7] text-[#4A3F35]">
+    <main className="min-h-svh bg-[#FDFBF7] text-[#4A3F35]">
       <div
         className="
           mx-auto
           flex
-          min-h-[100svh]
+          min-h-svh
           w-full
           max-w-6xl
           flex-col
@@ -401,7 +401,7 @@ export default function ResetPasswordClient({
             lg:py-12
           "
         >
-          <div className="w-full max-w-[480px]">
+          <div className="w-full max-w-60">
             {/* Logo */}
             <div className="mb-7 flex justify-center sm:mb-8">
               <Image
@@ -412,9 +412,9 @@ export default function ResetPasswordClient({
                 priority
                 className="
                   h-auto
-                  w-[118px]
+                  w-29.5
                   object-contain
-                  sm:w-[132px]
+                  sm:w-33
                 "
               />
             </div>
@@ -467,7 +467,7 @@ export default function ResetPasswordClient({
                 <p
                   className="
                     mt-2.5
-                    max-w-[410px]
+                    max-w-37.5
                     text-[13px]
                     leading-6
                     text-[#4A3F35]/60
@@ -501,8 +501,8 @@ export default function ResetPasswordClient({
                       absolute
                       left-4
                       top-1/2
-                      h-[17px]
-                      w-[17px]
+                      h-4.25
+                      w-4.25
                       -translate-y-1/2
                       text-[#4A3F35]/35
                     "
@@ -526,7 +526,7 @@ export default function ResetPasswordClient({
                       text-sm
                       text-[#4A3F35]/70
                       outline-none
-                      sm:h-[50px]
+                      sm:h-12.5
                     "
                   />
                 </div>
@@ -622,8 +622,8 @@ export default function ResetPasswordClient({
                       absolute
                       left-4
                       top-1/2
-                      h-[17px]
-                      w-[17px]
+                      h-4.25
+                      w-4.25
                       -translate-y-1/2
                       text-[#4A3F35]/35
                     "
@@ -657,7 +657,7 @@ export default function ResetPasswordClient({
                       focus:bg-white
                       focus:ring-4
                       focus:ring-[#E2725B]/8
-                      sm:h-[50px]
+                      sm:h-12.5
                     "
                   />
 
@@ -691,9 +691,9 @@ export default function ResetPasswordClient({
                     "
                   >
                     {showPassword ? (
-                      <EyeOffIcon className="h-[17px] w-[17px]" />
+                      <EyeOffIcon className="h-4.25 w-4.25" />
                     ) : (
-                      <EyeIcon className="h-[17px] w-[17px]" />
+                      <EyeIcon className="h-4.25 w-4.25" />
                     )}
                   </button>
                 </div>
@@ -722,8 +722,8 @@ export default function ResetPasswordClient({
                       absolute
                       left-4
                       top-1/2
-                      h-[17px]
-                      w-[17px]
+                      h-4.25
+                      w-4.25
                       -translate-y-1/2
                       text-[#4A3F35]/35
                     "
@@ -765,7 +765,7 @@ export default function ResetPasswordClient({
                       focus:bg-white
                       focus:ring-4
                       focus:ring-[#E2725B]/8
-                      sm:h-[50px]
+                      sm:h-12.5
                     "
                   />
 
@@ -799,9 +799,9 @@ export default function ResetPasswordClient({
                     "
                   >
                     {showConfirmPassword ? (
-                      <EyeOffIcon className="h-[17px] w-[17px]" />
+                      <EyeOffIcon className="h-4.25 w-4.25" />
                     ) : (
-                      <EyeIcon className="h-[17px] w-[17px]" />
+                      <EyeIcon className="h-4.25 w-4.25" />
                     )}
                   </button>
                 </div>
@@ -875,7 +875,7 @@ export default function ResetPasswordClient({
                     active:scale-[0.99]
                     disabled:cursor-not-allowed
                     disabled:opacity-60
-                    sm:h-[50px]
+                    sm:h-12.5
                   "
                 >
                   <span>
@@ -885,7 +885,7 @@ export default function ResetPasswordClient({
                   </span>
 
                   {!isLoading && (
-                    <ArrowRightIcon className="h-[17px] w-[17px]" />
+                    <ArrowRightIcon className="h-4.25 w-4.25" />
                   )}
                 </button>
               </form>

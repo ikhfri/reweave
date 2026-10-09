@@ -124,10 +124,9 @@ export default function ForgotPasswordClient({
   }
 
   return (
-    <main className="min-h-[100svh] bg-[#FDFBF7] text-[#4A3F35]">
-      <div className="mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+    <main className="min-h-svh bg-[#FDFBF7] text-[#4A3F35]">
+      <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
 
-        {/* Top navigation */}
         <header className="flex w-full items-center justify-between">
           <button
             type="button"
@@ -186,7 +185,7 @@ export default function ForgotPasswordClient({
 
         {/* Main content */}
         <div className="flex flex-1 items-center justify-center py-8 sm:py-10 lg:py-12">
-          <div className="w-full max-w-[480px]">
+          <div className="w-full max-w-120">
 
             {/* Logo */}
             <div className="mb-7 flex justify-center sm:mb-8">
@@ -196,7 +195,7 @@ export default function ForgotPasswordClient({
                 width={132}
                 height={132}
                 priority
-                className="h-auto w-[118px] object-contain sm:w-[132px]"
+                className="h-auto w-29.5 object-contain sm:w-33"
               />
             </div>
 
@@ -248,7 +247,7 @@ export default function ForgotPasswordClient({
                 <p
                   className="
                     mt-2.5
-                    max-w-[410px]
+                    max-w-102.5
                     text-[13px]
                     leading-6
                     text-[#4A3F35]/60
@@ -287,8 +286,8 @@ export default function ForgotPasswordClient({
                         absolute
                         left-4
                         top-1/2
-                        h-[17px]
-                        w-[17px]
+                        h-4
+                        w-4
                         -translate-y-1/2
                         text-[#4A3F35]/35
                       "
@@ -326,7 +325,7 @@ export default function ForgotPasswordClient({
                         focus:ring-[#E2725B]/8
                         disabled:cursor-not-allowed
                         disabled:opacity-60
-                        sm:h-[50px]
+                        sm:h-12.5
                       "
                     />
                   </div>
@@ -393,7 +392,7 @@ export default function ForgotPasswordClient({
                     active:scale-[0.99]
                     disabled:cursor-not-allowed
                     disabled:opacity-60
-                    sm:h-[50px]
+                    sm:h-12.5
                   "
                 >
                   <span>
@@ -401,7 +400,7 @@ export default function ForgotPasswordClient({
                   </span>
 
                   {!isLoading && (
-                    <ArrowRightIcon className="h-[17px] w-[17px]" />
+                    <ArrowRightIcon className="h-4 w-4" />
                   )}
                 </button>
               </form>

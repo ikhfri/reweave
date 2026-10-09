@@ -362,7 +362,7 @@ export default function AIAnalysisResult({
               </p>
 
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-[40px] font-semibold tracking-[-0.05em]">
+                <span className="text-[40px] font-semibold tracking-tighter">
                   {stressScore}
                 </span>
 
@@ -586,7 +586,7 @@ export default function AIAnalysisResult({
                   : "Apa yang kamu tinggalkan di sini hari ini."}
               </h2>
 
-              <p className="mt-7 whitespace-pre-wrap text-[16px] leading-[2] text-[#4A3F35]/70">
+              <p className="mt-7 whitespace-pre-wrap text-[16px] leading-loose text-[#4A3F35]/70">
                 {diaryEntry.content}
               </p>
 
@@ -675,7 +675,7 @@ export default function AIAnalysisResult({
 
               <span
                 className={[
-                  "text-[10px] font-semibold uppercase tracking-[0.1em]",
+                  "text-[10px] font-semibold uppercase tracking-widest",
                   analysis.riskLevel === "HIGH"
                     ? "text-[#E2725B]"
                     : analysis.riskLevel ===

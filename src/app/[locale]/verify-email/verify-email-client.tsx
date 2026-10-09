@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import {
   useRouter,
@@ -13,7 +12,6 @@ import {
 } from "react";
 
 import { ArrowRightIcon } from "@/components/moodify-icons";
-
 type VerifyEmailClientProps = {
   locale: string;
 };
@@ -23,11 +21,8 @@ export default function VerifyEmailClient({
 }: VerifyEmailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const userId = searchParams.get("userId");
-
   const isEnglish = locale === "en";
-
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,9 +30,7 @@ export default function VerifyEmailClient({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [cooldown, setCooldown] = useState(0);
-
   const inputRef = useRef<HTMLInputElement>(null);
-
   const text = {
     title: isEnglish ? "Check your email" : "Cek email kamu",
     description: isEnglish
@@ -75,10 +68,10 @@ export default function VerifyEmailClient({
   };
 
   useEffect(() => {
-    if (!userId) {
+  
+  if (!userId) {
       return;
     }
-
     inputRef.current?.focus();
   }, [userId]);
 
@@ -86,28 +79,24 @@ export default function VerifyEmailClient({
     if (cooldown <= 0) {
       return;
     }
-
     const timer = window.setInterval(() => {
       setCooldown((current) => {
         if (current <= 1) {
           window.clearInterval(timer);
           return 0;
         }
-
         return current - 1;
       });
     }, 1000);
-
     return () => window.clearInterval(timer);
   }, [cooldown]);
 
   useEffect(() => {
+
   if (!userId) {
     return;
   }
-
   const currentUserId = userId;
-
   async function loadUser() {
     try {
       const response = await fetch(
@@ -115,31 +104,24 @@ export default function VerifyEmailClient({
           currentUserId
         )}`
       );
-
       if (!response.ok) {
         return;
       }
-
       const data = await response.json();
-
       if (data.email) {
         setEmail(data.email);
       }
-
       if (data.emailVerifiedAt) {
         router.replace(`/${locale}/onboarding`);
       }
     } catch {
-      // Email display is optional.
     }
   }
-
   loadUser();
 }, [locale, router, userId]);
 
   function handleOtpChange(value: string) {
     const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-
     setOtp(digitsOnly);
     setError("");
     setSuccess("");
@@ -147,21 +129,18 @@ export default function VerifyEmailClient({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (!userId) {
+  
+  if (!userId) {
       setError(text.invalidUser);
       return;
     }
-
     if (otp.length !== 6) {
       setError(text.invalidOtp);
       return;
     }
-
     setLoading(true);
     setError("");
     setSuccess("");
-
     try {
       const response = await fetch("/api/auth/verify-email", {
         method: "POST",
@@ -173,16 +152,12 @@ export default function VerifyEmailClient({
           otp,
         }),
       });
-
       const data = await response.json();
-
       if (!response.ok || !data.success) {
         setError(data.message ?? text.genericError);
         return;
       }
-
       setSuccess(text.verified);
-
       window.setTimeout(() => {
         router.replace(`/${locale}/onboarding`);
       }, 700);
@@ -197,11 +172,9 @@ export default function VerifyEmailClient({
     if (!userId || cooldown > 0 || resending) {
       return;
     }
-
     setResending(true);
     setError("");
     setSuccess("");
-
     try {
       const response = await fetch("/api/auth/send-verification", {
         method: "POST",
@@ -212,18 +185,14 @@ export default function VerifyEmailClient({
           userId,
         }),
       });
-
       const data = await response.json();
-
       if (!response.ok || !data.success) {
         if (response.status === 429 && data.retryAfter) {
           setCooldown(Number(data.retryAfter));
         }
-
         setError(data.message ?? text.genericError);
         return;
       }
-
       setSuccess(text.resendSuccess);
       setCooldown(60);
       setOtp("");
@@ -250,16 +219,14 @@ export default function VerifyEmailClient({
                 alt="Moodify"
                 width={150}
                 height={48}
-                className="h-auto w-[150px]"
+                className="h-auto w-37.5"
                 priority
               />
             </div>
-
             <div className="text-center">
               <h1 className="text-2xl font-semibold tracking-[-0.03em]">
                 {text.invalidUser}
               </h1>
-
               <button
                 type="button"
                 onClick={handleBackToRegister}
@@ -274,82 +241,69 @@ export default function VerifyEmailClient({
       </main>
     );
   }
-
   return (
     <main className="min-h-screen bg-[#FDFBF7] px-5 py-8 text-[#4A3F35] sm:px-6">
-      <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1120px] items-center justify-center">
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-280 items-center justify-center">
         <div className="grid w-full max-w-5xl overflow-hidden rounded-[32px] border border-[#4A3F35]/10 bg-white shadow-[0_24px_80px_rgba(74,63,53,0.08)] lg:grid-cols-[0.9fr_1.1fr]">
-          {/* Left visual */}
-          <div className="relative hidden min-h-[620px] overflow-hidden bg-[#FBC4AB]/35 p-10 lg:flex lg:flex-col lg:justify-between">
+          <div className="relative hidden min-h-155 overflow-hidden bg-[#FBC4AB]/35 p-10 lg:flex lg:flex-col lg:justify-between">
             <div className="relative z-10">
               <Image
                 src="/moodify-logo.webp"
                 alt="Moodify"
                 width={150}
                 height={48}
-                className="h-auto w-[150px]"
+                className="h-auto w-37.5"
                 priority
               />
             </div>
-
             <div className="relative z-10 max-w-sm">
               <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#E2725B]">
                 {isEnglish ? "One small step" : "Satu langkah kecil"}
               </p>
-
               <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.04em] text-[#4A3F35]">
                 {isEnglish
                   ? "Make space for how you feel."
                   : "Beri ruang untuk apa yang kamu rasakan."}
               </h2>
-
               <p className="mt-5 text-[15px] leading-7 text-[#4A3F35]/65">
                 {isEnglish
                   ? "Your email helps us keep your Moodify account secure."
                   : "Email kamu membantu menjaga akun Moodify tetap aman."}
               </p>
             </div>
-
             <div className="absolute -bottom-20 -right-16 h-64 w-64 rounded-full bg-[#C1D5C0]/70" />
             <div className="absolute right-20 top-28 h-24 w-24 rounded-full bg-white/50" />
           </div>
-
-          {/* Form */}
-          <div className="flex min-h-[620px] flex-col justify-center px-6 py-10 sm:px-10 lg:px-14">
-            <div className="mx-auto w-full max-w-[430px]">
+          <div className="flex min-h-155 flex-col justify-center px-6 py-10 sm:px-10 lg:px-14">
+            <div className="mx-auto w-full max-w-107.5">
               <div className="mb-9 lg:hidden">
                 <Image
                   src="/moodify-logo.webp"
                   alt="Moodify"
                   width={150}
                   height={48}
-                  className="h-auto w-[150px]"
+                  className="h-auto w-37.5"
                   priority
                 />
               </div>
-
               <div className="mb-8">
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FBC4AB]/45">
                   <span className="text-lg font-semibold text-[#E2725B]">
                     6
                   </span>
                 </div>
-
                 <h1 className="text-[32px] font-semibold leading-tight tracking-[-0.04em] sm:text-[36px]">
                   {text.title}
                 </h1>
-
                 <p className="mt-3 text-[15px] leading-7 text-[#4A3F35]/60">
                   {text.description}
                 </p>
-
                 {email && (
                   <p className="mt-2 break-all text-sm font-medium text-[#4A3F35]/80">
                     {email}
                   </p>
                 )}
               </div>
-
               <form onSubmit={handleSubmit}>
                 <label
                   htmlFor="otp"
@@ -357,7 +311,6 @@ export default function VerifyEmailClient({
                 >
                   {text.codeLabel}
                 </label>
-
                 <input
                   ref={inputRef}
                   id="otp"
@@ -372,7 +325,6 @@ export default function VerifyEmailClient({
                   disabled={loading}
                   className="h-16 w-full rounded-2xl border border-[#4A3F35]/12 bg-[#FDFBF7] px-5 text-center text-2xl font-semibold tracking-[0.42em] text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/20 focus:border-[#E2725B] focus:ring-4 focus:ring-[#E2725B]/10 disabled:cursor-not-allowed disabled:opacity-60"
                 />
-
                 {error && (
                   <div
                     role="alert"
@@ -381,7 +333,6 @@ export default function VerifyEmailClient({
                     {error}
                   </div>
                 )}
-
                 {success && (
                   <div
                     role="status"
@@ -390,25 +341,21 @@ export default function VerifyEmailClient({
                     {success}
                   </div>
                 )}
-
                 <button
                   type="submit"
                   disabled={loading || otp.length !== 6}
-                  className="mt-5 flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-[#E2725B] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#D7654E] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#E2725B] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#D7654E] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   {loading ? text.verifying : text.verify}
-
                   {!loading && (
                     <ArrowRightIcon className="h-4 w-4" />
                   )}
                 </button>
               </form>
-
               <div className="mt-7 text-center">
                 <p className="text-sm text-[#4A3F35]/55">
                   {text.didntReceive}
                 </p>
-
                 <button
                   type="button"
                   onClick={handleResend}
@@ -424,7 +371,6 @@ export default function VerifyEmailClient({
                       : text.resend}
                 </button>
               </div>
-
               <div className="mt-8 border-t border-[#4A3F35]/8 pt-6 text-center">
                 <button
                   type="button"

@@ -9,7 +9,7 @@ type Props = {
 
 function RegisterFallback() {
   return (
-    <main className="flex min-h-[100svh] items-center justify-center bg-[#FDFBF7]">
+    <main className="flex min-h-svh items-center justify-center bg-[#FDFBF7]">
       <div
         className="
           h-10

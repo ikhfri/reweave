@@ -46,7 +46,7 @@ export function LanguageSwitcher({ locale }: Props) {
         <Languages className="h-4 w-4" />
       </div>
 
-      <div className="relative flex h-8 w-[72px] items-center rounded-full bg-[#c1d5c0]/45 p-1">
+      <div className="relative flex h-8 w-18 items-center rounded-full bg-[#c1d5c0]/45 p-1">
         {/* Sliding indicator */}
         <div
           className={`
