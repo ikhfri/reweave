@@ -1,15 +1,16 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 import {
+  ActivityIcon,
   ArrowRightIcon,
   DiaryIcon,
   InsightIcon,
   PrivacyIcon,
   WellbeingIcon,
-  ActivityIcon,
 } from "@/components/moodify-icons";
-
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { ArrowRight, Check, LockKeyhole } from "lucide-react";
 
@@ -17,6 +18,35 @@ type PageProps = {
   params: Promise<{
     locale: string;
   }>;
+};
+
+type TrustItemProps = {
+  number: string;
+  icon: ReactNode;
+  title: string;
+  description: string;
+};
+
+type EditorialFeatureProps = TrustItemProps;
+
+type TimelineStepProps = {
+  number: string;
+  title: string;
+  description: string;
+};
+
+type PrivacyPointProps = {
+  text: string;
+};
+
+type FooterLink = {
+  href: string;
+  label: string;
+};
+
+type FooterColumnProps = {
+  title: string;
+  links: FooterLink[];
 };
 
 export default async function LandingPage({ params }: PageProps) {
@@ -31,10 +61,6 @@ export default async function LandingPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#FDFBF7] text-[#4A3F35]">
-      {/* =========================================================
-          NAVBAR
-      ========================================================= */}
-
       <header className="sticky top-0 z-50 border-b border-[#4A3F35]/6 bg-[#FDFBF7]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <Link
@@ -88,129 +114,102 @@ export default async function LandingPage({ params }: PageProps) {
               className="group inline-flex items-center gap-2 rounded-xl bg-[#5C6B9C] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
             >
               {isEnglish ? "Start free" : "Mulai gratis"}
-
               <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* =========================================================
-          HERO
-      ========================================================= */}
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute -right-56 -top-48 h-150 w-150 rounded-full bg-[#FBC4AB]/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-45 -left-48 h-130 w-130 rounded-full bg-[#C1D5C0]/25 blur-3xl" />
 
-      {/* HERO */}
-<section className="relative overflow-hidden">
-  <div className="pointer-events-none absolute -right-56 -top-48 h-150 w-150 rounded-full bg-[#FBC4AB]/25 blur-3xl" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[0.82fr_1.18fr] lg:px-10 lg:pb-32 lg:pt-28">
+          <div className="relative z-10 max-w-2xl">
+            <div className="mb-7 flex items-center gap-3">
+              <span className="h-px w-8 bg-[#E2725B]" />
 
-  <div className="pointer-events-none absolute -left-48 -bottom-45 h-130 w-130 rounded-full bg-[#C1D5C0]/25 blur-3xl" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4A3F35]/45">
+                {isEnglish
+                  ? "A quieter place for your thoughts"
+                  : "Ruang kecil untuk pikiranmu"}
+              </span>
+            </div>
 
-  <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:pb-32 lg:pt-28">
+            <h1 className="max-w-175 text-[48px] font-semibold leading-[0.99] tracking-[-0.065em] sm:text-[62px] lg:text-[76px]">
+              {isEnglish ? (
+                <>
+                  Know what
+                  <br />
+                  you actually feel.
+                </>
+              ) : (
+                <>
+                  Tahu apa yang
+                  <br />
+                  kamu rasakan.
+                </>
+              )}
+            </h1>
 
-    {/* COPY */}
-    <div className="relative z-10 max-w-2xl">
-      <div className="mb-7 flex items-center gap-3">
-        <span className="h-px w-8 bg-[#E2725B]" />
+            <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4A3F35]/58 sm:text-base">
+              {isEnglish
+                ? "A private place to check in, write things down, and slowly understand the patterns behind your days."
+                : "Tempat pribadi buat check-in, menulis, dan perlahan memahami pola yang muncul dari hari-harimu."}
+            </p>
 
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4A3F35]/45">
-          {isEnglish
-            ? "A quieter place for your thoughts"
-            : "Ruang kecil untuk pikiranmu"}
-        </span>
-      </div>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={`/${typedLocale}/register`}
+                className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-6 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
+              >
+                {isEnglish ? "Start free" : "Mulai gratis"}
+                <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
 
-      <h1 className="max-w-175 text-[48px] font-semibold leading-[0.99] tracking-[-0.065em] sm:text-[62px] lg:text-[76px]">
-        {isEnglish ? (
-          <>
-            Know what
-            <br />
-            you actually feel.
-          </>
-        ) : (
-          <>
-            Tahu apa yang
-            <br />
-            kamu rasakan.
-          </>
-        )}
-      </h1>
+              <Link
+                href={`/${typedLocale}/login`}
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white/55 px-6 text-sm font-medium text-[#4A3F35]/65 transition hover:bg-white hover:text-[#4A3F35]"
+              >
+                {isEnglish
+                  ? "I already have an account"
+                  : "Sudah punya akun"}
+              </Link>
+            </div>
 
-      <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4A3F35]/58 sm:text-[16px]">
-        {isEnglish
-          ? "A private place to check in, write things down, and slowly understand the patterns behind your days."
-          : "Tempat pribadi buat check-in, menulis, dan perlahan memahami pola yang muncul dari hari-harimu."}
-      </p>
+            <div className="mt-8 flex items-center gap-2 text-xs text-[#4A3F35]/38">
+              <LockKeyhole className="h-3.5 w-3.5" strokeWidth={1.7} />
 
-      <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-        <Link
-          href={`/${typedLocale}/register`}
-          className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-6 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
-        >
-          {isEnglish ? "Start free" : "Mulai gratis"}
+              <span>
+                {isEnglish
+                  ? "Your thoughts stay private."
+                  : "Pikiranmu tetap pribadi."}
+              </span>
+            </div>
+          </div>
 
-          <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </Link>
+          <div className="relative mx-auto w-full max-w-none lg:ml-auto lg:-mr-10 xl:-mr-16">
+            <div className="pointer-events-none absolute -right-24 -top-20 h-80 w-80 rounded-full bg-[#FBC4AB]/30 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 -left-20 h-72 w-72 rounded-full bg-[#C1D5C0]/35 blur-3xl" />
 
-        <Link
-          href={`/${typedLocale}/login`}
-          className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white/55 px-6 text-sm font-medium text-[#4A3F35]/65 transition hover:bg-white hover:text-[#4A3F35]"
-        >
-          {isEnglish
-            ? "I already have an account"
-            : "Sudah punya akun"}
-        </Link>
-      </div>
-
-      <div className="mt-8 flex items-center gap-2 text-xs text-[#4A3F35]/38">
-        <LockKeyhole
-          className="h-3.5 w-3.5"
-          strokeWidth={1.7}
-        />
-
-        <span>
-          {isEnglish
-            ? "Your thoughts stay private."
-            : "Pikiranmu tetap pribadi."}
-        </span>
-      </div>
-    </div>
-
-    {/* HERO VISUAL — PNG */}
-    <div className="relative mx-auto w-full max-w-140 lg:ml-auto">
-      <div className="pointer-events-none absolute -right-24 -top-20 h-80 w-80 rounded-full bg-[#FBC4AB]/30 blur-3xl" />
-
-      <div className="pointer-events-none absolute -bottom-16 -left-20 h-72 w-72 rounded-full bg-[#C1D5C0]/35 blur-3xl" />
-
-      <div className="relative">
-        <Image
-          src="/hero-visual.png"
-          alt={
-            isEnglish
-              ? "A quiet Moodify journal page"
-              : "Halaman jurnal Moodify yang tenang"
-          }
-          width={900}
-          height={900}
-          priority
-          className="
-            relative z-10
-            h-auto
-            w-full
-            object-contain
-            drop-shadow-[0_35px_55px_rgba(74,63,53,0.14)]
-          "
-        />
-
-       
-      </div>
-    </div>
-
-  </div>
-</section>
-
-      {/* =========================================================
-          INTRO / TRUST
-      ========================================================= */}
+            <div className="relative">
+              <Image
+                src="/hero-visual3.png"
+                alt={
+                  isEnglish
+                    ? "A quiet Moodify journal page"
+                    : "Halaman jurnal Moodify yang tenang"
+                }
+                width={900}
+                height={900}
+                priority
+                sizes="(max-width: 1023px) 100vw, (max-width: 1279px) 58vw, 65vw"
+                className="relative z-10 h-auto w-full object-contain drop-shadow-[0_35px_55px_rgba(74,63,53,0.14)]"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="border-y border-[#4A3F35]/6 bg-[#F5EFE6]/45">
         <div className="mx-auto grid max-w-7xl md:grid-cols-3">
@@ -248,10 +247,6 @@ export default async function LandingPage({ params }: PageProps) {
           />
         </div>
       </section>
-
-      {/* =========================================================
-          FEATURES
-      ========================================================= */}
 
       <section
         id="features"
@@ -328,12 +323,9 @@ export default async function LandingPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Wide editorial card */}
-
           <div className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
             <div className="relative min-h-70 overflow-hidden rounded-[30px] bg-[#5C6B9C] p-8 text-[#FDFBF7] sm:p-10">
               <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full border border-white/10" />
-
               <div className="absolute right-16 top-16 h-24 w-24 rounded-full border border-[#FBC4AB]/30" />
 
               <div className="relative max-w-lg">
@@ -353,8 +345,6 @@ export default async function LandingPage({ params }: PageProps) {
                     : "Moodify membantumu melihat halaman-halaman di sekitarnya, supaya kamu bisa memperhatikan apa yang terus muncul dari waktu ke waktu."}
                 </p>
               </div>
-
-              {/* abstract lines */}
 
               <div className="absolute bottom-8 right-8 hidden w-48 sm:block">
                 <div className="flex items-end gap-2">
@@ -390,10 +380,6 @@ export default async function LandingPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* =========================================================
-          HOW IT WORKS
-      ========================================================= */}
-
       <section
         id="how-it-works"
         className="scroll-mt-24 border-y border-[#4A3F35]/6 bg-[#F1E9DB]"
@@ -422,8 +408,6 @@ export default async function LandingPage({ params }: PageProps) {
           </div>
 
           <div className="relative mt-16">
-            {/* timeline */}
-
             <div className="absolute left-5 top-7 hidden h-px w-[calc(100%-40px)] bg-[#4A3F35]/10 md:block" />
 
             <div className="grid gap-12 md:grid-cols-3 md:gap-8">
@@ -461,124 +445,92 @@ export default async function LandingPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* =========================================================
-          PRIVACY
-      ========================================================= */}
+      
 
-      <section
-        id="privacy"
-        className="scroll-mt-24 border-b border-[#4A3F35]/6"
-      >
-        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
-          <div className="grid items-center gap-16 lg:grid-cols-[0.9fr_1.1fr]">
-            {/* Privacy visual */}
+<section
+  id="privacy"
+  className="scroll-mt-24 border-b border-[#4A3F35]/6"
+>
+  <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
+    <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+      <div className="relative w-full">
+        <Image
+          src="/private-diary.png"
+          alt={
+            isEnglish
+              ? "Private diary pages representing personal thoughts"
+              : "Halaman diary pribadi yang menggambarkan pikiran personal"
+          }
+          width={1356}
+          height={1118}
+          sizes="(max-width: 1023px) 100vw, 46vw"
+          className="block h-auto w-full object-contain"
+        />
+      </div>
 
-            <div className="relative min-h-100 overflow-hidden rounded-[34px] bg-[#C1D5C0]/40 p-8 sm:p-10">
-              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/30" />
+      <div className="py-2 lg:py-8">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-7 bg-[#5C6B9C]" />
 
-              <div className="absolute -bottom-20 -left-10 h-52 w-52 rounded-full border-25 border-white/20" />
-
-              <div className="relative flex min-h-82.5 items-center justify-center">
-                <div className="relative w-full max-w-77.5 -rotate-3 rounded-[7px] bg-[#FFFDF8] p-7 shadow-[0_25px_60px_rgba(74,63,53,0.12)]">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#4A3F35]/30">
-                      {isEnglish ? "Personal" : "Pribadi"}
-                    </span>
-
-                    <LockKeyhole
-                      className="h-4 w-4 text-[#5C6B9C]"
-                      strokeWidth={1.7}
-                    />
-                  </div>
-
-                  <div className="mt-8 space-y-4">
-                    <div className="h-2 w-[82%] rounded-full bg-[#4A3F35]/[0.07]" />
-                    <div className="h-2 w-[92%] rounded-full bg-[#4A3F35]/[0.07]" />
-                    <div className="h-2 w-[66%] rounded-full bg-[#4A3F35]/[0.07]" />
-                    <div className="h-2 w-[86%] rounded-full bg-[#4A3F35]/[0.07]" />
-                  </div>
-
-                  <div className="mt-10 flex items-center justify-between border-t border-[#4A3F35]/[0.07] pt-5">
-                    <span className="text-[9px] text-[#4A3F35]/35">
-                      {isEnglish
-                        ? "Only visible to you"
-                        : "Hanya terlihat olehmu"}
-                    </span>
-
-                    <div className="h-2 w-2 rounded-full bg-[#C1D5C0]" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Privacy copy */}
-
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="h-px w-7 bg-[#5C6B9C]" />
-
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                  {isEnglish ? "Privacy" : "Privasi"}
-                </p>
-              </div>
-
-              <h2 className="mt-5 max-w-xl text-[38px] font-semibold leading-[1.04] tracking-tighter sm:text-[50px]">
-                {isEnglish
-                  ? "Some thoughts are meant to stay yours."
-                  : "Ada hal yang memang cukup menjadi milikmu."}
-              </h2>
-
-              <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
-                {isEnglish
-                  ? "Your diary and check-ins are connected to your account. They are not a public timeline and are not shared with other users."
-                  : "Diary dan check-inmu terhubung ke akunmu. Bukan timeline publik dan tidak dibagikan kepada pengguna lain."}
-              </p>
-
-              <div className="mt-9 space-y-4">
-                <PrivacyPoint
-                  text={
-                    isEnglish
-                      ? "Your entries stay attached to your account."
-                      : "Catatan tetap terhubung dengan akunmu."
-                  }
-                />
-
-                <PrivacyPoint
-                  text={
-                    isEnglish
-                      ? "You can export or delete your data."
-                      : "Kamu bisa export atau menghapus datamu."
-                  }
-                />
-
-                <PrivacyPoint
-                  text={
-                    isEnglish
-                      ? "AI reflections only use what you choose to submit."
-                      : "Refleksi AI hanya menggunakan apa yang kamu pilih untuk dikirim."
-                  }
-                />
-              </div>
-
-              <Link
-                href={`/${typedLocale}/register`}
-                className="group mt-9 inline-flex items-center gap-2 text-sm font-semibold text-[#5C6B9C] transition hover:text-[#4A3F35]"
-              >
-                {isEnglish ? "Create your space" : "Buat ruangmu"}
-
-                <ArrowRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                  strokeWidth={1.8}
-                />
-              </Link>
-            </div>
-          </div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
+            {isEnglish ? "Privacy" : "Privasi"}
+          </p>
         </div>
-      </section>
 
-      {/* =========================================================
-          FINAL CTA
-      ========================================================= */}
+        <h2 className="mt-5 max-w-xl text-[38px] font-semibold leading-[1.04] tracking-[-0.055em] sm:text-[48px] lg:text-[54px]">
+          {isEnglish
+            ? "Some thoughts are meant to stay yours."
+            : "Ada hal yang memang cukup menjadi milikmu."}
+        </h2>
+
+        <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/65 sm:text-base sm:leading-8">
+          {isEnglish
+            ? "Your diary and check-ins are connected to your account. They are not a public timeline and are not shared with other users."
+            : "Diary dan check-inmu terhubung ke akunmu. Bukan timeline publik dan tidak dibagikan kepada pengguna lain."}
+        </p>
+
+        <div className="mt-9 space-y-5">
+          <PrivacyPoint
+            text={
+              isEnglish
+                ? "Your entries stay attached to your account."
+                : "Catatan tetap terhubung dengan akunmu."
+            }
+          />
+
+          <PrivacyPoint
+            text={
+              isEnglish
+                ? "You can export or delete your data."
+                : "Kamu bisa mengekspor atau menghapus datamu."
+            }
+          />
+
+          <PrivacyPoint
+            text={
+              isEnglish
+                ? "AI reflections only use what you choose to submit."
+                : "Refleksi AI hanya menggunakan apa yang kamu pilih untuk dikirim."
+            }
+          />
+        </div>
+
+        <Link
+          href={`/${typedLocale}/register`}
+          className="group mt-10 inline-flex items-center gap-2 text-sm font-semibold text-[#5C6B9C] transition-colors hover:text-[#4A3F35]"
+        >
+          {isEnglish ? "Create your space" : "Buat ruangmu"}
+
+          <ArrowRight
+            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+            strokeWidth={1.8}
+          />
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-105 w-105 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FBC4AB]/20 blur-3xl" />
@@ -617,10 +569,7 @@ export default async function LandingPage({ params }: PageProps) {
             >
               {isEnglish ? "Create account" : "Buat akun"}
 
-              <ArrowRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                strokeWidth={1.8}
-              />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.8} />
             </Link>
 
             <Link
@@ -633,10 +582,6 @@ export default async function LandingPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* =========================================================
-          FOOTER
-      ========================================================= */}
-
       <footer className="border-t border-[#4A3F35]/6 bg-[#F5EFE6]/40">
         <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
           <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
@@ -644,6 +589,7 @@ export default async function LandingPage({ params }: PageProps) {
               <Link
                 href={`/${typedLocale}`}
                 className="inline-flex items-center"
+                aria-label="Moodify"
               >
                 <Image
                   src="/moodify-logo.webp"
@@ -702,6 +648,9 @@ export default async function LandingPage({ params }: PageProps) {
                 <div className="mt-4 flex items-center gap-2">
                   <Link
                     href="/id"
+                    lang="id"
+                    hrefLang="id"
+                    aria-current={!isEnglish ? "page" : undefined}
                     className={`rounded-lg px-2.5 py-1.5 text-xs transition ${
                       !isEnglish
                         ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]"
@@ -713,6 +662,9 @@ export default async function LandingPage({ params }: PageProps) {
 
                   <Link
                     href="/en"
+                    lang="en"
+                    hrefLang="en"
+                    aria-current={isEnglish ? "page" : undefined}
                     className={`rounded-lg px-2.5 py-1.5 text-xs transition ${
                       isEnglish
                         ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]"
@@ -750,21 +702,12 @@ export default async function LandingPage({ params }: PageProps) {
   );
 }
 
-/* =========================================================
-   TRUST ITEM
-========================================================= */
-
 function TrustItem({
   number,
   icon,
   title,
   description,
-}: {
-  number: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
+}: TrustItemProps) {
   return (
     <div className="group flex gap-4 border-b border-[#4A3F35]/[0.07] px-5 py-7 last:border-b-0 sm:px-8 md:border-b-0 md:border-r md:last:border-r-0 lg:px-10">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#FDFBF7] text-[#5C6B9C]">
@@ -788,21 +731,12 @@ function TrustItem({
   );
 }
 
-/* =========================================================
-   EDITORIAL FEATURE
-========================================================= */
-
 function EditorialFeature({
   number,
   icon,
   title,
   description,
-}: {
-  number: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
+}: EditorialFeatureProps) {
   return (
     <div className="group relative rounded-[26px] border border-[#4A3F35]/[0.07] bg-white/55 p-7 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-[0_20px_55px_rgba(74,63,53,0.07)]">
       <div className="flex items-start justify-between">
@@ -826,19 +760,11 @@ function EditorialFeature({
   );
 }
 
-/* =========================================================
-   TIMELINE STEP
-========================================================= */
-
 function TimelineStep({
   number,
   title,
   description,
-}: {
-  number: string;
-  title: string;
-  description: string;
-}) {
+}: TimelineStepProps) {
   return (
     <div className="relative">
       <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#F1E9DB]">
@@ -848,9 +774,7 @@ function TimelineStep({
       </div>
 
       <div className="mt-7">
-        <h3 className="text-xl font-semibold tracking-tight">
-          {title}
-        </h3>
+        <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
 
         <p className="mt-3 max-w-xs text-sm leading-7 text-[#4A3F35]/50">
           {description}
@@ -860,41 +784,19 @@ function TimelineStep({
   );
 }
 
-/* =========================================================
-   PRIVACY POINT
-========================================================= */
-
-function PrivacyPoint({ text }: { text: string }) {
+function PrivacyPoint({ text }: PrivacyPointProps) {
   return (
     <div className="flex items-start gap-3">
       <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C1D5C0]/55">
-        <Check
-          className="h-3 w-3 text-[#4A3F35]"
-          strokeWidth={2}
-        />
+        <Check className="h-3 w-3 text-[#4A3F35]" strokeWidth={2} />
       </div>
 
-      <p className="text-sm text-[#4A3F35]/58">
-        {text}
-      </p>
+      <p className="text-sm text-[#4A3F35]/58">{text}</p>
     </div>
   );
 }
 
-/* =========================================================
-   FOOTER COLUMN
-========================================================= */
-
-function FooterColumn({
-  title,
-  links,
-}: {
-  title: string;
-  links: {
-    href: string;
-    label: string;
-  }[];
-}) {
+function FooterColumn({ title, links }: FooterColumnProps) {
   return (
     <div>
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/30">

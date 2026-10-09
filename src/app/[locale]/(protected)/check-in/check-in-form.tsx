@@ -1150,7 +1150,7 @@ const emotionImages: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
   loved: "/emotions-emoji/loved.png",
   excited: "/emotions-emoji/excited.png",
-  hopeful: "/emotions-emoji/hopeful.png",
+  hopeful: "/emotions-emoji/hopefulrev.png",
   calm: "/emotions-emoji/calm.png",
   tired: "/emotions-emoji/tired.png",
   anxious: "/emotions-emoji/anxious.png",
