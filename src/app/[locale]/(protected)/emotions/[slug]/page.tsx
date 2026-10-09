@@ -129,6 +129,79 @@ const emotions: EmotionDetail[] = [
   },
 
   {
+    slug: "loved",
+    nameId: "Dicintai",
+    nameEn: "Loved",
+    category: "positive",
+    image: "/emotions-emoji/loved.png",
+    color: "#C39986",
+
+    descriptionId:
+      "Merasa dicintai adalah perasaan ketika kita merasa diterima, dihargai, dan memiliki hubungan yang berarti dengan orang lain. Perasaan ini dapat muncul melalui perhatian, dukungan, kasih sayang, atau tindakan sederhana yang membuat kita merasa berarti.",
+
+    descriptionEn:
+      "Feeling loved is the experience of feeling accepted, valued, and connected to others in a meaningful way. It can arise through care, support, affection, or simple actions that remind us we matter.",
+
+    feelingsId: [
+      "Merasa diterima apa adanya",
+      "Merasa diperhatikan dan dihargai",
+      "Merasa aman untuk menjadi diri sendiri",
+      "Ingin menunjukkan kasih sayang kepada orang lain",
+    ],
+
+    feelingsEn: [
+      "Feeling accepted for who you are",
+      "Feeling cared for and appreciated",
+      "Feeling safe to be yourself",
+      "Wanting to show affection to others",
+    ],
+
+    bodySignalsId: [
+      "Tubuh terasa lebih rileks",
+      "Muncul perasaan hangat dan nyaman",
+      "Wajah lebih mudah tersenyum",
+      "Napas terasa lebih tenang",
+    ],
+
+    bodySignalsEn: [
+      "Feeling more physically relaxed",
+      "Experiencing a sense of warmth and comfort",
+      "Finding it easier to smile",
+      "Breathing feels calmer",
+    ],
+
+    thoughtsId: [
+      "Aku berarti bagi seseorang.",
+      "Aku bisa menjadi diriku sendiri.",
+      "Aku tidak harus menghadapi semuanya sendirian.",
+    ],
+
+    thoughtsEn: [
+      "I matter to someone.",
+      "I can be myself.",
+      "I do not have to face everything alone.",
+    ],
+
+    reflectionId: [
+      "Kapan terakhir kali aku merasa benar-benar diperhatikan?",
+      "Siapa yang membuatku merasa diterima apa adanya?",
+      "Bagaimana aku bisa menunjukkan kasih sayang kepada orang lain?",
+    ],
+
+    reflectionEn: [
+      "When was the last time I felt genuinely cared for?",
+      "Who makes me feel accepted for who I am?",
+      "How can I show care and affection to others?", 
+    ],
+
+    reminderId:
+      "Kamu layak mendapatkan kasih sayang dan penghargaan. Ingat, kamu juga bisa belajar menerima perhatian dan menunjukkan kasih sayang dengan caramu sendiri.",
+
+    reminderEn:
+      "You deserve care and appreciation. Remember that you can also learn to receive care and show affection in your own way.",
+  },
+
+  {
     slug: "excited",
     nameId: "Antusias",
     nameEn: "Excited",
@@ -206,7 +279,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Bersyukur",
     nameEn: "Grateful",
     category: "positive",
-    image: "/emotions-emoji/grateful.png",
+    image: "/emotions-emoji/hopefulrev.png",
     color: "#D6E3D5",
 
     descriptionId:
@@ -1091,7 +1164,7 @@ export default async function EmotionDetailPage({
                   width={190}
                   height={190}
                   priority
-                  className="h-[175px] w-[175px] object-contain mix-blend-multiply sm:h-[205px] sm:w-[205px]"
+                  className="h-43.75 w-43.75 object-contain sm:h-51.25 sm:w-51.25"
                 />
               </div>
             </div>
@@ -1101,7 +1174,7 @@ export default async function EmotionDetailPage({
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FDFBF7]/65 text-[#5C6B9C]">
-                  <WellbeingIcon className="h-[18px] w-[18px]" />
+                  <WellbeingIcon className="h-4.5 w-4.5" />
                 </div>
 
                 <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-[#5C6B9C]">
@@ -1112,7 +1185,7 @@ export default async function EmotionDetailPage({
                 </p>
               </div>
 
-              <h1 className="mt-5 text-[42px] font-semibold leading-none tracking-[-0.05em] sm:text-[58px]">
+              <h1 className="mt-5 text-[42px] font-semibold leading-none tracking-tighter sm:text-[58px]">
                 {name}
               </h1>
 

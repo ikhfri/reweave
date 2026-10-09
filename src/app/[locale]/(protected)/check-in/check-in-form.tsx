@@ -114,7 +114,6 @@ export default function CheckInForm({ locale, userName }: Props) {
           return;
         }
 
-        // --- BAGIAN YANG DIUBAH (SORTING) ---
         const fetchedEmotions = Array.isArray(data.emotions)
           ? data.emotions
           : [];
@@ -124,8 +123,6 @@ export default function CheckInForm({ locale, userName }: Props) {
         });
 
         setEmotions(sortedEmotions);
-        // ------------------------------------
-
         setContexts(Array.isArray(data.contexts) ? data.contexts : []);
       } catch (loadError) {
         console.error("Failed to load check-in options:", loadError);
@@ -332,8 +329,6 @@ export default function CheckInForm({ locale, userName }: Props) {
     setIsSubmitting(true);
 
     try {
-      // 1. SAVE CHECK-IN
-
       const checkinResponse = await fetch("/api/check-ins", {
         method: "POST",
         headers: {
@@ -360,18 +355,13 @@ export default function CheckInForm({ locale, userName }: Props) {
       if (!checkinResponse.ok) {
         console.error("Check-in API error:", checkinData);
 
-        // If today's check-in already exists,
-        // reuse it so AI analysis can be retried.
         if (checkinResponse.status === 409 && checkinData?.checkinId) {
           const existingCheckinId = checkinData.checkinId;
-
           setSavedCheckinId(existingCheckinId);
-
           const success = await analyzeCheckin(existingCheckinId);
 
           if (success) {
             router.push(`/${locale}/check-in/result/${existingCheckinId}`);
-
             router.refresh();
           }
 
@@ -392,32 +382,24 @@ export default function CheckInForm({ locale, userName }: Props) {
 
       if (!checkinId) {
         console.error("Check-in ID missing:", checkinData);
-
         setError(
           isEnglish
             ? "Check-in was saved but its ID could not be found."
             : "Check-in berhasil disimpan tetapi ID tidak ditemukan.",
         );
-
         return;
       }
 
       setSavedCheckinId(checkinId);
 
-      // 2. GENERATE AI ANALYSIS
-
       const success = await analyzeCheckin(checkinId);
-
-      // 3. GO TO AI RESULT
 
       if (success) {
         router.push(`/${locale}/check-in/result/${checkinId}`);
-
         router.refresh();
       }
     } catch (submitError) {
       console.error("Failed to submit check-in:", submitError);
-
       setError(
         isEnglish
           ? "Something went wrong. Please try again."
@@ -465,7 +447,6 @@ export default function CheckInForm({ locale, userName }: Props) {
       <header className="mb-12 max-w-3xl">
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-[#e2725b]" />
-
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
             {isEnglish ? "Daily check-in" : "Check-in harian"}
           </p>
@@ -495,13 +476,11 @@ export default function CheckInForm({ locale, userName }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
                 01
               </p>
-
               <h2 className="mt-2 text-2xl font-semibold tracking-tight">
                 {isEnglish
                   ? "What are you feeling?"
                   : "Apa yang sedang kamu rasakan?"}
               </h2>
-
               <p className="mt-2 max-w-xl text-sm leading-6 text-[#4a3f35]/50">
                 {isEnglish
                   ? "Choose up to three emotions that feel closest to your experience."
@@ -526,7 +505,6 @@ export default function CheckInForm({ locale, userName }: Props) {
             <div className="grid grid-cols-2 border-l border-t border-[#4a3f35]/10 sm:grid-cols-3 lg:grid-cols-4">
               {emotions.map((emotion) => {
                 const selected = Boolean(getSelectedEmotion(emotion.slug));
-
                 const disabled = !selected && selectedEmotions.length >= 3;
 
                 return (
@@ -543,7 +521,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                         : undefined
                     }
                     className={[
-                      "group relative min-h-[105px] border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
+                      "group relative min-h-[105px] flex flex-col justify-center border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
                       !selected ? "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10" : "",
                       disabled ? "cursor-not-allowed opacity-30" : "",
                     ].join(" ")}
@@ -557,44 +535,38 @@ export default function CheckInForm({ locale, userName }: Props) {
                       />
                     )}
 
-                    <div className="flex h-full flex-col justify-between gap-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <Image
-                            src={getEmotionImage(emotion.slug)}
-                            alt={getEmotionLabel(emotion, isEnglish)}
-                            width={52}
-                            height={52}
-                            className="h-full w-full object-contain"
-                          />
+                    <div className="flex w-full items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={getEmotionImage(emotion.slug)}
+                          alt={getEmotionLabel(emotion, isEnglish)}
+                          width={52}
+                          height={52}
+                          className="h-[52px] w-[52px] shrink-0 object-contain"
+                        />
 
-                          <span
-                            className="text-[10px] font-semibold uppercase tracking-[0.12em]"
-                            style={{
-                              color: selected
-                                ? getEmotionColor(emotion.slug)
-                                : undefined,
-                            }}
-                          >
-                            {getCategoryLabel(emotion.category, isEnglish)}
-                          </span>
-                        </div>
-
-                        {selected && (
-                          <span
-                            className="flex h-5 w-5 items-center justify-center rounded-full"
-                            style={{
-                              backgroundColor: getEmotionColor(emotion.slug),
-                            }}
-                          >
-                            <CheckIcon className="h-3 w-3 text-white" />
-                          </span>
-                        )}
+                        <span
+                          className="text-sm font-medium transition-colors"
+                          style={{
+                            color: selected
+                              ? getEmotionColor(emotion.slug)
+                              : "#4a3f35",
+                          }}
+                        >
+                          {getEmotionLabel(emotion, isEnglish)}
+                        </span>
                       </div>
 
-                      <span className="text-sm font-medium text-[#4a3f35]">
-                        {getEmotionLabel(emotion, isEnglish)}
-                      </span>
+                      {selected && (
+                        <span
+                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                          style={{
+                            backgroundColor: getEmotionColor(emotion.slug),
+                          }}
+                        >
+                          <CheckIcon className="h-3 w-3 text-white" />
+                        </span>
+                      )}
                     </div>
                   </button>
                 );
@@ -1233,7 +1205,7 @@ const contextTranslations: Record<string, { en: string; id: string }> = {
   family: { en: "Family", id: "Keluarga" },
   financial: { en: "Financial", id: "Keuangan" },
   "life changes": { en: "Life Changes", id: "Perubahan Hidup" },
-  "life-changes": { en: "Life Changes", id: "Perubahan Hidup" }, // Jaga-jaga jika format slug memakai strip
+  "life-changes": { en: "Life Changes", id: "Perubahan Hidup" },
   other: { en: "Other", id: "Lainnya" },
   "physical health": { en: "Physical Health", id: "Kesehatan Fisik" },
   "physical-health": { en: "Physical Health", id: "Kesehatan Fisik" },
@@ -1242,8 +1214,6 @@ const contextTranslations: Record<string, { en: string; id: string }> = {
   "school-work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
   sleep: { en: "Sleep", id: "Tidur" },
   social: { en: "Social", id: "Sosial" },
-  
-  // Konteks tambahan jika sewaktu-waktu ada di database
   work: { en: "Work", id: "Pekerjaan" },
   health: { en: "Health", id: "Kesehatan" },
   friends: { en: "Friends", id: "Teman" },

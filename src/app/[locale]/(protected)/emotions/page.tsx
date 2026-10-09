@@ -75,7 +75,7 @@ const emotions: EmotionItem[] = [
       "Perasaan menghargai hal baik, bantuan, atau sesuatu yang berarti dalam hidup.",
     descriptionEn:
       "A feeling of appreciation for something good, meaningful, or supportive in your life.",
-    image: "/emotions-emoji/grateful.png",
+    image: "/emotions-emoji/hopefulrev.png",
     color: "#D6E3D5",
   },
 
@@ -444,16 +444,16 @@ export default function EmotionsPage() {
                           alt={name}
                           width={68}
                           height={68}
-                          className="object-contain mix-blend-multiply"
+                          className="object-contain"
                         />
                       </div>
 
                       <div className="mt-2 text-[#4A3F35]/25 transition-transform duration-300 group-hover:translate-x-1">
-                        <ArrowRightIcon className="h-[19px] w-[19px]" />
+                        <ArrowRightIcon className="h-4.75 w-4.75" />
                       </div>
                     </div>
 
-                    <p className="mt-6 text-[22px] font-semibold tracking-[-0.025em]">
+                    <p className="mt-6 text-[22px] font-semibold tracking-tight">
                       {name}
                     </p>
 
