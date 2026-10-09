@@ -1,411 +1,337 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "node:crypto";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  generateGeminiContent,
-  GEMINI_MODEL,
-} from "@/lib/gemini";
+import { generateGeminiContent, GEMINI_MODEL } from "@/lib/gemini";
 
-const schema = z.object({
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const requestSchema = z.object({
   language: z.enum(["id", "en"]).default("id"),
+  // Only an explicit user action should regenerate a cached summary.
+  regenerate: z.boolean().default(false),
+});
+
+const aiResponseSchema = z.object({
+  headline: z.string().min(1).max(80),
+  summary: z.string().min(1).max(500),
+  highlights: z.array(z.string().min(1)).max(3),
+  reflectionPrompt: z.string().max(180),
+  gentleSuggestion: z.string().max(250),
 });
 
 function getDateRange() {
   const end = new Date();
-
   const start = new Date(end);
   start.setDate(start.getDate() - 6);
   start.setHours(0, 0, 0, 0);
-
   return { start, end };
 }
 
-export async function POST(request: NextRequest) {
+// Use Monday as the stable cache key for the current calendar week.
+// The source data remains the same rolling seven-day window as the Insights API.
+function getWeekKey(date: Date) {
+  const key = new Date(date);
+  key.setHours(0, 0, 0, 0);
+  const day = key.getDay();
+  key.setDate(key.getDate() - ((day + 6) % 7));
+  return key;
+}
+
+function fingerprint(value: unknown) {
+  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function toSummary(record: {
+  headline: string;
+  summary: string;
+  highlights: unknown;
+  reflectionPrompt: string;
+  gentleSuggestion: string;
+}) {
+  return {
+    headline: record.headline,
+    summary: record.summary,
+    highlights: Array.isArray(record.highlights)
+      ? record.highlights.filter((item): item is string => typeof item === "string").slice(0, 3)
+      : [],
+    reflectionPrompt: record.reflectionPrompt,
+    gentleSuggestion: record.gentleSuggestion,
+  };
+}
+
+export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
-
     if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 },
-      );
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
+    }
 
-    const parsed = schema.safeParse(body);
-
+    const parsed = requestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: parsed.error.flatten(),
-        },
+        { success: false, error: "Invalid request", details: parsed.error.flatten() },
         { status: 400 },
       );
     }
 
-    const { language } = parsed.data;
+    const { language, regenerate } = parsed.data;
     const { start, end } = getDateRange();
+    const weekStart = getWeekKey(end);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
 
-    const [checkins, diaries, analyses] =
-      await Promise.all([
-        prisma.dailyCheckin.findMany({
-          where: {
-            userId: user.id,
-            checkinDate: {
-              gte: start,
-              lte: end,
+    const [checkins, diaries, analyses] = await Promise.all([
+      prisma.dailyCheckin.findMany({
+        where: { userId: user.id, checkinDate: { gte: start, lte: end } },
+        select: {
+          checkinDate: true,
+          overallIntensity: true,
+          emotions: {
+            select: {
+              intensity: true,
+              emotion: { select: { name: true, slug: true, category: true } },
             },
           },
-          select: {
-            checkinDate: true,
-            overallIntensity: true,
-            emotions: {
-              select: {
-                intensity: true,
-                emotion: {
-                  select: {
-                    name: true,
-                    slug: true,
-                    category: true,
-                  },
-                },
-              },
-            },
-            contexts: {
-              select: {
-                context: {
-                  select: {
-                    name: true,
-                    slug: true,
-                  },
-                },
-              },
-            },
+          contexts: {
+            select: { context: { select: { name: true, slug: true } } },
           },
-        }),
+        },
+      }),
+      prisma.diaryEntry.findMany({
+        where: { userId: user.id, createdAt: { gte: start, lte: end } },
+        select: { id: true, content: true, createdAt: true },
+      }),
+      prisma.aIAnalysis.findMany({
+        where: { userId: user.id, createdAt: { gte: start, lte: end } },
+        orderBy: { createdAt: "desc" },
+        select: {
+          summary: true,
+          stressScore: true,
+          sentiment: true,
+          emotionalState: true,
+          possibleTriggers: true,
+          recommendations: true,
+          riskLevel: true,
+        },
+      }),
+    ]);
 
-        prisma.diaryEntry.findMany({
-          where: {
-            userId: user.id,
-            createdAt: {
-              gte: start,
-              lte: end,
-            },
-          },
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-          },
-        }),
-
-        prisma.aIAnalysis.findMany({
-          where: {
-            userId: user.id,
-            createdAt: {
-              gte: start,
-              lte: end,
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-          select: {
-            summary: true,
-            stressScore: true,
-            sentiment: true,
-            emotionalState: true,
-            possibleTriggers: true,
-            recommendations: true,
-            riskLevel: true,
-          },
-        }),
-      ]);
-
-    const emotionMap = new Map<
-      string,
-      {
-        name: string;
-        count: number;
-      }
-    >();
+    const emotionMap = new Map<string, { name: string; count: number }>();
+    const contextMap = new Map<string, number>();
 
     for (const checkin of checkins) {
       for (const item of checkin.emotions) {
         const slug = item.emotion.slug;
-        const existing = emotionMap.get(slug);
+        const current = emotionMap.get(slug);
+        if (current) current.count += 1;
+        else emotionMap.set(slug, { name: item.emotion.name, count: 1 });
+      }
 
-        if (existing) {
-          existing.count += 1;
-        } else {
-          emotionMap.set(slug, {
-            name: item.emotion.name,
-            count: 1,
-          });
-        }
+      for (const item of checkin.contexts) {
+        const name = item.context.name;
+        contextMap.set(name, (contextMap.get(name) ?? 0) + 1);
       }
     }
 
-    const topEmotions = Array.from(
-      emotionMap.values(),
-    )
+    const topEmotions = [...emotionMap.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    const topContexts = [...contextMap.entries()]
+      .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
     const stressValues = analyses
       .map((item) => item.stressScore)
-      .filter(
-        (value): value is number =>
-          typeof value === "number",
-      );
+      .filter((value): value is number => typeof value === "number");
 
     const averageStress =
       stressValues.length > 0
-        ? Number(
-            (
-              stressValues.reduce(
-                (sum, value) => sum + value,
-                0,
-              ) / stressValues.length
-            ).toFixed(1),
-          )
+        ? Number((stressValues.reduce((sum, value) => sum + value, 0) / stressValues.length).toFixed(1))
         : null;
 
     const sentiment = {
-      positive: analyses.filter(
-        (item) => item.sentiment === "POSITIVE",
-      ).length,
-
-      neutral: analyses.filter(
-        (item) => item.sentiment === "NEUTRAL",
-      ).length,
-
-      negative: analyses.filter(
-        (item) => item.sentiment === "NEGATIVE",
-      ).length,
+      positive: analyses.filter((item) => item.sentiment === "POSITIVE").length,
+      neutral: analyses.filter((item) => item.sentiment === "NEUTRAL").length,
+      negative: analyses.filter((item) => item.sentiment === "NEGATIVE").length,
     };
 
-    const contexts = new Map<
-      string,
-      number
-    >();
+    // Fingerprint only the summarized source data. We do not send raw diary
+    // entries to the weekly summary prompt.
+    const sourceData = {
+      periodStart: start.toISOString(),
+      periodEnd: end.toISOString(),
+      checkinCount: checkins.length,
+      diaryCount: diaries.length,
+      topEmotions,
+      topContexts,
+      averageStress,
+      sentiment,
+      observations: analyses.slice(0, 5).map((item) => ({
+        summary: item.summary,
+        emotionalState: item.emotionalState,
+        possibleTriggers: item.possibleTriggers,
+      })),
+    };
+    const sourceFingerprint = fingerprint(sourceData);
 
-    for (const checkin of checkins) {
-      for (const item of checkin.contexts) {
-        const name = item.context.name;
+    const existing = await prisma.weeklyAIInsight.findUnique({
+      where: {
+        userId_weekStart_language: {
+          userId: user.id,
+          weekStart,
+          language: language === "id" ? "ID" : "EN",
+        },
+      },
+    });
 
-        contexts.set(
-          name,
-          (contexts.get(name) ?? 0) + 1,
-        );
-      }
+    if (existing && !regenerate) {
+      return NextResponse.json({
+        success: true,
+        cached: true,
+        stale: existing.sourceFingerprint !== sourceFingerprint,
+        summary: toSummary(existing),
+        meta: {
+          model: existing.model ?? GEMINI_MODEL,
+          generatedAt: existing.generatedAt,
+          period: { start: existing.periodStart.toISOString(), end: existing.periodEnd.toISOString() },
+        },
+      });
     }
 
-    const topContexts = Array.from(
-      contexts.entries(),
-    )
-      .map(([name, count]) => ({
-        name,
-        count,
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+    const languageInstruction =
+      language === "id"
+        ? "Write all user-facing text in natural Bahasa Indonesia."
+        : "Write all user-facing text in natural English.";
 
     const prompt = `
 You are Moodify, an AI emotional wellbeing companion.
 
-Create a short weekly emotional wellbeing summary based ONLY on the structured data provided below.
+Create a concise weekly emotional wellbeing summary based ONLY on the aggregated data below.
+${languageInstruction}
 
-Language:
-${
-  language === "id"
-    ? "Bahasa Indonesia"
-    : "English"
-}
-
-IMPORTANT:
-- Do not diagnose mental health conditions.
-- Do not claim the user has depression, anxiety, or another disorder.
-- Do not invent facts.
-- Do not make assumptions that are not supported by the data.
-- Use cautious language such as "your week suggests", "you may have noticed", or "a pattern appears".
-- Do not make medical claims.
-- Recommendations must be low-risk.
+Rules:
+- Do not diagnose mental health conditions or make medical claims.
+- Do not invent facts or infer details that are not supported by the data.
+- Use cautious language such as "data minggu ini menunjukkan" / "this week's data suggests".
+- Recommendations must be practical and low-risk.
 - Do not expose internal reasoning.
-- Return ONLY valid JSON.
+- Return ONLY valid JSON, without markdown fences.
 
-Return:
-
+Required JSON:
 {
-  "headline": "Short title",
-  "summary": "2-4 sentence summary of the week",
-  "highlights": [
-    "Short observation"
-  ],
-  "reflectionPrompt": "One thoughtful reflection question",
-  "gentleSuggestion": "One practical low-risk suggestion"
+  "headline": "Short title, max 80 characters",
+  "summary": "2-4 sentence summary, max 500 characters",
+  "highlights": ["Observation, maximum 3 items"],
+  "reflectionPrompt": "One reflection question, max 180 characters",
+  "gentleSuggestion": "One practical suggestion, max 250 characters"
 }
 
-Keep:
-- headline under 80 characters
-- summary under 500 characters
-- highlights maximum 3 items
-- reflectionPrompt under 180 characters
-- gentleSuggestion under 250 characters
-
-WEEKLY DATA:
-
-Check-ins: ${checkins.length}
-
-Diary entries: ${diaries.length}
-
-Average stress score: ${
-      averageStress ?? "No data"
-    }
-
-Top emotions:
-${JSON.stringify(topEmotions)}
-
-Sentiment:
-${JSON.stringify(sentiment)}
-
-Common contexts:
-${JSON.stringify(topContexts)}
-
-Recent AI observations:
-${JSON.stringify(
-  analyses.slice(0, 5).map((item) => ({
-    summary: item.summary,
-    emotionalState: item.emotionalState,
-    possibleTriggers: item.possibleTriggers,
-  })),
-)}
+AGGREGATED DATA:
+${JSON.stringify(sourceData)}
 `;
 
-    const response =
-      await generateGeminiContent(
-        prompt,
-        3,
-      );
-
-    if (!response.text) {
-      return NextResponse.json(
-        {
-          error:
-            "AI returned an empty response",
-        },
-        { status: 502 },
-      );
+    const response = await generateGeminiContent(prompt, 3);
+    if (!response.text?.trim()) {
+      return NextResponse.json({ success: false, error: "AI returned an empty response" }, { status: 502 });
     }
 
-    let result: {
-      headline?: string;
-      summary?: string;
-      highlights?: unknown;
-      reflectionPrompt?: string;
-      gentleSuggestion?: string;
-    };
-
+    let rawResult: unknown;
     try {
-      result = JSON.parse(response.text);
+      rawResult = JSON.parse(response.text);
     } catch {
-      console.error(
-        "[Weekly AI] Invalid JSON:",
-        response.text,
-      );
+      console.error("[Weekly AI] Gemini returned invalid JSON.");
+      return NextResponse.json({ success: false, error: "AI returned invalid JSON" }, { status: 502 });
+    }
 
+    const validated = aiResponseSchema.safeParse(rawResult);
+    if (!validated.success) {
+      console.error("[Weekly AI] Invalid response schema:", validated.error.flatten());
       return NextResponse.json(
-        {
-          error: "AI returned invalid JSON",
-        },
+        { success: false, error: "AI returned an unexpected response format" },
         { status: 502 },
       );
     }
 
-    const highlights = Array.isArray(
-      result.highlights,
-    )
-      ? result.highlights.filter(
-          (item): item is string =>
-            typeof item === "string",
-        ).slice(0, 3)
-      : [];
+    const result = validated.data;
+    const saved = await prisma.weeklyAIInsight.upsert({
+      where: {
+        userId_weekStart_language: {
+          userId: user.id,
+          weekStart,
+          language: language === "id" ? "ID" : "EN",
+        },
+      },
+      create: {
+        userId: user.id,
+        weekStart,
+        weekEnd,
+        periodStart: start,
+        periodEnd: end,
+        language: language === "id" ? "ID" : "EN",
+        headline: result.headline,
+        summary: result.summary,
+        highlights: result.highlights,
+        reflectionPrompt: result.reflectionPrompt,
+        gentleSuggestion: result.gentleSuggestion,
+        sourceFingerprint,
+        model: GEMINI_MODEL,
+        generatedAt: new Date(),
+      },
+      update: {
+        weekEnd,
+        periodStart: start,
+        periodEnd: end,
+        headline: result.headline,
+        summary: result.summary,
+        highlights: result.highlights,
+        reflectionPrompt: result.reflectionPrompt,
+        gentleSuggestion: result.gentleSuggestion,
+        sourceFingerprint,
+        model: GEMINI_MODEL,
+        generatedAt: new Date(),
+      },
+    });
 
     return NextResponse.json({
       success: true,
-
-      summary: {
-        headline:
-          result.headline ??
-          (language === "id"
-            ? "Ringkasan minggu kamu"
-            : "Your weekly summary"),
-
-        summary:
-          result.summary ??
-          (language === "id"
-            ? "Belum cukup data untuk membuat ringkasan."
-            : "There is not enough data to create a summary."),
-
-        highlights,
-
-        reflectionPrompt:
-          result.reflectionPrompt ?? "",
-
-        gentleSuggestion:
-          result.gentleSuggestion ?? "",
-      },
-
+      cached: false,
+      stale: false,
+      summary: toSummary(saved),
       meta: {
-        model: GEMINI_MODEL,
-        period: {
-          start: start.toISOString(),
-          end: end.toISOString(),
-        },
+        model: saved.model ?? GEMINI_MODEL,
+        generatedAt: saved.generatedAt,
+        period: { start: saved.periodStart.toISOString(), end: saved.periodEnd.toISOString() },
       },
-    });
-  } catch (error: any) {
-    console.error(
-      "[POST /api/ai/weekly-summary]",
-      error,
-    );
+    }, { status: 201 });
+  } catch (error: unknown) {
+    console.error("[POST /api/ai/weekly-summary]", error);
 
-    const status = error?.status;
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? Number((error as { status?: unknown }).status)
+        : undefined;
 
     if (status === 429) {
-      return NextResponse.json(
-        {
-          error: "AI request limit reached",
-        },
-        { status: 429 },
-      );
+      return NextResponse.json({ success: false, error: "AI request limit reached" }, { status: 429 });
     }
 
-    if (
-      status === 503 ||
-      status === 500 ||
-      status === 408
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "AI service is temporarily unavailable",
-        },
-        { status: 503 },
-      );
+    if (status === 503 || status === 500 || status === 408) {
+      return NextResponse.json({ success: false, error: "AI service is temporarily unavailable" }, { status: 503 });
     }
 
-    return NextResponse.json(
-      {
-        error:
-          "Failed to generate weekly summary",
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, error: "Failed to generate weekly summary" }, { status: 500 });
   }
 }

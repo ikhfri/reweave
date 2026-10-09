@@ -122,12 +122,39 @@ googleId     String? @unique
 
   activityLogs   ActivityLog[]
   weeklyInsights WeeklyInsight[]
+  weeklyAIInsights WeeklyAIInsight[]
 
   safetyContacts SafetyContact[]
   safetyEvents   SafetyEvent[]
   emotionDescriptions EmotionDescription[]
   otpVerifications OtpVerification[]
   reminderLogs     ReminderLog[]
+}
+
+model WeeklyAIInsight {
+  id                String   @id @default(cuid())
+  userId            String
+  weekStart         DateTime
+  weekEnd           DateTime
+  periodStart       DateTime
+  periodEnd         DateTime
+  language          Language @default(ID)
+  headline          String
+  summary           String
+  highlights        Json
+  reflectionPrompt  String
+  gentleSuggestion  String
+  sourceFingerprint String
+  model             String?
+  generatedAt       DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart, language])
+  @@index([userId])
+  @@index([weekStart])
 }
 
 model Session {
