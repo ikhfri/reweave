@@ -154,7 +154,7 @@ export async function processDailyCheckinReminders(): Promise<ReminderResult> {
       }
 
       /*
-       * Default Moodify:
+       * Default Reweave:
        * Asia/Jakarta
        */
 
@@ -335,13 +335,13 @@ export async function processDailyCheckinReminders(): Promise<ReminderResult> {
       result.sent += 1;
 
       console.info(
-        `[Moodify Reminder] Sent daily check-in reminder to ${preference.user.email}`,
+        `[Reweave Reminder] Sent daily check-in reminder to ${preference.user.email}`,
       );
     } catch (error) {
       result.failed += 1;
 
       console.error(
-        `[Moodify Reminder] Failed for user ${preference.user.id}`,
+        `[Reweave Reminder] Failed for user ${preference.user.id}`,
         error,
       );
     }

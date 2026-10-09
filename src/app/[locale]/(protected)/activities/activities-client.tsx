@@ -9,7 +9,7 @@ import {
   DiaryIcon,
   SupportIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import type { Locale } from "@/i18n/config";
 

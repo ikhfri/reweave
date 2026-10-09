@@ -391,7 +391,7 @@ export async function GET() {
 
         drawText(
           currentPage,
-          "Moodify · Personal Data Export",
+          "Reweave · Personal Data Export",
           42,
           21,
           regularFont,
@@ -427,7 +427,7 @@ export async function GET() {
 
     drawText(
       page,
-      "Moodify",
+      "Reweave",
       48,
       pageHeight - 75,
       boldFont,
@@ -447,7 +447,7 @@ export async function GET() {
 
     drawText(
       page,
-      "A copy of the personal information stored in your Moodify account.",
+      "A copy of the personal information stored in your Reweave account.",
       48,
       pageHeight - 138,
       regularFont,
@@ -547,7 +547,7 @@ export async function GET() {
 
     y = drawWrappedText(
       page,
-      "This export contains information associated with your Moodify account. Password hashes, session tokens, and other authentication secrets are intentionally excluded.",
+      "This export contains information associated with your Reweave account. Password hashes, session tokens, and other authentication secrets are intentionally excluded.",
       48,
       y,
       pageWidth - 96,
@@ -1140,7 +1140,7 @@ export async function GET() {
 
     drawWrappedText(
       page,
-      "Moodify's AI analysis is intended to help users reflect on their emotional experiences. It is not a medical diagnosis, professional mental health assessment, or substitute for professional care.",
+      "Reweave's AI analysis is intended to help users reflect on their emotional experiences. It is not a medical diagnosis, professional mental health assessment, or substitute for professional care.",
       58,
       y - 40,
       pageWidth - 116,
@@ -1154,7 +1154,7 @@ export async function GET() {
 
     const pdfBytes = await pdf.save();
 
-    const filename = `Moodify_Data_Export_${
+    const filename = `Reweave_Data_Export_${
       new Date().toISOString().slice(0, 10)
     }.pdf`;
 

@@ -7,7 +7,7 @@ import Image from "next/image";
 import {
   ArrowRightIcon,
   MailIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 
@@ -21,7 +21,7 @@ const translations = {
   id: {
     title: "Lupa password?",
     subtitle:
-      "Masukkan email yang kamu gunakan untuk akun Moodify. Kami akan mengirimkan kode verifikasi untuk membuat password baru.",
+      "Masukkan email yang kamu gunakan untuk akun Reweave. Kami akan mengirimkan kode verifikasi untuk membuat password baru.",
     email: "Email",
     emailPlaceholder: "you@example.com",
     submit: "Kirim kode verifikasi",
@@ -36,7 +36,7 @@ const translations = {
   en: {
     title: "Forgot your password?",
     subtitle:
-      "Enter the email address you use for your Moodify account. We'll send you a verification code to create a new password.",
+      "Enter the email address you use for your Reweave account. We'll send you a verification code to create a new password.",
     email: "Email",
     emailPlaceholder: "you@example.com",
     submit: "Send verification code",
@@ -190,8 +190,8 @@ export default function ForgotPasswordClient({
             {/* Logo */}
             <div className="mb-7 flex justify-center sm:mb-8">
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={132}
                 height={132}
                 priority
@@ -418,7 +418,7 @@ export default function ForgotPasswordClient({
                 sm:text-[11px]
               "
             >
-              Moodify · Emotional wellbeing, one day at a time.
+              Reweave · Emotional wellbeing, one day at a time.
             </p>
           </div>
         </div>

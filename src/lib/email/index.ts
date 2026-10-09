@@ -8,7 +8,7 @@ const smtpFrom = process.env.SMTP_FROM;
 
 if (!smtpHost || !smtpUser || !smtpPassword || !smtpFrom) {
   console.warn(
-    "[Moodify Email] SMTP environment variables are not completely configured."
+    "[Reweave Email] SMTP environment variables are not completely configured."
   );
 }
 

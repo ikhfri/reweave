@@ -12,7 +12,7 @@ import {
   SupportIcon,
   UserIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/i18n/config";
@@ -275,8 +275,8 @@ export default function OnboardingForm({
 
           <div className="flex items-center">
             <Image
-              src="/moodify-logo.webp"
-              alt="Moodify"
+              src="/reweave-logo.webp"
+              alt="Reweave"
               width={150}
               height={48}
               priority
@@ -372,8 +372,8 @@ export default function OnboardingForm({
             <p className="mt-4 max-w-xl text-sm leading-7 text-[#4A3F35]/50">
               {t.subtitle ??
                 (locale === "id"
-                  ? "Beberapa pertanyaan singkat ini membantu Moodify memahami cara yang paling nyaman untuk menemanimu."
-                  : "A few short questions help Moodify understand the most comfortable way to support you.")}
+                  ? "Beberapa pertanyaan singkat ini membantu Reweave memahami cara yang paling nyaman untuk menemanimu."
+                  : "A few short questions help Reweave understand the most comfortable way to support you.")}
             </p>
           </div>
         </div>
@@ -421,8 +421,8 @@ export default function OnboardingForm({
               title={
                 t.goals?.title ??
                 (locale === "id"
-                  ? "Apa yang ingin kamu dapatkan dari Moodify?"
-                  : "What would you like to get from Moodify?")
+                  ? "Apa yang ingin kamu dapatkan dari Reweave?"
+                  : "What would you like to get from Reweave?")
               }
               description={
                 t.goals?.description ??
@@ -527,8 +527,8 @@ export default function OnboardingForm({
               description={
                 t.support?.description ??
                 (locale === "id"
-                  ? "Ini membantu Moodify menyesuaikan cara memberikan dukungan."
-                  : "This helps Moodify adapt how it supports you.")
+                  ? "Ini membantu Reweave menyesuaikan cara memberikan dukungan."
+                  : "This helps Reweave adapt how it supports you.")
               }
               options={getSupportOptions(
                 locale,
@@ -545,8 +545,8 @@ export default function OnboardingForm({
               title={
                 t.communication?.title ??
                 (locale === "id"
-                  ? "Bagaimana Moodify sebaiknya berbicara denganmu?"
-                  : "How should Moodify talk to you?")
+                  ? "Bagaimana Reweave sebaiknya berbicara denganmu?"
+                  : "How should Reweave talk to you?")
               }
               description={
                 t.communication?.description ??

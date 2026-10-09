@@ -10,7 +10,7 @@ import {
   InsightIcon,
   PrivacyIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { ArrowRight, Check, LockKeyhole } from "lucide-react";
 
@@ -66,11 +66,11 @@ export default async function LandingPage({ params }: PageProps) {
           <Link
             href={`/${typedLocale}`}
             className="flex shrink-0 items-center"
-            aria-label="Moodify"
+            aria-label="Reweave"
           >
             <Image
-              src="/moodify-logo.webp"
-              alt="Moodify"
+              src="/reweave-logo.webp"
+              alt="Reweave"
               width={150}
               height={45}
               priority
@@ -197,8 +197,8 @@ export default async function LandingPage({ params }: PageProps) {
                 src="/hero-visual3.png"
                 alt={
                   isEnglish
-                    ? "A quiet Moodify journal page"
-                    : "Halaman jurnal Moodify yang tenang"
+                    ? "A quiet Reweave journal page"
+                    : "Halaman jurnal Reweave yang tenang"
                 }
                 width={900}
                 height={900}
@@ -259,7 +259,7 @@ export default async function LandingPage({ params }: PageProps) {
                 <span className="h-px w-7 bg-[#E2725B]" />
 
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                  {isEnglish ? "Inside Moodify" : "Di dalam Moodify"}
+                  {isEnglish ? "Inside Reweave" : "Di dalam Reweave"}
                 </p>
               </div>
 
@@ -341,8 +341,8 @@ export default async function LandingPage({ params }: PageProps) {
 
                 <p className="mt-5 max-w-md text-sm leading-7 text-white/60">
                   {isEnglish
-                    ? "Moodify helps you look at the pages around it, so you can notice what keeps appearing over time."
-                    : "Moodify membantumu melihat halaman-halaman di sekitarnya, supaya kamu bisa memperhatikan apa yang terus muncul dari waktu ke waktu."}
+                    ? "Reweave helps you look at the pages around it, so you can notice what keeps appearing over time."
+                    : "Reweave membantumu melihat halaman-halaman di sekitarnya, supaya kamu bisa memperhatikan apa yang terus muncul dari waktu ke waktu."}
                 </p>
               </div>
 
@@ -402,8 +402,8 @@ export default async function LandingPage({ params }: PageProps) {
 
             <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
               {isEnglish
-                ? "Open Moodify when you have a moment. Start wherever you are."
-                : "Buka Moodify saat kamu punya waktu sebentar. Mulai dari mana pun kamu berada."}
+                ? "Open Reweave when you have a moment. Start wherever you are."
+                : "Buka Reweave saat kamu punya waktu sebentar. Mulai dari mana pun kamu berada."}
             </p>
           </div>
 
@@ -538,8 +538,8 @@ export default async function LandingPage({ params }: PageProps) {
         <div className="relative mx-auto max-w-4xl px-5 py-28 text-center sm:px-8 lg:py-36">
           <div className="mx-auto flex items-center justify-center">
             <Image
-              src="/moodify-logo.png"
-              alt="Moodify"
+              src="/reweave-logo.png"
+              alt="Reweave"
               width={170}
               height={52}
               className="h-20 w-auto object-contain"
@@ -589,11 +589,11 @@ export default async function LandingPage({ params }: PageProps) {
               <Link
                 href={`/${typedLocale}`}
                 className="inline-flex items-center"
-                aria-label="Moodify"
+                aria-label="Reweave"
               >
                 <Image
-                  src="/moodify-logo.webp"
-                  alt="Moodify"
+                  src="/reweave-logo.webp"
+                  alt="Reweave"
                   width={130}
                   height={40}
                   className="h-16 w-auto object-contain"
@@ -680,7 +680,7 @@ export default async function LandingPage({ params }: PageProps) {
 
           <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#4A3F35]/6 pt-6 text-center sm:flex-row sm:text-left">
             <p className="text-[10px] text-[#4A3F35]/30">
-              © {new Date().getFullYear()} Moodify.{" "}
+              © {new Date().getFullYear()} Reweave.{" "}
               {isEnglish
                 ? "All rights reserved."
                 : "Semua hak dilindungi."}

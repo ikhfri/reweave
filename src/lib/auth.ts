@@ -3,7 +3,7 @@ import crypto from "crypto";
 
 import { prisma } from "./prisma";
 
-const SESSION_COOKIE = "moodify_session";
+const SESSION_COOKIE = "reweave_session";
 const SESSION_DURATION = 1000 * 60 * 60 * 24 * 30; // 30 days
 
 export async function createSession(userId: string) {

@@ -132,7 +132,7 @@ export async function GET(request: Request) {
           name:
             user.name.trim().length > 0
               ? user.name
-              : googleUser.name || "Moodify User",
+              : googleUser.name || "Reweave User",
         },
       });
     } else {
@@ -147,7 +147,7 @@ export async function GET(request: Request) {
           name:
             googleUser.name ||
             googleUser.given_name ||
-            "Moodify User",
+            "Reweave User",
           nickname:
             googleUser.given_name ||
             null,

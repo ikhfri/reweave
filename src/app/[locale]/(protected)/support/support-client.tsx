@@ -16,7 +16,7 @@ import {
   PrivacyIcon,
   SupportIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 /* ========================================================= */
 /* COMPONENT                                                 */
@@ -124,8 +124,8 @@ export default function SupportClient({
 
               <p className="mt-4 text-sm leading-7 text-[#4a3f35]/70">
                 {isEnglish
-                  ? "Moodify can give you a place to reflect, but you never have to carry difficult moments by yourself. Reaching out to someone you trust can be an important step."
-                  : "Moodify bisa menjadi tempat untuk berefleksi, tetapi kamu tidak harus menghadapi masa-masa sulit sendirian. Menghubungi seseorang yang kamu percaya bisa menjadi salah satu langkah penting."}
+                  ? "Reweave can give you a place to reflect, but you never have to carry difficult moments by yourself. Reaching out to someone you trust can be an important step."
+                  : "Reweave bisa menjadi tempat untuk berefleksi, tetapi kamu tidak harus menghadapi masa-masa sulit sendirian. Menghubungi seseorang yang kamu percaya bisa menjadi salah satu langkah penting."}
               </p>
             </div>
           </div>
@@ -253,14 +253,14 @@ export default function SupportClient({
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5c6b9c]">
               {isEnglish
-                ? "About Moodify"
-                : "Tentang Moodify"}
+                ? "About Reweave"
+                : "Tentang Reweave"}
             </p>
 
             <p className="mt-2 text-xs leading-6 text-[#4a3f35]/50">
               {isEnglish
-                ? "Moodify is designed as a reflection and wellbeing companion. It does not replace professional mental health care, diagnosis, or emergency services."
-                : "Moodify dirancang sebagai teman untuk berefleksi dan menjaga wellbeing. Moodify tidak menggantikan bantuan profesional, diagnosis, maupun layanan darurat."}
+                ? "Reweave is designed as a reflection and wellbeing companion. It does not replace professional mental health care, diagnosis, or emergency services."
+                : "Reweave dirancang sebagai teman untuk berefleksi dan menjaga wellbeing. Reweave tidak menggantikan bantuan profesional, diagnosis, maupun layanan darurat."}
             </p>
           </div>
         </footer>

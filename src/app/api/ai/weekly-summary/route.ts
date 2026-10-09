@@ -217,7 +217,7 @@ export async function POST(request: Request) {
         : "Write all user-facing text in natural English.";
 
     const prompt = `
-You are Moodify, an AI emotional wellbeing companion.
+You are Reweave, an AI emotional wellbeing companion.
 
 Create a concise weekly emotional wellbeing summary based ONLY on the aggregated data below.
 ${languageInstruction}

@@ -18,7 +18,7 @@ import {
   SettingsIcon,
   SupportIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import type { Locale } from "@/i18n/config";
 
@@ -281,11 +281,11 @@ export default function DashboardShell({
             href={`/${locale}/dashboard`}
             onClick={closeMobile}
             className="group flex items-center"
-            aria-label="Moodify Dashboard"
+            aria-label="Reweave Dashboard"
           >
             <Image
-              src="/moodify-logo.webp"
-              alt="Moodify"
+              src="/reweave-logo.webp"
+              alt="Reweave"
               width={145}
               height={44}
               priority
@@ -639,11 +639,11 @@ export default function DashboardShell({
           <Link
             href={`/${locale}/dashboard`}
             className="flex items-center"
-            aria-label="Moodify Dashboard"
+            aria-label="Reweave Dashboard"
           >
             <Image
-              src="/moodify-logo.webp"
-              alt="Moodify"
+              src="/reweave-logo.webp"
+              alt="Reweave"
               width={120}
               height={38}
               priority

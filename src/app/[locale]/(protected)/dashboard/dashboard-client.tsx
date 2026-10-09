@@ -132,7 +132,7 @@ const emotionColors: Record<string, string> = {
   sad: "#475677",
   overwhelmed: "#39405B",
 
-  // Emotion tambahan yang digunakan Moodify
+  // Emotion tambahan yang digunakan Reweave
   grateful: "#D6E3D5",
   frustrated: "#A64D3B",
 };

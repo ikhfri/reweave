@@ -10,7 +10,7 @@ import {
   EyeOffIcon,
   LockIcon,
   MailIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 
@@ -405,8 +405,8 @@ export default function ResetPasswordClient({
             {/* Logo */}
             <div className="mb-7 flex justify-center sm:mb-8">
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={132}
                 height={44}
                 priority
@@ -936,7 +936,7 @@ export default function ResetPasswordClient({
                 sm:text-[11px]
               "
             >
-              Moodify · Emotional wellbeing, one day at a time.
+              Reweave · Emotional wellbeing, one day at a time.
             </p>
           </div>
         </div>

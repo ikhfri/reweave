@@ -38,14 +38,14 @@ export function createDailyCheckinReminderEmail({
 
 How are you feeling today?
 
-Take a couple of minutes to check in with yourself on Moodify. You can choose the emotions you're experiencing, add a little context, and reflect on what may be behind them.
+Take a couple of minutes to check in with yourself on Reweave. You can choose the emotions you're experiencing, add a little context, and reflect on what may be behind them.
 
-Open Moodify:
+Open Reweave:
 ${checkinUrl}
 
 You don't have to figure everything out right now. Just start with how you feel.
 
-— Moodify`,
+— Reweave`,
 
       html: createHtml({
         greeting: `Hi ${safeName},`,
@@ -57,27 +57,27 @@ You don't have to figure everything out right now. Just start with how you feel.
           "Open today's check-in",
         checkinUrl,
         footer:
-          "You can always come back to Moodify whenever you're ready.",
+          "You can always come back to Reweave whenever you're ready.",
       }),
     };
   }
 
   return {
     subject:
-      "Waktunya check-in sebentar di Moodify",
+      "Waktunya check-in sebentar di Reweave",
 
     text: `Hai ${name || "kamu"},
 
 Gimana keadaanmu hari ini?
 
-Luangkan sekitar dua menit untuk check-in di Moodify. Kamu bisa memilih emosi yang sedang dirasakan, menambahkan sedikit cerita, dan memahami apa yang sedang terjadi.
+Luangkan sekitar dua menit untuk check-in di Reweave. Kamu bisa memilih emosi yang sedang dirasakan, menambahkan sedikit cerita, dan memahami apa yang sedang terjadi.
 
-Buka Moodify:
+Buka Reweave:
 ${checkinUrl}
 
 Kamu nggak harus menyelesaikan semuanya sekarang. Mulai saja dari apa yang sedang kamu rasakan.
 
-— Moodify`,
+— Reweave`,
 
     html: createHtml({
       greeting: `Hai ${safeName},`,
@@ -89,7 +89,7 @@ Kamu nggak harus menyelesaikan semuanya sekarang. Mulai saja dari apa yang sedan
         "Buka check-in hari ini",
       checkinUrl,
       footer:
-        "Kamu bisa kembali ke Moodify kapan pun kamu siap.",
+        "Kamu bisa kembali ke Reweave kapan pun kamu siap.",
     }),
   };
 }
@@ -120,7 +120,7 @@ function createHtml({
     content="width=device-width, initial-scale=1.0"
   />
 
-  <title>Moodify</title>
+  <title>Reweave</title>
 </head>
 
 <body
@@ -177,7 +177,7 @@ function createHtml({
                   color:#4A3F35;
                 "
               >
-                Moodify
+                Reweave
               </div>
             </td>
           </tr>
@@ -296,7 +296,7 @@ function createHtml({
                 "
               >
                 Kamu menerima email ini karena pengingat
-                harian Moodify diaktifkan pada akunmu.
+                harian Reweave diaktifkan pada akunmu.
               </p>
             </td>
           </tr>

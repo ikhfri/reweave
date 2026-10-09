@@ -6,7 +6,7 @@ const smtpUser = process.env.SMTP_USER;
 const smtpPassword = process.env.SMTP_PASSWORD;
 const smtpFrom =
   process.env.SMTP_FROM ??
-  `Moodify <${smtpUser ?? "noreply@moodify.app"}>`;
+  `Reweave <${smtpUser ?? "noreply@reweave.app"}>`;
 
 if (!smtpHost) {
   throw new Error("SMTP_HOST is not configured.");

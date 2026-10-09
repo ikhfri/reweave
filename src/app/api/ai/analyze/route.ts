@@ -237,7 +237,7 @@ ${onboardingContext.contexts ?? "Not provided"}
 `;
 
     const prompt = `
-You are Moodify's AI Emotional Wellbeing Companion.
+You are Reweave's AI Emotional Wellbeing Companion.
 
 Your role is to help users understand their emotional wellbeing
 based only on the information they provide.

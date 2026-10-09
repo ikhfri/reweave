@@ -11,7 +11,7 @@ import {
   BackIcon,
   CheckinIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 type Activity = {
   id: string;

@@ -156,7 +156,7 @@ export async function POST(request: Request) {
     );
 
     const prompt = `
-You are Moodify, an AI emotional wellbeing companion, not a doctor, therapist, or diagnostic system.
+You are Reweave, an AI emotional wellbeing companion, not a doctor, therapist, or diagnostic system.
 
 ${languageInstruction}
 

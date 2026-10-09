@@ -13,7 +13,7 @@ import {
   MailIcon,
   ShieldIcon,
   UserIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/i18n/config";
@@ -40,7 +40,7 @@ const content = {
     privacyText:
       "Cerita, check-in, dan refleksi yang kamu simpan tetap terhubung dengan akunmu.",
 
-    welcome: "Buat akun Moodify",
+    welcome: "Buat akun Reweave",
 
     subtitle: "Mulai perjalanan untuk lebih memahami dirimu.",
 
@@ -53,7 +53,7 @@ const content = {
     nicknamePlaceholder: "Opsional, misalnya Ikhsan",
 
     nicknameHint:
-      "Bebas menggunakan nama yang nyaman untuk digunakan di Moodify.",
+      "Bebas menggunakan nama yang nyaman untuk digunakan di Reweave.",
 
     email: "Email",
 
@@ -96,13 +96,13 @@ const content = {
     login: "Masuk",
 
     privacyNote:
-      "Dengan membuat akun, kamu menyetujui Terms of Service dan Privacy Policy Moodify.",
+      "Dengan membuat akun, kamu menyetujui Terms of Service dan Privacy Policy Reweave.",
 
     errors: {
       registerFailed: "Gagal membuat akun.",
       googleFailed: "Pendaftaran dengan Google gagal. Silakan coba lagi.",
       googleConflict:
-        "Akun Google ini sudah terhubung dengan akun Moodify.",
+        "Akun Google ini sudah terhubung dengan akun Reweave.",
       general: "Terjadi kesalahan. Silakan coba lagi.",
     },
 
@@ -132,7 +132,7 @@ const content = {
     privacyText:
       "Your stories, check-ins, and reflections stay connected to your account.",
 
-    welcome: "Create your Moodify account",
+    welcome: "Create your Reweave account",
 
     subtitle: "Start your journey toward understanding yourself better.",
 
@@ -145,7 +145,7 @@ const content = {
     nicknamePlaceholder: "Optional, e.g. Ikhsan",
 
     nicknameHint:
-      "Use any name that feels comfortable for you on Moodify.",
+      "Use any name that feels comfortable for you on Reweave.",
 
     email: "Email",
 
@@ -188,13 +188,13 @@ const content = {
     login: "Sign in",
 
     privacyNote:
-      "By creating an account, you agree to Moodify's Terms of Service and Privacy Policy.",
+      "By creating an account, you agree to Reweave's Terms of Service and Privacy Policy.",
 
     errors: {
       registerFailed: "Failed to create your account.",
       googleFailed: "Google sign-up failed. Please try again.",
       googleConflict:
-        "This Google account is already connected to a Moodify account.",
+        "This Google account is already connected to a Reweave account.",
       general: "Something went wrong. Please try again.",
     },
 
@@ -407,11 +407,11 @@ export default function RegisterClient({
             <Link
               href={`/${locale}`}
               className="inline-flex w-fit"
-              aria-label="Moodify"
+              aria-label="Reweave"
             >
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={180}
                 height={55}
                 priority
@@ -515,11 +515,11 @@ export default function RegisterClient({
             <Link
               href={`/${locale}`}
               className="lg:hidden"
-              aria-label="Moodify"
+              aria-label="Reweave"
             >
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={150}
                 height={45}
                 priority
@@ -974,8 +974,8 @@ export default function RegisterClient({
                   className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#4A3F35]/30 transition hover:text-[#5C6B9C]"
                 >
                   {locale === "en"
-                    ? "Back to Moodify"
-                    : "Kembali ke Moodify"}
+                    ? "Back to Reweave"
+                    : "Kembali ke Reweave"}
                 </Link>
               </div>
             </div>

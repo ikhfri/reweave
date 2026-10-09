@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 
 import type { Locale } from "@/i18n/config";
 
-import { ArrowRightIcon, WellbeingIcon } from "@/components/moodify-icons";
+import { ArrowRightIcon, WellbeingIcon } from "@/components/reweave-icons";
 import { useParams } from "next/navigation";
 
 /* =========================================================
@@ -528,8 +528,8 @@ export default function EmotionsPage() {
 
               <p className="mt-3 max-w-xl text-sm leading-7 text-[#4A3F35]/50">
                 {isEnglish
-                  ? "You can describe what is happening in your own words. Moodify can help you explore the feeling without forcing it into a label."
-                  : "Kamu bisa menceritakan apa yang sedang terjadi dengan kata-katamu sendiri. Moodify bisa membantumu mengeksplorasinya tanpa memaksakan sebuah label."}
+                  ? "You can describe what is happening in your own words. Reweave can help you explore the feeling without forcing it into a label."
+                  : "Kamu bisa menceritakan apa yang sedang terjadi dengan kata-katamu sendiri. Reweave bisa membantumu mengeksplorasinya tanpa memaksakan sebuah label."}
               </p>
             </div>
 

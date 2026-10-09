@@ -15,7 +15,7 @@ import {
   SaveIcon,
   SupportIcon,
   UserIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import type { Locale } from "@/i18n/config";
 
@@ -58,16 +58,16 @@ type Props = {
   userName: string;
 };
 
-type MoodifySelectOption = {
+type ReweaveSelectOption = {
   value: string;
   label: string;
   description?: string;
 };
 
-type MoodifySelectProps = {
+type ReweaveSelectProps = {
   value: string;
   onChange: (value: string) => void;
-  options: MoodifySelectOption[];
+  options: ReweaveSelectOption[];
   placeholder?: string;
   disabled?: boolean;
 };
@@ -333,8 +333,8 @@ export default function SettingsClient({
 
         <p className="mt-2 max-w-xl text-sm leading-6 text-[#4A3F35]/55">
           {isEnglish
-            ? "Personalize how Moodify works for you."
-            : "Personalisasikan bagaimana Moodify bekerja untukmu."}
+            ? "Personalize how Reweave works for you."
+            : "Personalisasikan bagaimana Reweave bekerja untukmu."}
         </p>
       </section>
 
@@ -408,8 +408,8 @@ export default function SettingsClient({
               maxLength={50}
               placeholder={
                 isEnglish
-                  ? "What should Moodify call you?"
-                  : "Moodify sebaiknya memanggilmu apa?"
+                  ? "What should Reweave call you?"
+                  : "Reweave sebaiknya memanggilmu apa?"
               }
               className="
                 h-11
@@ -482,7 +482,7 @@ export default function SettingsClient({
             : "Pilih bahasa yang kamu gunakan."
         }
       >
-        <MoodifySelect
+        <ReweaveSelect
           value={language}
           onChange={(value) =>
             setLanguage(value as "ID" | "EN")
@@ -493,15 +493,15 @@ export default function SettingsClient({
               value: "ID",
               label: "Bahasa Indonesia",
               description: isEnglish
-                ? "Use Moodify in Bahasa Indonesia."
-                : "Gunakan Moodify dalam Bahasa Indonesia.",
+                ? "Use Reweave in Bahasa Indonesia."
+                : "Gunakan Reweave dalam Bahasa Indonesia.",
             },
             {
               value: "EN",
               label: "English",
               description: isEnglish
-                ? "Use Moodify in English."
-                : "Gunakan Moodify dalam Bahasa Inggris.",
+                ? "Use Reweave in English."
+                : "Gunakan Reweave dalam Bahasa Inggris.",
             },
           ]}
         />
@@ -519,11 +519,11 @@ export default function SettingsClient({
         }
         description={
           isEnglish
-            ? "How would you like Moodify to communicate with you?"
-            : "Bagaimana kamu ingin Moodify berkomunikasi denganmu?"
+            ? "How would you like Reweave to communicate with you?"
+            : "Bagaimana kamu ingin Reweave berkomunikasi denganmu?"
         }
       >
-        <MoodifySelect
+        <ReweaveSelect
           value={communicationStyle}
           onChange={setCommunicationStyle}
           disabled={saving}
@@ -578,7 +578,7 @@ export default function SettingsClient({
             : "Dukungan seperti apa yang terasa berguna untukmu?"
         }
       >
-        <MoodifySelect
+        <ReweaveSelect
           value={supportPreference}
           onChange={setSupportPreference}
           disabled={saving}
@@ -660,7 +660,7 @@ export default function SettingsClient({
             : "Bagaimana kamu lebih suka melakukan refleksi?"
         }
       >
-        <MoodifySelect
+        <ReweaveSelect
           value={journalingPreference}
           onChange={setJournalingPreference}
           disabled={saving}
@@ -727,8 +727,8 @@ export default function SettingsClient({
         }
         description={
           isEnglish
-            ? "Choose whether Moodify should remind you to check in."
-            : "Atur apakah Moodify boleh mengingatkanmu untuk check-in."
+            ? "Choose whether Reweave should remind you to check in."
+            : "Atur apakah Reweave boleh mengingatkanmu untuk check-in."
         }
       >
         <div className="space-y-5">
@@ -811,7 +811,7 @@ export default function SettingsClient({
                   : "Waktu pengingat"}
               </label>
 
-              <MoodifyTimePicker
+              <ReweaveTimePicker
                 value={dailyCheckinTime}
                 onChange={setDailyCheckinTime}
                 disabled={saving}
@@ -939,7 +939,7 @@ function SettingsSection({
    MOODIFY TIME PICKER
 ================================================================ */
 
-function MoodifyTimePicker({
+function ReweaveTimePicker({
   value,
   onChange,
   disabled = false,
@@ -1324,13 +1324,13 @@ function MoodifyTimePicker({
    MOODIFY SELECT
 ================================================================ */
 
-function MoodifySelect({
+function ReweaveSelect({
   value,
   onChange,
   options,
   placeholder = "Pilih...",
   disabled = false,
-}: MoodifySelectProps) {
+}: ReweaveSelectProps) {
   const [open, setOpen] = useState(false);
 
   const [highlightedIndex, setHighlightedIndex] =

@@ -56,7 +56,7 @@ export default function PrivacyClient({
 
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "Moodify_Data_Export.pdf";
+    anchor.download = "Reweave_Data_Export.pdf";
 
     document.body.appendChild(anchor);
     anchor.click();
@@ -138,8 +138,8 @@ export default function PrivacyClient({
     const firstConfirm =
       window.confirm(
         isEnglish
-          ? "This will permanently delete your Moodify account and associated data. Continue?"
-          : "Ini akan menghapus akun Moodify dan data terkait secara permanen. Lanjutkan?",
+          ? "This will permanently delete your Reweave account and associated data. Continue?"
+          : "Ini akan menghapus akun Reweave dan data terkait secara permanen. Lanjutkan?",
       );
 
     if (!firstConfirm) {
@@ -218,8 +218,8 @@ export default function PrivacyClient({
 
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[#4a3f35]/55">
           {isEnglish
-            ? `Moodify keeps your personal wellbeing space private, ${userName}. Here you can understand and manage the data connected to your account.`
-            : `Moodify menjaga ruang wellbeing pribadimu tetap private, ${userName}. Di sini kamu bisa memahami dan mengatur data yang terhubung dengan akunmu.`}
+            ? `Reweave keeps your personal wellbeing space private, ${userName}. Here you can understand and manage the data connected to your account.`
+            : `Reweave menjaga ruang wellbeing pribadimu tetap private, ${userName}. Di sini kamu bisa memahami dan mengatur data yang terhubung dengan akunmu.`}
         </p>
       </header>
 
@@ -253,8 +253,8 @@ export default function PrivacyClient({
 
               <p className="mt-1 text-xs leading-5 text-[#4a3f35]/45">
                 {isEnglish
-                  ? "A few things to know about how your Moodify data is handled."
-                  : "Beberapa hal yang perlu kamu tahu tentang data di Moodify."}
+                  ? "A few things to know about how your Reweave data is handled."
+                  : "Beberapa hal yang perlu kamu tahu tentang data di Reweave."}
               </p>
             </div>
           </div>
@@ -303,8 +303,8 @@ export default function PrivacyClient({
               }
               description={
                 isEnglish
-                  ? "AI analysis is generated from the information you choose to submit to Moodify."
-                  : "Analisis AI dibuat berdasarkan informasi yang kamu pilih untuk dikirim ke Moodify."
+                  ? "AI analysis is generated from the information you choose to submit to Reweave."
+                  : "Analisis AI dibuat berdasarkan informasi yang kamu pilih untuk dikirim ke Reweave."
               }
             />
           </div>
@@ -330,8 +330,8 @@ export default function PrivacyClient({
 
               <p className="mt-1 text-xs leading-5 text-[#4a3f35]/45">
                 {isEnglish
-                  ? "Moodify only analyzes content that you submit for an AI-powered feature."
-                  : "Moodify hanya menganalisis konten yang kamu kirim untuk fitur yang menggunakan AI."}
+                  ? "Reweave only analyzes content that you submit for an AI-powered feature."
+                  : "Reweave hanya menganalisis konten yang kamu kirim untuk fitur yang menggunakan AI."}
               </p>
             </div>
           </div>

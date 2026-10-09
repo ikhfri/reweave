@@ -10,7 +10,7 @@
     "previous": "Sebelumnya"
   },
   "brand": {
-    "name": "moodify",
+    "name": "reweave",
     "tagline": "Teman untuk memahami emosimu"
   },
   "onboarding": {
@@ -20,7 +20,7 @@
 
     "step1": {
       "title": "Sedikit tentang kamu",
-      "description": "Bantu kami menyesuaikan pengalaman Moodify untukmu.",
+      "description": "Bantu kami menyesuaikan pengalaman Reweave untukmu.",
       "question": "Apa jenis kelaminmu?",
       "male": "Laki-laki",
       "female": "Perempuan",
@@ -29,7 +29,7 @@
 
     "step2": {
       "title": "Apa yang membawamu ke sini?",
-      "description": "Pilih hal yang ingin kamu dapatkan dari Moodify.",
+      "description": "Pilih hal yang ingin kamu dapatkan dari Reweave.",
       "understandEmotions": "Memahami emosiku",
       "manageStress": "Mengelola stres",
       "emotionalPatterns": "Memahami pola emosiku",
@@ -84,13 +84,13 @@
     },
 
     "step7": {
-      "title": "Bagaimana Moodify sebaiknya berbicara denganmu?",
+      "title": "Bagaimana Reweave sebaiknya berbicara denganmu?",
       "description": "Pilih gaya komunikasi yang kamu sukai.",
       "gentle": "Lembut & empatik",
       "practical": "Praktis & langsung",
       "balanced": "Seimbang"
     },
 
-    "privacy": "Jawabanmu digunakan untuk mempersonalisasi pengalaman Moodify."
+    "privacy": "Jawabanmu digunakan untuk mempersonalisasi pengalaman Reweave."
   }
 }

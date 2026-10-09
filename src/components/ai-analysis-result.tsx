@@ -290,8 +290,8 @@ export default function AIAnalysisResult({
             <div className="max-w-3xl">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
                 {isEnglish
-                  ? "What Moodify noticed"
-                  : "Yang Moodify perhatikan"}
+                  ? "What Reweave noticed"
+                  : "Yang Reweave perhatikan"}
               </p>
 
               <p className="mt-7 text-[21px] leading-[1.75] tracking-[-0.015em] text-[#4A3F35]/80 sm:text-[24px]">
@@ -539,8 +539,8 @@ export default function AIAnalysisResult({
               }
               title={
                 isEnglish
-                  ? "Patterns Moodify noticed."
-                  : "Pola yang Moodify perhatikan."
+                  ? "Patterns Reweave noticed."
+                  : "Pola yang Reweave perhatikan."
               }
             />
 
@@ -690,8 +690,8 @@ export default function AIAnalysisResult({
 
             <p className="mt-4 text-sm leading-7 text-[#4A3F35]/45">
               {isEnglish
-                ? "Moodify's reflections are designed to help you pause and understand your experience. They are not medical diagnoses."
-                : "Refleksi Moodify dirancang untuk membantumu berhenti sejenak dan memahami pengalamanmu. Refleksi ini bukan diagnosis medis."}
+                ? "Reweave's reflections are designed to help you pause and understand your experience. They are not medical diagnoses."
+                : "Refleksi Reweave dirancang untuk membantumu berhenti sejenak dan memahami pengalamanmu. Refleksi ini bukan diagnosis medis."}
             </p>
 
             {analysis.riskLevel === "HIGH" && (
@@ -759,8 +759,8 @@ export default function AIAnalysisResult({
         <section className="mt-12 flex justify-center">
           <p className="max-w-lg text-center text-[10px] leading-5 tracking-[0.04em] text-[#4A3F35]/20">
             {isEnglish
-              ? "Moodify is a space for reflection, not a replacement for professional care."
-              : "Moodify adalah ruang untuk refleksi, bukan pengganti bantuan profesional."}
+              ? "Reweave is a space for reflection, not a replacement for professional care."
+              : "Reweave adalah ruang untuk refleksi, bukan pengganti bantuan profesional."}
           </p>
         </section>
       </div>

@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 
-import { ArrowRightIcon } from "@/components/moodify-icons";
+import { ArrowRightIcon } from "@/components/reweave-icons";
 type VerifyEmailClientProps = {
   locale: string;
 };
@@ -215,8 +215,8 @@ export default function VerifyEmailClient({
           <section className="w-full rounded-[28px] border border-[#4A3F35]/10 bg-white p-7 shadow-[0_20px_60px_rgba(74,63,53,0.08)] sm:p-9">
             <div className="mb-8 flex justify-center">
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={150}
                 height={48}
                 className="h-auto w-37.5"
@@ -248,8 +248,8 @@ export default function VerifyEmailClient({
           <div className="relative hidden min-h-155 overflow-hidden bg-[#FBC4AB]/35 p-10 lg:flex lg:flex-col lg:justify-between">
             <div className="relative z-10">
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={150}
                 height={48}
                 className="h-auto w-37.5"
@@ -267,8 +267,8 @@ export default function VerifyEmailClient({
               </h2>
               <p className="mt-5 text-[15px] leading-7 text-[#4A3F35]/65">
                 {isEnglish
-                  ? "Your email helps us keep your Moodify account secure."
-                  : "Email kamu membantu menjaga akun Moodify tetap aman."}
+                  ? "Your email helps us keep your Reweave account secure."
+                  : "Email kamu membantu menjaga akun Reweave tetap aman."}
               </p>
             </div>
             <div className="absolute -bottom-20 -right-16 h-64 w-64 rounded-full bg-[#C1D5C0]/70" />
@@ -278,8 +278,8 @@ export default function VerifyEmailClient({
             <div className="mx-auto w-full max-w-107.5">
               <div className="mb-9 lg:hidden">
                 <Image
-                  src="/moodify-logo.webp"
-                  alt="Moodify"
+                  src="/reweave-logo.webp"
+                  alt="Reweave"
                   width={150}
                   height={48}
                   className="h-auto w-37.5"

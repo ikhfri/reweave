@@ -579,8 +579,8 @@ export default function InsightsClient({ locale, userName }: Props) {
               </h2>
               <p className="mt-3 text-sm leading-7 text-[#4A3F35]/55">
                 {isId
-                  ? "Moodify membantu merangkum pola yang muncul dari check-in dan diary kamu."
-                  : "Moodify looks across your check-ins and diary entries to help you notice patterns."}
+                  ? "Reweave membantu merangkum pola yang muncul dari check-in dan diary kamu."
+                  : "Reweave looks across your check-ins and diary entries to help you notice patterns."}
               </p>
             </div>
             <div className="relative overflow-hidden rounded-[2rem] bg-[#FBC4AB]/35 p-6 md:p-8">
@@ -598,8 +598,8 @@ export default function InsightsClient({ locale, userName }: Props) {
                       </div>
                       <p className="text-sm leading-7 text-[#4A3F35]/65">
                         {isId
-                          ? "Moodify sedang menyusun refleksi dari aktivitasmu minggu ini."
-                          : "Moodify is putting together a reflection from your week."}
+                          ? "Reweave sedang menyusun refleksi dari aktivitasmu minggu ini."
+                          : "Reweave is putting together a reflection from your week."}
                       </p>
                     </div>
                   </div>
@@ -1051,12 +1051,12 @@ export default function InsightsClient({ locale, userName }: Props) {
               {isId ? "Catatan kecil" : "A small note"}
             </p>
             <h2 className="mt-2 text-lg font-semibold text-[#4A3F35]">
-              {isId ? "Tentang Insights Moodify" : "About Moodify Insights"}
+              {isId ? "Tentang Insights Reweave" : "About Reweave Insights"}
             </h2>
             <p className="mt-2 text-xs leading-6 text-[#4A3F35]/55">
               {isId
-                ? "Insights Moodify adalah ringkasan pola dari data check-in, diary, aktivitas, dan analisis AI kamu. Hasil ini dimaksudkan untuk membantu refleksi pribadi dan bukan merupakan diagnosis medis atau psikologis."
-                : "Moodify Insights summarizes patterns from your check-ins, diary entries, activities, and AI analyses. It is intended to support personal reflection and is not a medical or psychological diagnosis."}
+                ? "Insights Reweave adalah ringkasan pola dari data check-in, diary, aktivitas, dan analisis AI kamu. Hasil ini dimaksudkan untuk membantu refleksi pribadi dan bukan merupakan diagnosis medis atau psikologis."
+                : "Reweave Insights summarizes patterns from your check-ins, diary entries, activities, and AI analyses. It is intended to support personal reflection and is not a medical or psychological diagnosis."}
             </p>
           </div>
         </section>

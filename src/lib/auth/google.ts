@@ -9,8 +9,8 @@ const GOOGLE_TOKEN_URL =
 const GOOGLE_USERINFO_URL =
   "https://openidconnect.googleapis.com/v1/userinfo";
 
-export const GOOGLE_STATE_COOKIE = "moodify_google_oauth_state";
-export const GOOGLE_LOCALE_COOKIE = "moodify_google_oauth_locale";
+export const GOOGLE_STATE_COOKIE = "reweave_google_oauth_state";
+export const GOOGLE_LOCALE_COOKIE = "reweave_google_oauth_locale";
 
 export const GOOGLE_STATE_MAX_AGE = 10 * 60;
 

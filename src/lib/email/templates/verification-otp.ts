@@ -8,20 +8,20 @@ export function verificationOtpTemplate({
   otp,
 }: VerificationOtpTemplateInput) {
   return {
-    subject: `${otp} — Kode verifikasi Moodify`,
+    subject: `${otp} — Kode verifikasi Reweave`,
 
     text: `
 Hai ${name},
 
-Kode verifikasi email Moodify kamu adalah:
+Kode verifikasi email Reweave kamu adalah:
 
 ${otp}
 
 Kode ini berlaku selama 10 menit.
 
-Kalau kamu tidak membuat akun Moodify, abaikan email ini.
+Kalau kamu tidak membuat akun Reweave, abaikan email ini.
 
-Moodify
+Reweave
 `,
 
     html: `
@@ -30,7 +30,7 @@ Moodify
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verifikasi Email Moodify</title>
+  <title>Verifikasi Email Reweave</title>
 </head>
 
 <body style="margin:0;background:#fdfbf7;font-family:Arial,sans-serif;color:#4a3f35;">
@@ -50,7 +50,7 @@ Moodify
         color:#e2725b;
         margin-bottom:28px;
       ">
-        Moodify
+        Reweave
       </div>
 
       <h1 style="
@@ -68,7 +68,7 @@ Moodify
         color:#4a3f35;
         opacity:.7;
       ">
-        Hai ${name}, satu langkah kecil lagi untuk mulai menggunakan Moodify.
+        Hai ${name}, satu langkah kecil lagi untuk mulai menggunakan Reweave.
       </p>
 
       <div style="
@@ -117,7 +117,7 @@ Moodify
         color:#4a3f35;
         opacity:.45;
       ">
-        Kalau kamu tidak membuat akun Moodify, kamu bisa mengabaikan email ini.
+        Kalau kamu tidak membuat akun Reweave, kamu bisa mengabaikan email ini.
       </div>
 
     </div>

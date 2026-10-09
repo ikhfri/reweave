@@ -1735,9 +1735,9 @@ function DiaryEntry({
 
               {isId
 
-                ? "Moodify sedang membaca refleksimu..."
+                ? "Reweave sedang membaca refleksimu..."
 
-                : "Moodify is reflecting on your entry..."}
+                : "Reweave is reflecting on your entry..."}
 
             </div>
 
@@ -1767,9 +1767,9 @@ function DiaryEntry({
 
                   {isId
 
-                    ? "Refleksi dari Moodify"
+                    ? "Refleksi dari Reweave"
 
-                    : "A reflection from Moodify"}
+                    : "A reflection from Reweave"}
 
                 </p>
 

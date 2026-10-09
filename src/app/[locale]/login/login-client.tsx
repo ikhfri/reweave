@@ -12,7 +12,7 @@ import {
   LockIcon,
   MailIcon,
   ShieldIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/i18n/config";
@@ -45,7 +45,7 @@ const content = {
     privacyTitle: "Akun pribadi",
     privacyText: "Check-in dan diarymu hanya terhubung ke akun ini.",
 
-    terms: "Dengan masuk, kamu menyetujui Terms of Service dan Privacy Policy Moodify.",
+    terms: "Dengan masuk, kamu menyetujui Terms of Service dan Privacy Policy Reweave.",
 
     validation: {
       emptyEmail: "Email tidak boleh kosong.",
@@ -56,7 +56,7 @@ const content = {
     errors: {
       loginFailed: "Email atau password salah.",
       googleFailed: "Login Google gagal. Coba lagi.",
-      googleConflict: "Akun Google ini tidak bisa dihubungkan ke Moodify.",
+      googleConflict: "Akun Google ini tidak bisa dihubungkan ke Reweave.",
       general: "Terjadi kesalahan. Coba lagi.",
     },
   },
@@ -88,7 +88,7 @@ const content = {
     privacyTitle: "Private account",
     privacyText: "Your check-ins and diary stay with this account.",
 
-    terms: "By signing in, you agree to Moodify's Terms of Service and Privacy Policy.",
+    terms: "By signing in, you agree to Reweave's Terms of Service and Privacy Policy.",
 
     validation: {
       emptyEmail: "Email cannot be empty.",
@@ -99,7 +99,7 @@ const content = {
     errors: {
       loginFailed: "Invalid email or password.",
       googleFailed: "Google sign-in failed. Try again.",
-      googleConflict: "This Google account could not be connected to Moodify.",
+      googleConflict: "This Google account could not be connected to Reweave.",
       general: "Something went wrong. Try again.",
     },
   },
@@ -221,10 +221,10 @@ export default function LoginClient({ locale: localeParam }: LoginClientProps) {
           <div className="absolute right-[18%] top-[34%] h-20 w-20 rounded-full border border-[#5C6B9C]/10" />
 
           <div className="relative z-10 flex min-h-screen flex-col justify-between p-12 xl:p-16">
-            <Link href={`/${locale}`} className="inline-flex w-fit" aria-label="Moodify">
+            <Link href={`/${locale}`} className="inline-flex w-fit" aria-label="Reweave">
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={180}
                 height={55}
                 priority
@@ -260,10 +260,10 @@ export default function LoginClient({ locale: localeParam }: LoginClientProps) {
         {/* RIGHT */}
         <section className="relative flex min-h-screen flex-col bg-white">
           <header className="flex items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-            <Link href={`/${locale}`} className="lg:hidden" aria-label="Moodify">
+            <Link href={`/${locale}`} className="lg:hidden" aria-label="Reweave">
               <Image
-                src="/moodify-logo.webp"
-                alt="Moodify"
+                src="/reweave-logo.webp"
+                alt="Reweave"
                 width={150}
                 height={45}
                 priority
@@ -485,7 +485,7 @@ export default function LoginClient({ locale: localeParam }: LoginClientProps) {
                   href={`/${locale}`}
                   className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#4A3F35]/30 transition hover:text-[#5C6B9C]"
                 >
-                  {isEnglish ? "Back to Moodify" : "Kembali ke Moodify"}
+                  {isEnglish ? "Back to Reweave" : "Kembali ke Reweave"}
                 </Link>
               </div>
             </div>

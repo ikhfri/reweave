@@ -45,7 +45,7 @@ function getMailer() {
 function getFromAddress() {
   return (
     process.env.SMTP_FROM ||
-    `Moodify <${process.env.SMTP_USER || "no-reply@moodify.app"}>`
+    `Reweave <${process.env.SMTP_USER || "no-reply@reweave.app"}>`
   );
 }
 
@@ -54,11 +54,11 @@ function buildResetEmail(
   expiresInMinutes: number,
 ) {
   return {
-    subject: "Kode Reset Password Moodify",
+    subject: "Kode Reset Password Reweave",
     text: [
-      "Moodify",
+      "Reweave",
       "",
-      "Kami menerima permintaan untuk mereset password akun Moodify kamu.",
+      "Kami menerima permintaan untuk mereset password akun Reweave kamu.",
       "",
       `Kode reset password kamu: ${otp}`,
       "",
@@ -66,7 +66,7 @@ function buildResetEmail(
       "",
       "Jika kamu tidak meminta reset password, abaikan email ini.",
       "",
-      "Moodify",
+      "Reweave",
     ].join("\n"),
 
     html: `
@@ -75,7 +75,7 @@ function buildResetEmail(
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Kode Reset Password Moodify</title>
+          <title>Kode Reset Password Reweave</title>
         </head>
 
         <body
@@ -117,7 +117,7 @@ function buildResetEmail(
                     font-weight: 700;
                   "
                 >
-                  Moodify
+                  Reweave
                 </div>
               </div>
 
@@ -141,7 +141,7 @@ function buildResetEmail(
                 "
               >
                 Kami menerima permintaan untuk mereset password akun
-                Moodify kamu.
+                Reweave kamu.
               </p>
 
               <div
@@ -219,7 +219,7 @@ function buildResetEmail(
                 color: rgba(74, 63, 53, 0.35);
               "
             >
-              Moodify · Emotional Wellbeing Companion
+              Reweave · Emotional Wellbeing Companion
             </p>
           </div>
         </body>

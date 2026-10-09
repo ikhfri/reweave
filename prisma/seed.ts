@@ -16,7 +16,7 @@ const prisma = new PrismaClient({
   adapter,
 });
 async function main() {
-  console.log("🌱 Seeding Moodify database...");
+  console.log("🌱 Seeding Reweave database...");
 
 
   const emotions = [
@@ -256,7 +256,7 @@ async function main() {
 
   console.log(`✅ ${activities.length} activities seeded`);
 
-  console.log("🎉 Moodify seed completed!");
+  console.log("🎉 Reweave seed completed!");
 }
 
 main()

@@ -9,7 +9,7 @@ import {
   BackIcon,
   DiaryIcon,
   WellbeingIcon,
-} from "@/components/moodify-icons";
+} from "@/components/reweave-icons";
 
 /* =========================================================
    TYPES

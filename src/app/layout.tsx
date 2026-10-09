@@ -8,7 +8,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Moodify",
+  title: "Reweave",
   description: "AI-Powered Emotional Wellbeing Companion",
   icons: {
     icon: [

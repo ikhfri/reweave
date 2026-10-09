@@ -12,7 +12,7 @@ export {
   PrivacyIcon,
   UserIcon,
   WellbeingIcon,
-  MoodifyMark,
+  ReweaveMark,
   EyeIcon,
   EyeOffIcon,
   LockIcon,
@@ -21,4 +21,4 @@ export {
   BellIcon,
   GlobeIcon,
   SaveIcon,
-} from "./moodify-icons";
+} from "./reweave-icons";

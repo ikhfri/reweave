@@ -1099,8 +1099,8 @@ export default function CheckInForm({ locale, userName }: Props) {
 
               <p className="mt-3 text-xs leading-5 text-[#4a3f35]/45">
                 {isEnglish
-                  ? "Your entries are private. Once saved, Moodify will create a reflection based on what you shared."
-                  : "Catatanmu bersifat pribadi. Setelah disimpan, Moodify akan membuat refleksi berdasarkan apa yang kamu bagikan."}
+                  ? "Your entries are private. Once saved, Reweave will create a reflection based on what you shared."
+                  : "Catatanmu bersifat pribadi. Setelah disimpan, Reweave akan membuat refleksi berdasarkan apa yang kamu bagikan."}
               </p>
             </div>
 

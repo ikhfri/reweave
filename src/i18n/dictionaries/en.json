@@ -10,7 +10,7 @@
     "previous": "Previous"
   },
   "brand": {
-    "name": "moodify",
+    "name": "reweave",
     "tagline": "A companion for understanding your emotions"
   },
   "onboarding": {
@@ -20,7 +20,7 @@
 
     "step1": {
       "title": "A little about you",
-      "description": "Help us personalize your Moodify experience.",
+      "description": "Help us personalize your Reweave experience.",
       "question": "What is your gender?",
       "male": "Male",
       "female": "Female",
@@ -29,7 +29,7 @@
 
     "step2": {
       "title": "What brings you here?",
-      "description": "Choose what you'd like Moodify to help you with.",
+      "description": "Choose what you'd like Reweave to help you with.",
       "understandEmotions": "Understand my emotions",
       "manageStress": "Manage stress",
       "emotionalPatterns": "Understand my emotional patterns",
@@ -84,13 +84,13 @@
     },
 
     "step7": {
-      "title": "How should Moodify talk to you?",
+      "title": "How should Reweave talk to you?",
       "description": "Choose the communication style you prefer.",
       "gentle": "Gentle & empathetic",
       "practical": "Practical & direct",
       "balanced": "Balanced"
     },
 
-    "privacy": "Your answers are used to personalize your Moodify experience."
+    "privacy": "Your answers are used to personalize your Reweave experience."
   }
 }

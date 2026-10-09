@@ -268,9 +268,9 @@ export const SupportIcon = createIcon(
    (tidak ada lagi warna #FDFBF7 yang di-hardcode).
 ========================================================= */
 
-export function MoodifyMark({ className, ...props }: IconProps) {
+export function ReweaveMark({ className, ...props }: IconProps) {
   const rawId = useId();
-  const maskId = `moodify-face-${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const maskId = `reweave-face-${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   return (
     <svg {...baseProps} {...props} className={className}>
