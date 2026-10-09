@@ -15,6 +15,12 @@ type CalendarEmotion = {
   note: string | null;
 };
 
+type Context = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
 type CalendarDay = {
   date: string;
   hasCheckin: boolean;
@@ -26,11 +32,7 @@ type CalendarDay = {
 
   emotions: CalendarEmotion[];
 
-  contexts: Array<{
-    id: string;
-    name: string;
-    slug: string;
-  }>;
+  contexts: Context[];
 
   diary: {
     id: string;
@@ -54,16 +56,16 @@ type Props = {
 
 const emotionArtwork: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
-  sad: "/emotions-emoji/sad.png",
-  angry: "/emotions-emoji/angry.png",
-  anxious: "/emotions-emoji/anxious.png",
-  stressed: "/emotions-emoji/stressed.png",
+  loved: "/emotions-emoji/loved.png",
+  excited: "/emotions-emoji/excited.png",
+  hopeful: "/emotions-emoji/hopeful.png",
   calm: "/emotions-emoji/calm.png",
   tired: "/emotions-emoji/tired.png",
-  excited: "/emotions-emoji/excited.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  angry: "/emotions-emoji/angry.png",
   lonely: "/emotions-emoji/lonely.png",
-  grateful: "/emotions-emoji/grateful.png",
-  frustrated: "/emotions-emoji/frustrated.png",
+  sad: "/emotions-emoji/sad.png",
   overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
@@ -74,6 +76,26 @@ function getEmotionArtwork(slug: string) {
     .replace(/\s+/g, "-");
 
   return emotionArtwork[normalized] ?? "/emotions-emoji/calm.png";
+}
+
+const emotionTranslations: Record<string, { en: string; id: string }> = {
+  happy: { en: "Happy", id: "Senang" },
+  loved: { en: "Loved", id: "Dicintai" },
+  excited: { en: "Excited", id: "Bersemangat" },
+  hopeful: { en: "Hopeful", id: "Penuh Harapan" },
+  calm: { en: "Calm", id: "Tenang" },
+  tired: { en: "Tired", id: "Lelah" },
+  anxious: { en: "Anxious", id: "Cemas" },
+  stressed: { en: "Stressed", id: "Stres" },
+  angry: { en: "Angry", id: "Marah" },
+  lonely: { en: "Lonely", id: "Kesepian" },
+  sad: { en: "Sad", id: "Sedih" },
+  overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
+};
+
+function getEmotionLabel(emotion: CalendarEmotion, isId: boolean) {
+  const translation = emotionTranslations[emotion.slug.toLowerCase()];
+  return translation ? (isId ? translation.id : translation.en) : emotion.name;
 }
 
 function EmotionArtwork({
@@ -96,6 +118,26 @@ function EmotionArtwork({
       className={`object-contain mix-blend-multiply ${className}`}
     />
   );
+}
+
+const contextTranslations: Record<string, { en: string; id: string }> = {
+  family: { en: "Family", id: "Keluarga" },
+  financial: { en: "Financial", id: "Keuangan" },
+  "life changes": { en: "Life Changes", id: "Perubahan Hidup" },
+  "life-changes": { en: "Life Changes", id: "Perubahan Hidup" },
+  other: { en: "Other", id: "Lainnya" },
+  "physical health": { en: "Physical Health", id: "Kesehatan Fisik" },
+  "physical-health": { en: "Physical Health", id: "Kesehatan Fisik" },
+  relationship: { en: "Relationship", id: "Hubungan" },
+  "school / work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+  "school-work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+  sleep: { en: "Sleep", id: "Tidur" },
+  social: { en: "Social", id: "Sosial" },
+};
+
+function getContextLabel(context: Context, isId: boolean) {
+  const translation = contextTranslations[context.slug.toLowerCase()];
+  return translation ? (isId ? translation.id : translation.en) : context.name;
 }
 
 function CalendarIcon({
@@ -358,18 +400,27 @@ export default function MoodCalendarClient({
         setData(result);
 
         setSelectedDate((current) => {
-          const monthPrefix = `${year}-${String(month).padStart(
-            2,
-            "0",
-          )}`;
+          const monthPrefix = `${year}-${String(month).padStart(2, "0")}`;
 
-          if (
-            current &&
-            current.startsWith(monthPrefix)
-          ) {
+          // Jika user sudah memilih tanggal dan masih di bulan yang sama, pertahankan
+          if (current && current.startsWith(monthPrefix)) {
             return current;
           }
 
+          // Dapatkan tanggal real hari ini dari sistem
+          const realNow = new Date();
+          const realTodayKey = [
+            realNow.getFullYear(),
+            String(realNow.getMonth() + 1).padStart(2, "0"),
+            String(realNow.getDate()).padStart(2, "0"),
+          ].join("-");
+
+          // Jika kalender yang dibuka adalah bulan ini, default ke hari ini
+          if (realTodayKey.startsWith(monthPrefix)) {
+            return realTodayKey;
+          }
+
+          // Jika user membuka bulan lalu/depan, fallback pilih tanggal 1
           return result.days[0]?.date ?? null;
         });
       } catch (err) {
@@ -752,9 +803,7 @@ export default function MoodCalendarClient({
                             </p>
 
                             <h4 className="mt-1 text-2xl font-semibold text-[#4A3F35]">
-                              {
-                                selectedEmotion.name
-                              }
+                              {getEmotionLabel(selectedEmotion, isId)}
                             </h4>
                           </div>
 
@@ -817,30 +866,22 @@ export default function MoodCalendarClient({
                         )}
                       </div>
 
-                      {selectedDay.contexts.length >
-                        0 && (
+                      {selectedDay.contexts.length > 0 && (
                         <div className="mt-6">
                           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
-                            {isId
-                              ? "Konteks"
-                              : "Context"}
+                            {isId ? "Konteks" : "Context"}
                           </p>
 
                           <div className="mt-3 flex flex-wrap gap-2">
-                            {selectedDay.contexts.map(
-                              (context) => (
-                                <span
-                                  key={
-                                    context.id
-                                  }
-                                  className="rounded-full bg-[#C1D5C0]/25 px-3 py-1.5 text-xs text-[#4A3F35]/70"
-                                >
-                                  {
-                                    context.name
-                                  }
-                                </span>
-                              ),
-                            )}
+                            {selectedDay.contexts.map((context) => (
+                              <span
+                                key={context.id}
+                                className="rounded-full bg-[#C1D5C0]/25 px-3 py-1.5 text-xs text-[#4A3F35]/70"
+                              >
+                                {/* 3. Panggil fungsi dengan isId */}
+                                {getContextLabel(context, isId)}
+                              </span>
+                            ))}
                           </div>
                         </div>
                       )}

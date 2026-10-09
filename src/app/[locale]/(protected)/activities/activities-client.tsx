@@ -48,6 +48,67 @@ type ActivitiesClientProps = {
   userName: string;
 };
 
+/* ========================================================= */
+/* TRANSLATIONS & HELPERS                                    */
+/* ========================================================= */
+
+// KAMUS JUDUL DAN DESKRIPSI AKTIVITAS
+const wellbeingTranslations: Record<
+  string,
+  {
+    title: { en: string; id: string };
+    description: { en: string; id: string };
+  }
+> = {
+  "box breathing": {
+    title: { en: "Box Breathing", id: "Pernapasan Kotak" },
+    description: {
+      en: "A simple breathing exercise that can help you slow down and create a moment of calm.",
+      id: "Latihan pernapasan sederhana yang dapat membantumu rileks dan menciptakan momen ketenangan.",
+    },
+  },
+  "gratitude journal": {
+    title: { en: "Gratitude Journal", id: "Jurnal Rasa Syukur" },
+    description: {
+      en: "Reflect on a few things that you appreciate or that went well today.",
+      id: "Renungkan beberapa hal yang kamu hargai atau yang berjalan dengan baik hari ini.",
+    },
+  },
+  "grounding 5-4-3-2-1": {
+    title: { en: "Grounding 5-4-3-2-1", id: "Teknik Grounding 5-4-3-2-1" },
+    description: {
+      en: "A grounding activity that brings your attention back to the present moment.",
+      id: "Aktivitas grounding yang membawa kembali perhatianmu sepenuhnya ke masa kini.",
+    },
+  },
+  "short walk": {
+    title: { en: "Short Walk", id: "Jalan Kaki Sejenak" },
+    description: {
+      en: "Take a short mindful walk and give yourself some space away from your current environment.",
+      id: "Luangkan waktu sejenak untuk berjalan santai dan beri ruang bagi dirimu dari penatnya lingkungan saat ini.",
+    },
+  },
+  "progressive muscle relaxation": {
+    title: { en: "Progressive Muscle Relaxation", id: "Relaksasi Otot Progresif" },
+    description: {
+      en: "A relaxation exercise involving gentle tensing and releasing of different muscle groups.",
+      id: "Latihan relaksasi yang melibatkan ketegangan dan pelepasan lembut pada berbagai kelompok otot secara berurutan.",
+    },
+  },
+};
+
+function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
+  if (!title) return "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation ? (isId ? translation.title.id : translation.title.en) : title;
+}
+
+function getWellbeingDescription(title: string | null | undefined, originalDesc: string | null | undefined, isId: boolean) {
+  if (!title) return originalDesc || "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation ? (isId ? translation.description.id : translation.description.en) : (originalDesc || "");
+}
+
 const categoryIcons: Record<string, typeof ActivityIcon> = {
   breathing: ActivityIcon,
   breath: ActivityIcon,
@@ -147,6 +208,10 @@ function getActivityMood(
     ? "Untuk dirimu hari ini"
     : "For where you are today";
 }
+
+/* ========================================================= */
+/* MAIN COMPONENT                                            */
+/* ========================================================= */
 
 export default function ActivitiesClient({
   locale,
@@ -415,11 +480,11 @@ export default function ActivitiesClient({
                   </div>
 
                   <h3 className="mt-7 text-2xl font-semibold tracking-tight text-[#4a3f35] sm:text-3xl">
-                    {featuredActivity.title}
+                    {getWellbeingTitle(featuredActivity.title, isId)}
                   </h3>
 
                   <p className="mt-3 max-w-xl text-sm leading-7 text-[#4a3f35]/65">
-                    {featuredActivity.description}
+                    {getWellbeingDescription(featuredActivity.title, featuredActivity.description, isId)}
                   </p>
 
                   <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#4a3f35]/55">
@@ -667,7 +732,7 @@ function RecommendedRow({
             </span>
 
             <h3 className="mt-1 text-sm font-semibold text-[#4a3f35]">
-              {activity.title}
+              {getWellbeingTitle(activity.title, isId)}
             </h3>
           </div>
 
@@ -675,7 +740,7 @@ function RecommendedRow({
         </div>
 
         <p className="mt-1 line-clamp-1 text-xs leading-5 text-[#4a3f35]/50">
-          {activity.description}
+          {getWellbeingDescription(activity.title, activity.description, isId)}
         </p>
 
         <div className="mt-2 flex items-center gap-3 text-[11px] text-[#4a3f35]/40">
@@ -733,7 +798,7 @@ function ExploreActivityRow({
             </span>
 
             <h3 className="mt-1 text-base font-semibold text-[#4a3f35]">
-              {activity.title}
+              {getWellbeingTitle(activity.title, isId)}
             </h3>
           </div>
 
@@ -741,7 +806,7 @@ function ExploreActivityRow({
         </div>
 
         <p className="mt-2 line-clamp-2 max-w-xl text-sm leading-6 text-[#4a3f35]/55">
-          {activity.description}
+          {getWellbeingDescription(activity.title, activity.description, isId)}
         </p>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#4a3f35]/45">
@@ -798,7 +863,7 @@ function HistoryItem({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h3 className="text-sm font-semibold text-[#4a3f35]">
-              {log.activity.title}
+              {getWellbeingTitle(log.activity.title, isId)}
             </h3>
 
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#4a3f35]/45">

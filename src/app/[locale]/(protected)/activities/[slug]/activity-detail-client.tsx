@@ -53,6 +53,103 @@ type ActivityPhase = {
 
 type ActivityMode = "BREATHING" | "GUIDED";
 
+/* ========================================================= */
+/* TRANSLATIONS & HELPERS                                    */
+/* ========================================================= */
+
+const wellbeingTranslations: Record<
+  string,
+  {
+    title: { en: string; id: string };
+    description: { en: string; id: string };
+    instructions: { en: string; id: string };
+  }
+> = {
+  "box breathing": {
+    title: { en: "Box Breathing", id: "Pernapasan Kotak" },
+    description: {
+      en: "A simple breathing exercise that can help you slow down and create a moment of calm.",
+      id: "Latihan pernapasan sederhana yang dapat membantumu rileks dan menciptakan momen ketenangan.",
+    },
+    instructions: {
+      en: "Breathe in for 4 seconds, hold for 4 seconds, breathe out for 4 seconds, then hold for 4 seconds. Repeat for several rounds.",
+      id: "Tarik napas selama 4 detik, tahan selama 4 detik, buang napas selama 4 detik, lalu tahan selama 4 detik. Ulangi selama beberapa putaran.",
+    },
+  },
+  "gratitude journal": {
+    title: { en: "Gratitude Journal", id: "Jurnal Rasa Syukur" },
+    description: {
+      en: "Reflect on a few things that you appreciate or that went well today.",
+      id: "Renungkan beberapa hal yang kamu hargai atau yang berjalan dengan baik hari ini.",
+    },
+    instructions: {
+      en: "Take a moment to write down three things you are grateful for today. They can be small or big things.",
+      id: "Luangkan waktu sejenak untuk menuliskan tiga hal yang kamu syukuri hari ini. Bisa berupa hal kecil maupun besar.",
+    },
+  },
+  "grounding 5-4-3-2-1": {
+    title: { en: "Grounding 5-4-3-2-1", id: "Teknik Grounding 5-4-3-2-1" },
+    description: {
+      en: "A grounding activity that brings your attention back to the present moment.",
+      id: "Aktivitas grounding yang membawa kembali perhatianmu sepenuhnya ke masa kini.",
+    },
+    instructions: {
+      en: "Acknowledge 5 things you see, 4 things you can touch, 3 things you hear, 2 things you can smell, and 1 thing you can taste.",
+      id: "Sebutkan 5 hal yang bisa kamu lihat, 4 hal yang bisa kamu sentuh, 3 hal yang bisa kamu dengar, 2 hal yang bisa kamu cium baunya, dan 1 hal yang bisa kamu kecap.",
+    },
+  },
+  "short walk": {
+    title: { en: "Short Walk", id: "Jalan Kaki Sejenak" },
+    description: {
+      en: "Take a short mindful walk and give yourself some space away from your current environment.",
+      id: "Luangkan waktu sejenak untuk berjalan santai dan beri ruang bagi dirimu dari penatnya lingkungan saat ini.",
+    },
+    instructions: {
+      en: "Walk slowly for a few minutes. Pay attention to your steps, feel the air around you, and observe your surroundings without judgment.",
+      id: "Berjalanlah dengan santai selama beberapa menit. Perhatikan langkah kakimu, rasakan udara di sekitarmu, dan amati lingkungan sekitar tanpa menghakimi.",
+    },
+  },
+  "progressive muscle relaxation": {
+    title: { en: "Progressive Muscle Relaxation", id: "Relaksasi Otot Progresif" },
+    description: {
+      en: "A relaxation exercise involving gentle tensing and releasing of different muscle groups.",
+      id: "Latihan relaksasi yang melibatkan ketegangan dan pelepasan lembut pada berbagai kelompok otot secara berurutan.",
+    },
+    instructions: {
+      en: "Tense a muscle group (like your hands) for 5 seconds, then release slowly while exhaling. Move to other muscle groups from your toes to your head.",
+      id: "Tegangkan sekelompok otot (seperti tangan) selama 5 detik, lalu lepaskan secara perlahan sambil membuang napas. Pindah ke kelompok otot lain dari ujung kaki hingga kepala.",
+    },
+  },
+};
+
+function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
+  if (!title) return "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation ? (isId ? translation.title.id : translation.title.en) : title;
+}
+
+function getWellbeingDescription(title: string | null | undefined, originalDesc: string | null | undefined, isId: boolean) {
+  if (!title) return originalDesc || "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation ? (isId ? translation.description.id : translation.description.en) : (originalDesc || "");
+}
+
+function getWellbeingInstructions(title: string | null | undefined, originalInst: string | null | undefined, isId: boolean) {
+  if (!title) return originalInst || "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation ? (isId ? translation.instructions.id : translation.instructions.en) : (originalInst || "");
+}
+
+function formatCategory(category: string, isId: boolean) {
+  const value = category.toLowerCase();
+  if (value.includes("breath")) return isId ? "Pernapasan" : "Breathing";
+  if (value.includes("ground")) return "Grounding";
+  if (value.includes("movement")) return isId ? "Gerakan" : "Movement";
+  if (value.includes("reflection")) return isId ? "Refleksi" : "Reflection";
+  if (value.includes("relax")) return isId ? "Relaksasi" : "Relaxation";
+  return category;
+}
+
 const BREATHING_PHASES: ActivityPhase[] = [
   {
     id: "inhale",
@@ -393,6 +490,10 @@ function getOrbScale(
 
   return 1.18 - progress * 0.36;
 }
+
+/* ========================================================= */
+/* MAIN COMPONENT                                            */
+/* ========================================================= */
 
 export default function ActivityDetailClient({
   locale,
@@ -844,7 +945,7 @@ export default function ActivityDetailClient({
 
                   <div className="mt-6 flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-[#E2725B]/10 px-3 py-1.5 text-xs font-semibold text-[#C85E4A]">
-                      {activity.category}
+                      {formatCategory(activity.category, isId)}
                     </span>
 
                     <span className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#74675D]">
@@ -871,11 +972,11 @@ export default function ActivityDetailClient({
                   </div>
 
                   <h1 className="mt-5 max-w-2xl text-2xl font-bold tracking-tight text-[#4A3F35] sm:text-3xl lg:text-4xl">
-                    {activity.title}
+                    {getWellbeingTitle(activity.title, isId)}
                   </h1>
 
                   <p className="mt-4 max-w-2xl text-sm leading-7 text-[#75685E] sm:text-base">
-                    {activity.description}
+                    {getWellbeingDescription(activity.title, activity.description, isId)}
                   </p>
                 </div>
               </div>
@@ -888,7 +989,7 @@ export default function ActivityDetailClient({
                 </h2>
 
                 <div className="mt-4 whitespace-pre-line text-sm leading-7 text-[#75685E]">
-                  {activity.instructions}
+                  {getWellbeingInstructions(activity.title, activity.instructions, isId)}
                 </div>
 
                 {breathingMode && (
@@ -997,7 +1098,7 @@ export default function ActivityDetailClient({
                     </p>
 
                     <h1 className="mt-2 text-xl font-bold text-[#4A3F35] sm:text-2xl">
-                      {activity.title}
+                      {getWellbeingTitle(activity.title, isId)}
                     </h1>
                   </div>
 
@@ -1234,7 +1335,7 @@ export default function ActivityDetailClient({
                                   phase.id
                                 }
                                 className={[
-                                  "rounded-2xl border px-2 py-3 transition",
+                                  "rounded-2xl border px-2 py-3 transition text-center",
                                   active
                                     ? "border-[#E2725B] bg-white shadow-sm"
                                     : "border-transparent bg-white/50",
@@ -1322,7 +1423,7 @@ export default function ActivityDetailClient({
                   </p>
 
                   <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[#655950]">
-                    {activity.instructions}
+                    {getWellbeingInstructions(activity.title, activity.instructions, isId)}
                   </p>
                 </div>
 

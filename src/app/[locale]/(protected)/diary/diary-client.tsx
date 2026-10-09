@@ -617,7 +617,7 @@ const emotionTranslations: Record<string, { en: string; id: string }> = {
 
   excited: { en: "Excited", id: "Antusias" },
 
-  hopeful: { en: "Hopeful", id: "Penuh Harapan" },
+  hopeful: { en: "Hopeful", id: "Bersyukur" },
 
   calm: { en: "Calm", id: "Tenang" },
 

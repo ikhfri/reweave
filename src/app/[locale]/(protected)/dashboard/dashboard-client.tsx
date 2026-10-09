@@ -643,10 +643,10 @@ export default function DashboardClient({
                   : "Tidak ada jawaban yang benar. Pilih saja yang paling dekat dengan apa yang sedang kamu rasakan."}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
                 href={`/${locale}/check-in`}
-                className="inline-flex h-11 items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
+                className="flex h-11 w-full sm:w-auto items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
               >
                 {data?.today.hasCheckin
                   ? isEnglish
@@ -666,11 +666,9 @@ export default function DashboardClient({
 
               <Link
                 href={`/${locale}/diary`}
-                className="inline-flex h-11 items-center justify-center border border-[#4A3F35]/15 bg-[#FDFBF7]/45 px-6 text-sm font-medium text-[#4A3F35] transition-colors hover:bg-[#FDFBF7]/75"
+                className="flex h-11 w-full sm:w-auto items-center justify-center border border-[#4A3F35]/15 bg-[#FDFBF7]/45 px-6 text-sm font-medium text-[#4A3F35] transition-colors hover:bg-[#FDFBF7]/75"
               >
-                {isEnglish
-                  ? "Write a reflection"
-                  : "Tulis refleksi"}
+                {isEnglish ? "Write a reflection" : "Tulis refleksi"}
               </Link>
             </div>
           </div>
