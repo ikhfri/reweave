@@ -1,35 +1,63 @@
 "use client";
 
 import Image from "next/image";
+
 import { useEffect, useState, type ReactNode, type SVGProps } from "react";
+
 import { useRouter } from "next/navigation";
+
 import type { Locale } from "@/i18n/config";
 
 type Emotion = {
   id: string;
+
   name: string;
+
   slug: string;
+
   category: string;
+
   description: string | null;
 };
 
 type Context = {
   id: string;
+
   name: string;
+
   slug: string;
+
   icon: string | null;
 };
 
 type SelectedEmotion = {
   slug: string;
+
   intensity: number;
+
   note: string;
 };
 
 type Props = {
   locale: Locale;
+
   userName: string;
 };
+
+const EMOTION_ORDER = [
+  "happy",
+  "loved",
+  "excited",
+  "hopeful",
+  "calm",
+  "tired",
+  "anxious",
+  "stressed",
+  "angry",
+  "lonely",
+  "sad",
+  "overwhelmed",
+];
 
 export default function CheckInForm({ locale, userName }: Props) {
   const router = useRouter();
@@ -37,6 +65,7 @@ export default function CheckInForm({ locale, userName }: Props) {
   const isEnglish = locale === "en";
 
   const [emotions, setEmotions] = useState<Emotion[]>([]);
+
   const [contexts, setContexts] = useState<Context[]>([]);
 
   const [isLoadingOptions, setIsLoadingOptions] = useState(true);
@@ -44,7 +73,6 @@ export default function CheckInForm({ locale, userName }: Props) {
   // =========================================================
   // FORM STATE
   // =========================================================
-
   const [selectedEmotions, setSelectedEmotions] = useState<SelectedEmotion[]>(
     [],
   );
@@ -66,33 +94,18 @@ export default function CheckInForm({ locale, userName }: Props) {
   const [aiError, setAiError] = useState("");
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const emotionOrder = [
-    "happy",
-    "loved",
-    "excited",
-    "hopeful",
-    "calm",
-    "tired",
-    "anxious",
-    "stressed",
-    "angry",
-    "lonely",
-    "sad",
-    "overwhelmed",
-  ];
-
   useEffect(() => {
     let cancelled = false;
 
     async function loadOptions() {
       try {
         setIsLoadingOptions(true);
+
         setError("");
 
         const response = await fetch("/api/check-ins/options", {
           method: "GET",
+
           cache: "no-store",
         });
 
@@ -111,10 +124,16 @@ export default function CheckInForm({ locale, userName }: Props) {
           : [];
 
         const sortedEmotions = [...fetchedEmotions].sort((a, b) => {
-          return emotionOrder.indexOf(a.slug) - emotionOrder.indexOf(b.slug);
+          const indexA = EMOTION_ORDER.indexOf(a.slug);
+          const indexB = EMOTION_ORDER.indexOf(b.slug);
+          const orderA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
+          const orderB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;
+
+          return orderA - orderB;
         });
 
         setEmotions(sortedEmotions);
+
         setContexts(Array.isArray(data.contexts) ? data.contexts : []);
       } catch (loadError) {
         console.error("Failed to load check-in options:", loadError);
@@ -138,7 +157,7 @@ export default function CheckInForm({ locale, userName }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [emotionOrder, isEnglish]);
+  }, [isEnglish]);
 
   function toggleEmotion(slug: string) {
     setSelectedEmotions((current) => {
@@ -154,9 +173,12 @@ export default function CheckInForm({ locale, userName }: Props) {
 
       return [
         ...current,
+
         {
           slug,
+
           intensity: 3,
+
           note: "",
         },
       ];
@@ -175,6 +197,7 @@ export default function CheckInForm({ locale, userName }: Props) {
         emotion.slug === slug
           ? {
               ...emotion,
+
               intensity: safeIntensity,
             }
           : emotion,
@@ -188,6 +211,7 @@ export default function CheckInForm({ locale, userName }: Props) {
         emotion.slug === slug
           ? {
               ...emotion,
+
               note: emotionNote,
             }
           : emotion,
@@ -198,19 +222,21 @@ export default function CheckInForm({ locale, userName }: Props) {
   // =========================================================
   // UNKNOWN EMOTION MODE
   // =========================================================
-
   function enableUnknownEmotionMode() {
     setUnknownEmotionMode(true);
+
     setSelectedEmotions([]);
+
     setError("");
   }
 
   function disableUnknownEmotionMode() {
     setUnknownEmotionMode(false);
+
     setEmotionDescription("");
+
     setError("");
   }
-
 
   function toggleContext(slug: string) {
     setSelectedContexts((current) =>
@@ -222,16 +248,20 @@ export default function CheckInForm({ locale, userName }: Props) {
 
   async function analyzeCheckin(checkinId: string) {
     setIsAnalyzing(true);
+
     setAiError("");
 
     try {
       const analysisResponse = await fetch("/api/ai/analyze", {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           checkinId,
+
           language: locale === "id" ? "id" : "en",
         }),
       });
@@ -281,6 +311,7 @@ export default function CheckInForm({ locale, userName }: Props) {
 
   async function handleSubmit() {
     setError("");
+
     setAiError("");
 
     if (!unknownEmotionMode && selectedEmotions.length === 0) {
@@ -308,19 +339,26 @@ export default function CheckInForm({ locale, userName }: Props) {
     try {
       const checkinResponse = await fetch("/api/check-ins", {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           emotions: unknownEmotionMode
             ? []
             : selectedEmotions.map((emotion) => ({
                 name: emotion.slug,
+
                 intensity: emotion.intensity,
+
                 note: emotion.note.trim() || null,
               })),
+
           contexts: selectedContexts,
+
           note: note.trim() || null,
+
           emotionDescription: unknownEmotionMode
             ? emotionDescription.trim()
             : null,
@@ -334,11 +372,14 @@ export default function CheckInForm({ locale, userName }: Props) {
 
         if (checkinResponse.status === 409 && checkinData?.checkinId) {
           const existingCheckinId = checkinData.checkinId;
+
           setSavedCheckinId(existingCheckinId);
+
           const success = await analyzeCheckin(existingCheckinId);
 
           if (success) {
             router.push(`/${locale}/check-in/result/${existingCheckinId}`);
+
             router.refresh();
           }
 
@@ -359,11 +400,13 @@ export default function CheckInForm({ locale, userName }: Props) {
 
       if (!checkinId) {
         console.error("Check-in ID missing:", checkinData);
+
         setError(
           isEnglish
             ? "Check-in was saved but its ID could not be found."
             : "Check-in berhasil disimpan tetapi ID tidak ditemukan.",
         );
+
         return;
       }
 
@@ -373,10 +416,12 @@ export default function CheckInForm({ locale, userName }: Props) {
 
       if (success) {
         router.push(`/${locale}/check-in/result/${checkinId}`);
+
         router.refresh();
       }
     } catch (submitError) {
       console.error("Failed to submit check-in:", submitError);
+
       setError(
         isEnglish
           ? "Something went wrong. Please try again."
@@ -412,6 +457,7 @@ export default function CheckInForm({ locale, userName }: Props) {
       <header className="mb-12 max-w-3xl">
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-[#e2725b]" />
+
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
             {isEnglish ? "Daily check-in" : "Check-in harian"}
           </p>
@@ -437,11 +483,13 @@ export default function CheckInForm({ locale, userName }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
                 01
               </p>
+
               <h2 className="mt-2 text-2xl font-semibold tracking-tight">
                 {isEnglish
                   ? "What are you feeling?"
                   : "Apa yang sedang kamu rasakan?"}
               </h2>
+
               <p className="mt-2 max-w-xl text-sm leading-6 text-[#4a3f35]/50">
                 {isEnglish
                   ? "Choose up to three emotions that feel closest to your experience."
@@ -466,14 +514,19 @@ export default function CheckInForm({ locale, userName }: Props) {
             <div className="grid grid-cols-2 border-l border-t border-[#4a3f35]/10 sm:grid-cols-3 lg:grid-cols-4">
               {emotions.map((emotion) => {
                 const selected = Boolean(getSelectedEmotion(emotion.slug));
+
                 const disabled = !selected && selectedEmotions.length >= 3;
 
                 return (
                   <button
                     key={emotion.id}
+
                     type="button"
+
                     onClick={() => toggleEmotion(emotion.slug)}
+
                     disabled={disabled}
+
                     style={
                       selected
                         ? {
@@ -481,15 +534,19 @@ export default function CheckInForm({ locale, userName }: Props) {
                           }
                         : undefined
                     }
+
                     className={[
                       "group relative min-h-26.25 flex flex-col justify-center border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
+
                       !selected ? "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10" : "",
+
                       disabled ? "cursor-not-allowed opacity-30" : "",
                     ].join(" ")}
                   >
                     {selected && (
                       <span
                         className="absolute left-0 top-0 h-full w-1"
+
                         style={{
                           backgroundColor: getEmotionColor(emotion.slug),
                         }}
@@ -500,14 +557,19 @@ export default function CheckInForm({ locale, userName }: Props) {
                       <div className="flex items-center gap-3">
                         <Image
                           src={getEmotionImage(emotion.slug)}
+
                           alt={getEmotionLabel(emotion, isEnglish)}
+
                           width={52}
+
                           height={52}
+
                           className="h-13 w-13 shrink-0 object-contain"
                         />
 
                         <span
                           className="text-sm font-medium transition-colors"
+
                           style={{
                             color: selected
                               ? getEmotionColor(emotion.slug)
@@ -521,6 +583,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                       {selected && (
                         <span
                           className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+
                           style={{
                             backgroundColor: getEmotionColor(emotion.slug),
                           }}
@@ -562,6 +625,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                   return (
                     <article
                       key={selectedEmotion.slug}
+
                       className="grid gap-6 border-b border-[#4a3f35]/10 pb-8 lg:grid-cols-[0.7fr_1.3fr]"
                     >
                       {/* EMOTION INFO */}
@@ -570,15 +634,20 @@ export default function CheckInForm({ locale, userName }: Props) {
                         <div className="flex items-center gap-3">
                           <div
                             className="flex h-14 w-14 items-center justify-center rounded-2xl p-1.5"
+
                             style={{
                               backgroundColor: `${getEmotionColor(emotion.slug)}25`,
                             }}
                           >
                             <Image
                               src={getEmotionImage(emotion.slug)}
+
                               alt={getEmotionLabel(emotion, isEnglish)}
+
                               width={52}
+
                               height={52}
+
                               className="h-full w-full object-contain"
                             />
                           </div>
@@ -586,6 +655,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                           <div>
                             <span
                               className="mb-1 block h-1.5 w-8 rounded-full"
+
                               style={{
                                 backgroundColor: getEmotionColor(emotion.slug),
                               }}
@@ -621,14 +691,19 @@ export default function CheckInForm({ locale, userName }: Props) {
                         <div className="mt-4 flex items-center gap-3">
                           <button
                             type="button"
+
                             onClick={() =>
                               updateIntensity(
                                 selectedEmotion.slug,
+
                                 selectedEmotion.intensity - 1,
                               )
                             }
+
                             disabled={selectedEmotion.intensity <= 1}
+
                             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
+
                             aria-label={
                               isEnglish
                                 ? "Decrease intensity"
@@ -642,31 +717,41 @@ export default function CheckInForm({ locale, userName }: Props) {
                             {[1, 2, 3, 4, 5].map((level) => (
                               <button
                                 key={level}
+
                                 type="button"
+
                                 onClick={() =>
                                   updateIntensity(selectedEmotion.slug, level)
                                 }
+
                                 className={[
                                   "h-2 flex-1 rounded-full transition-all duration-200",
+
                                   level <= selectedEmotion.intensity
                                     ? ""
                                     : "bg-[#4a3f35]/10",
                                 ].join(" ")}
+
                                 style={
                                   level <= selectedEmotion.intensity
                                     ? {
                                         backgroundColor: (
                                           {
                                             1: "#7FAF7B",
+
                                             2: "#A8C58A",
+
                                             3: "#D9C65B",
+
                                             4: "#F2A65A",
+
                                             5: "#E2725B",
                                           } as const
                                         )[level as 1 | 2 | 3 | 4 | 5],
                                       }
                                     : undefined
                                 }
+
                                 aria-label={`Intensity ${level}`}
                               />
                             ))}
@@ -674,14 +759,19 @@ export default function CheckInForm({ locale, userName }: Props) {
 
                           <button
                             type="button"
+
                             onClick={() =>
                               updateIntensity(
                                 selectedEmotion.slug,
+
                                 selectedEmotion.intensity + 1,
                               )
                             }
+
                             disabled={selectedEmotion.intensity >= 5}
+
                             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#4a3f35]/10 text-[#4a3f35]/55 transition hover:border-[#e2725b] hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-30"
+
                             aria-label={
                               isEnglish
                                 ? "Increase intensity"
@@ -704,6 +794,7 @@ export default function CheckInForm({ locale, userName }: Props) {
 
                         <label
                           htmlFor={`emotion-note-${selectedEmotion.slug}`}
+
                           className="mt-7 block text-xs font-semibold uppercase tracking-widest text-[#5c6b9c]"
                         >
                           {isEnglish
@@ -713,20 +804,27 @@ export default function CheckInForm({ locale, userName }: Props) {
 
                         <textarea
                           id={`emotion-note-${selectedEmotion.slug}`}
+
                           value={selectedEmotion.note}
+
                           onChange={(event) =>
                             updateEmotionNote(
                               selectedEmotion.slug,
+
                               event.target.value,
                             )
                           }
+
                           maxLength={500}
+
                           rows={2}
+
                           placeholder={
                             isEnglish
                               ? "What made you feel this way?"
                               : "Apa yang membuatmu merasa seperti ini?"
                           }
+
                           className="mt-3 w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-6 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
                         />
 
@@ -747,11 +845,13 @@ export default function CheckInForm({ locale, userName }: Props) {
           <div className="mt-7">
             <button
               type="button"
+
               onClick={
                 unknownEmotionMode
                   ? disableUnknownEmotionMode
                   : enableUnknownEmotionMode
               }
+
               className="inline-flex items-center gap-2 border-b border-[#5c6b9c]/40 pb-1 text-sm font-medium text-[#5c6b9c] transition hover:border-[#e2725b] hover:text-[#e2725b]"
             >
               <MessageIcon className="h-4 w-4" />
@@ -786,16 +886,21 @@ export default function CheckInForm({ locale, userName }: Props) {
 
                   <textarea
                     value={emotionDescription}
+
                     onChange={(event) =>
                       setEmotionDescription(event.target.value)
                     }
+
                     maxLength={2000}
+
                     rows={7}
+
                     placeholder={
                       isEnglish
                         ? "For example: I don't know exactly what I'm feeling. Since this morning everything feels heavy, I don't feel like talking, and I just want some time alone..."
                         : "Contoh: Aku nggak tahu sebenarnya aku merasa apa. Dari pagi rasanya berat, nggak terlalu sedih tapi juga nggak punya energi buat ngobrol dan pengen sendiri..."
                     }
+
                     className="mt-6 min-h-45 w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-7 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
                   />
 
@@ -815,10 +920,6 @@ export default function CheckInForm({ locale, userName }: Props) {
             )}
           </div>
         </section>
-
-        {/* ===================================================
-            CONTEXT
-        ==================================================== */}
 
         <section>
           <div className="mb-7 max-w-2xl">
@@ -855,13 +956,17 @@ export default function CheckInForm({ locale, userName }: Props) {
                 return (
                   <button
                     key={context.id}
+
                     type="button"
+
                     onClick={() => toggleContext(context.slug)}
+
                     className="group inline-flex items-center gap-3 text-left"
                   >
                     <span
                       className={[
                         "flex h-5 w-5 items-center justify-center rounded-full border transition-all",
+
                         selected
                           ? "border-[#e2725b] bg-[#e2725b]"
                           : "border-[#4a3f35]/20 group-hover:border-[#e2725b]",
@@ -873,6 +978,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                     <span
                       className={[
                         "text-sm transition-colors",
+
                         selected
                           ? "font-medium text-[#4a3f35]"
                           : "text-[#4a3f35]/55 group-hover:text-[#4a3f35]",
@@ -886,10 +992,6 @@ export default function CheckInForm({ locale, userName }: Props) {
             </div>
           )}
         </section>
-
-        {/* ===================================================
-            DAILY STORY
-        ==================================================== */}
 
         <section>
           <div className="mb-7 grid gap-5 sm:grid-cols-[0.7fr_1.3fr] sm:items-end">
@@ -924,14 +1026,19 @@ export default function CheckInForm({ locale, userName }: Props) {
 
               <textarea
                 value={note}
+
                 onChange={(event) => setNote(event.target.value)}
+
                 maxLength={2000}
+
                 rows={8}
+
                 placeholder={
                   isEnglish
                     ? "Start wherever feels natural..."
                     : "Mulai dari mana pun yang terasa natural..."
                 }
+
                 className="mt-7 min-h-55 w-full resize-none border-0 bg-transparent px-0 py-0 text-base leading-8 text-[#4a3f35] outline-none placeholder:text-[#4a3f35]/35"
               />
 
@@ -950,10 +1057,6 @@ export default function CheckInForm({ locale, userName }: Props) {
           </div>
         </section>
 
-        {/* ===================================================
-            AI ERROR
-        ==================================================== */}
-
         {aiError && savedCheckinId && (
           <section className="border-l-2 border-[#e2725b] bg-[#fbc4ab]/20 px-5 py-5 sm:px-6">
             <p className="text-sm font-semibold text-[#4a3f35]">
@@ -968,6 +1071,7 @@ export default function CheckInForm({ locale, userName }: Props) {
 
             <button
               type="button"
+
               onClick={async () => {
                 if (!savedCheckinId || isAnalyzing) {
                   return;
@@ -976,12 +1080,14 @@ export default function CheckInForm({ locale, userName }: Props) {
                 const success = await analyzeCheckin(savedCheckinId);
 
                 if (success) {
-                  router.push(`/${locale}/check-in/result/${savedCheckinId}`);
+                  router.push(`/${locale}/moodlog/result/${savedCheckinId}`);
 
                   router.refresh();
                 }
               }}
+
               disabled={isAnalyzing}
+
               className="mt-5 inline-flex h-10 items-center gap-2 border-b border-[#e2725b] text-sm font-medium text-[#4a3f35] transition hover:text-[#e2725b] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isAnalyzing ? (
@@ -1001,14 +1107,12 @@ export default function CheckInForm({ locale, userName }: Props) {
           </section>
         )}
 
-    
         {error && (
           <div className="border-l-2 border-red-400 bg-red-50/70 px-5 py-4">
             <p className="text-sm leading-6 text-red-600">{error}</p>
           </div>
         )}
 
-      
         <section className="border-t border-[#4a3f35]/10 pt-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-md">
@@ -1033,13 +1137,16 @@ export default function CheckInForm({ locale, userName }: Props) {
 
             <button
               type="button"
+
               onClick={handleSubmit}
+
               disabled={
                 isSubmitting ||
                 isAnalyzing ||
                 (!unknownEmotionMode && selectedEmotions.length === 0) ||
                 (unknownEmotionMode && emotionDescription.trim().length === 0)
               }
+
               className="group inline-flex h-12 w-full items-center justify-center gap-3 bg-[#e2725b] px-7 text-sm font-semibold text-white transition-all hover:bg-[#4a3f35] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {isSubmitting || isAnalyzing ? (
@@ -1071,16 +1178,27 @@ export default function CheckInForm({ locale, userName }: Props) {
 
 const emotionImages: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
+
   loved: "/emotions-emoji/loved.png",
+
   excited: "/emotions-emoji/excited.png",
+
   hopeful: "/emotions-emoji/hopefulrev.png",
+
   calm: "/emotions-emoji/calm.png",
+
   tired: "/emotions-emoji/tired.png",
+
   anxious: "/emotions-emoji/anxious.png",
+
   stressed: "/emotions-emoji/stressed.png",
+
   angry: "/emotions-emoji/angry.png",
+
   lonely: "/emotions-emoji/lonely.png",
+
   sad: "/emotions-emoji/sad.png",
+
   overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
@@ -1090,16 +1208,27 @@ function getEmotionImage(slug: string) {
 
 const emotionColors: Record<string, string> = {
   happy: "#FBC4AB",
+
   loved: "#C39986",
+
   excited: "#8F7163",
+
   hopeful: "#D6E3D5",
+
   calm: "#B1C5B1",
+
   tired: "#879C87",
+
   anxious: "#D66F5A",
+
   stressed: "#A64D3B",
+
   angry: "#782E20",
+
   lonely: "#7182A4",
+
   sad: "#475677",
+
   overwhelmed: "#39405B",
 };
 
@@ -1110,73 +1239,105 @@ function getEmotionColor(slug: string) {
 // =========================================================
 // LABEL HELPERS
 // =========================================================
-
 const emotionTranslations: Record<string, { en: string; id: string }> = {
   happy: { en: "Happy", id: "Bahagia" },
+
   loved: { en: "Loved", id: "Dicintai" },
+
   excited: { en: "Excited", id: "Antusias" },
+
   hopeful: { en: "Hopeful", id: "Bersyukur" },
+
   calm: { en: "Calm", id: "Tenang" },
+
   tired: { en: "Tired", id: "Lelah" },
+
   anxious: { en: "Anxious", id: "Cemas" },
+
   stressed: { en: "Stressed", id: "Tertekan" },
+
   angry: { en: "Angry", id: "Marah" },
+
   lonely: { en: "Lonely", id: "Kesepian" },
+
   sad: { en: "Sad", id: "Sedih" },
+
   overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
 };
 
 function getEmotionLabel(emotion: Emotion, isEnglish: boolean) {
   const translation = emotionTranslations[emotion.slug.toLowerCase()];
+
   if (translation) {
     return isEnglish ? translation.en : translation.id;
   }
-  return emotion.name; // Fallback ke database jika tidak ada di kamus
+
+  return emotion.name;
 }
-
-
 
 const contextTranslations: Record<string, { en: string; id: string }> = {
   family: { en: "Family", id: "Keluarga" },
+
   financial: { en: "Financial", id: "Keuangan" },
+
   "life changes": { en: "Life Changes", id: "Perubahan Hidup" },
+
   "life-changes": { en: "Life Changes", id: "Perubahan Hidup" },
+
   other: { en: "Other", id: "Lainnya" },
+
   "physical health": { en: "Physical Health", id: "Kesehatan Fisik" },
+
   "physical-health": { en: "Physical Health", id: "Kesehatan Fisik" },
+
   relationship: { en: "Relationship", id: "Hubungan" },
+
   "school / work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+
   "school-work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
+
   sleep: { en: "Sleep", id: "Tidur" },
+
   social: { en: "Social", id: "Sosial" },
+
   work: { en: "Work", id: "Pekerjaan" },
+
   health: { en: "Health", id: "Kesehatan" },
+
   friends: { en: "Friends", id: "Teman" },
+
   weather: { en: "Weather", id: "Cuaca" },
 };
 
 function getContextLabel(context: Context, isEnglish: boolean) {
   const translation = contextTranslations[context.slug.toLowerCase()];
+
   if (translation) {
     return isEnglish ? translation.en : translation.id;
   }
+
   return context.name;
 }
-
 
 type IconProps = SVGProps<SVGSVGElement>;
 
 function Icon({
   children,
+
   className,
+
   viewBox = "0 0 24 24",
 }: IconProps & { children: ReactNode; viewBox?: string }) {
   return (
     <svg
       viewBox={viewBox}
+
       fill="none"
+
       xmlns="http://www.w3.org/2000/svg"
+
       className={className}
+
       aria-hidden="true"
     >
       {children}
@@ -1189,9 +1350,13 @@ function CheckIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M5 12.5 9.2 17 19 7"
+
         stroke="currentColor"
+
         strokeWidth="2.2"
+
         strokeLinecap="round"
+
         strokeLinejoin="round"
       />
     </Icon>
@@ -1203,8 +1368,11 @@ function HeartIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M12 20.2S4.2 15.4 4.2 9.7C4.2 6.8 6.2 5 8.7 5c1.5 0 2.7.7 3.3 1.8C12.6 5.7 13.8 5 15.3 5c2.5 0 4.5 1.8 4.5 4.7 0 5.7-7.8 10.5-7.8 10.5Z"
+
         stroke="currentColor"
+
         strokeWidth="1.7"
+
         strokeLinejoin="round"
       />
     </Icon>
@@ -1216,15 +1384,23 @@ function ArrowRightIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M4 12h15"
+
         stroke="currentColor"
+
         strokeWidth="1.8"
+
         strokeLinecap="round"
       />
+
       <path
         d="m13 6 6 6-6 6"
+
         stroke="currentColor"
+
         strokeWidth="1.8"
+
         strokeLinecap="round"
+
         strokeLinejoin="round"
       />
     </Icon>
@@ -1236,8 +1412,11 @@ function MinusIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M6 12h12"
+
         stroke="currentColor"
+
         strokeWidth="1.8"
+
         strokeLinecap="round"
       />
     </Icon>
@@ -1249,8 +1428,11 @@ function PlusIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M12 6v12M6 12h12"
+
         stroke="currentColor"
+
         strokeWidth="1.8"
+
         strokeLinecap="round"
       />
     </Icon>
@@ -1262,8 +1444,11 @@ function MessageIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M5.2 6.4A3.4 3.4 0 0 1 8.6 3h6.8a3.4 3.4 0 0 1 3.4 3.4v4.8a3.4 3.4 0 0 1-3.4 3.4h-3.2l-4.4 3v-3H8.6a3.4 3.4 0 0 1-3.4-3.4V6.4Z"
+
         stroke="currentColor"
+
         strokeWidth="1.6"
+
         strokeLinejoin="round"
       />
     </Icon>
@@ -1275,14 +1460,21 @@ function SparkleIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="m12 3 1.15 5.85L19 10l-5.85 1.15L12 17l-1.15-5.85L5 10l5.85-1.15L12 3Z"
+
         stroke="currentColor"
+
         strokeWidth="1.5"
+
         strokeLinejoin="round"
       />
+
       <path
         d="m19 16 .55 2.45L22 19l-2.45.55L19 22l-.55-2.45L16 19l2.45-.55L19 16Z"
+
         stroke="currentColor"
+
         strokeWidth="1.4"
+
         strokeLinejoin="round"
       />
     </Icon>
@@ -1294,8 +1486,11 @@ function SpinnerIcon(props: IconProps) {
     <Icon {...props}>
       <path
         d="M12 3a9 9 0 1 0 9 9"
+
         stroke="currentColor"
+
         strokeWidth="2"
+
         strokeLinecap="round"
       />
     </Icon>
