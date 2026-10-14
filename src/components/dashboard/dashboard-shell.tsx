@@ -76,8 +76,8 @@ export default function DashboardShell({
     },
 
     {
-      label: "Check-in",
-      href: `/${locale}/check-in`,
+      label: "Moodlog",
+      href: `/${locale}/moodlog`,
       icon: CheckinIcon,
     },
 

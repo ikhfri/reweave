@@ -119,7 +119,7 @@ googleId     String? @unique
   checkins     DailyCheckin[]
   diaryEntries DiaryEntry[]
   aiAnalyses   AIAnalysis[]
-
+consents UserConsent[]
   activityLogs   ActivityLog[]
   weeklyInsights WeeklyInsight[]
   weeklyAIInsights WeeklyAIInsight[]
@@ -129,7 +129,7 @@ googleId     String? @unique
   emotionDescriptions EmotionDescription[]
   otpVerifications OtpVerification[]
   reminderLogs     ReminderLog[]
-}
+} 
 
 model WeeklyAIInsight {
   id                String   @id @default(cuid())
@@ -168,6 +168,19 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model UserConsent {
+  id          String   @id @default(cuid())
+  userId      String
+  consentType String
+  version     String
+  acceptedAt  DateTime @default(now())
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@unique([userId, consentType, version])
+  @@index([userId, acceptedAt])
 }
 
 model UserPreference {

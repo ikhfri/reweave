@@ -89,7 +89,10 @@ const wellbeingTranslations: Record<
     },
   },
   "progressive muscle relaxation": {
-    title: { en: "Progressive Muscle Relaxation", id: "Relaksasi Otot Progresif" },
+    title: {
+      en: "Progressive Muscle Relaxation",
+      id: "Relaksasi Otot Progresif",
+    },
     description: {
       en: "A relaxation exercise involving gentle tensing and releasing of different muscle groups.",
       id: "Latihan relaksasi yang melibatkan ketegangan dan pelepasan lembut pada berbagai kelompok otot secara berurutan.",
@@ -100,13 +103,25 @@ const wellbeingTranslations: Record<
 function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
   if (!title) return "";
   const translation = wellbeingTranslations[title.toLowerCase().trim()];
-  return translation ? (isId ? translation.title.id : translation.title.en) : title;
+  return translation
+    ? isId
+      ? translation.title.id
+      : translation.title.en
+    : title;
 }
 
-function getWellbeingDescription(title: string | null | undefined, originalDesc: string | null | undefined, isId: boolean) {
+function getWellbeingDescription(
+  title: string | null | undefined,
+  originalDesc: string | null | undefined,
+  isId: boolean,
+) {
   if (!title) return originalDesc || "";
   const translation = wellbeingTranslations[title.toLowerCase().trim()];
-  return translation ? (isId ? translation.description.id : translation.description.en) : (originalDesc || "");
+  return translation
+    ? isId
+      ? translation.description.id
+      : translation.description.en
+    : originalDesc || "";
 }
 
 const categoryIcons: Record<string, typeof ActivityIcon> = {
@@ -122,9 +137,7 @@ const categoryIcons: Record<string, typeof ActivityIcon> = {
 function getCategoryIcon(category: string) {
   const key = category.toLowerCase();
 
-  const match = Object.keys(categoryIcons).find((item) =>
-    key.includes(item),
-  );
+  const match = Object.keys(categoryIcons).find((item) => key.includes(item));
 
   return match ? categoryIcons[match] : ActivityIcon;
 }
@@ -155,10 +168,7 @@ function formatCategory(category: string, isId: boolean) {
   return category;
 }
 
-function formatDifficulty(
-  difficulty: Activity["difficulty"],
-  isId: boolean,
-) {
+function formatDifficulty(difficulty: Activity["difficulty"], isId: boolean) {
   const labels = {
     EASY: isId ? "Mudah" : "Easy",
     MODERATE: isId ? "Sedang" : "Moderate",
@@ -168,45 +178,28 @@ function formatDifficulty(
   return labels[difficulty];
 }
 
-function getActivityMood(
-  activity: Activity,
-  isId: boolean,
-) {
+function getActivityMood(activity: Activity, isId: boolean) {
   const category = activity.category.toLowerCase();
 
-  if (
-    category.includes("breath") ||
-    category.includes("relax")
-  ) {
-    return isId
-      ? "Untuk menenangkan diri"
-      : "For slowing down";
+  if (category.includes("breath") || category.includes("relax")) {
+    return isId ? "Untuk menenangkan diri" : "For slowing down";
   }
 
-  if (
-    category.includes("ground") ||
-    category.includes("grounding")
-  ) {
+  if (category.includes("ground") || category.includes("grounding")) {
     return isId
       ? "Untuk kembali ke saat ini"
       : "For coming back to the present";
   }
 
   if (category.includes("movement")) {
-    return isId
-      ? "Untuk menggerakkan tubuh"
-      : "For getting your body moving";
+    return isId ? "Untuk menggerakkan tubuh" : "For getting your body moving";
   }
 
   if (category.includes("reflection")) {
-    return isId
-      ? "Untuk memahami perasaan"
-      : "For understanding yourself";
+    return isId ? "Untuk memahami perasaan" : "For understanding yourself";
   }
 
-  return isId
-    ? "Untuk dirimu hari ini"
-    : "For where you are today";
+  return isId ? "Untuk dirimu hari ini" : "For where you are today";
 }
 
 /* ========================================================= */
@@ -229,14 +222,9 @@ export default function ActivitiesClient({
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = useMemo(() => {
-    const values = activities.map(
-      (activity) => activity.category,
-    );
+    const values = activities.map((activity) => activity.category);
 
-    return [
-      "all",
-      ...Array.from(new Set(values)),
-    ];
+    return ["all", ...Array.from(new Set(values))];
   }, [activities]);
 
   const filteredActivities = useMemo(() => {
@@ -245,13 +233,11 @@ export default function ActivitiesClient({
     }
 
     return activities.filter(
-      (activity) =>
-        activity.category === activeCategory,
+      (activity) => activity.category === activeCategory,
     );
   }, [activities, activeCategory]);
 
-  const featuredActivity =
-    recommended[0] ?? activities[0] ?? null;
+  const featuredActivity = recommended[0] ?? activities[0] ?? null;
 
   const otherRecommended = recommended.slice(1);
 
@@ -263,75 +249,57 @@ export default function ActivitiesClient({
         setLoading(true);
         setError("");
 
-        const [
-          activitiesResponse,
-          recommendedResponse,
-          historyResponse,
-        ] = await Promise.all([
-          fetch("/api/activities", {
-            credentials: "include",
-          }),
+        const [activitiesResponse, recommendedResponse, historyResponse] =
+          await Promise.all([
+            fetch("/api/activities", {
+              credentials: "include",
+            }),
 
-          fetch("/api/activities/recommended", {
-            credentials: "include",
-          }),
+            fetch("/api/activities/recommended", {
+              credentials: "include",
+            }),
 
-          fetch("/api/activities/history", {
-            credentials: "include",
-          }),
-        ]);
+            fetch("/api/activities/history", {
+              credentials: "include",
+            }),
+          ]);
 
         if (!activitiesResponse.ok) {
-          throw new Error(
-            "Failed to load activities",
-          );
+          throw new Error("Failed to load activities");
         }
 
-        const activitiesData =
-          await activitiesResponse.json();
+        const activitiesData = await activitiesResponse.json();
 
-        const recommendedData =
-          recommendedResponse.ok
-            ? await recommendedResponse.json()
-            : { activities: [] };
+        const recommendedData = recommendedResponse.ok
+          ? await recommendedResponse.json()
+          : { activities: [] };
 
-        const historyData =
-          historyResponse.ok
-            ? await historyResponse.json()
-            : { logs: [] };
+        const historyData = historyResponse.ok
+          ? await historyResponse.json()
+          : { logs: [] };
 
         if (cancelled) return;
 
         setActivities(
-          Array.isArray(
-            activitiesData.activities,
-          )
+          Array.isArray(activitiesData.activities)
             ? activitiesData.activities
             : [],
         );
 
         setRecommended(
-          Array.isArray(
-            recommendedData.activities,
-          )
+          Array.isArray(recommendedData.activities)
             ? recommendedData.activities
             : [],
         );
 
-        setHistory(
-          Array.isArray(historyData.logs)
-            ? historyData.logs
-            : [],
-        );
+        setHistory(Array.isArray(historyData.logs) ? historyData.logs : []);
       } catch (err) {
         if (cancelled) return;
 
         console.error(err);
 
         setError(
-          isId
-            ? "Gagal memuat aktivitas."
-            : "Failed to load activities.",
+          isId ? "Gagal memuat aktivitas." : "Failed to load activities.",
         );
       } finally {
         if (!cancelled) {
@@ -366,9 +334,7 @@ export default function ActivitiesClient({
             </p>
 
             <p className="mt-1 text-xs text-[#4a3f35]/45">
-              {isId
-                ? "Sebentar."
-                : "Just a moment."}
+              {isId ? "Sebentar." : "Just a moment."}
             </p>
           </div>
         </div>
@@ -379,17 +345,10 @@ export default function ActivitiesClient({
   return (
     <main className="min-h-full bg-[#fdfbf7] px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
       <div className="mx-auto max-w-6xl">
-
-        {/* ================================================= */}
-        {/* INTRO                                             */}
-        {/* ================================================= */}
-
         <header className="mb-12">
           <div className="max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
-              {isId
-                ? "Ruang untuk dirimu"
-                : "A space for you"}
+              {isId ? "Ruang untuk dirimu" : "A space for you"}
             </p>
 
             <h1 className="text-3xl font-semibold tracking-[-0.035em] text-[#4a3f35] sm:text-4xl">
@@ -406,21 +365,11 @@ export default function ActivitiesClient({
           </div>
         </header>
 
-        {/* ================================================= */}
-        {/* ERROR                                             */}
-        {/* ================================================= */}
-
         {error && (
           <div className="mb-8 border-l-2 border-[#e2725b] bg-[#fbc4ab]/15 px-4 py-3">
-            <p className="text-sm text-[#4a3f35]/75">
-              {error}
-            </p>
+            <p className="text-sm text-[#4a3f35]/75">{error}</p>
           </div>
         )}
-
-        {/* ================================================= */}
-        {/* FEATURED                                          */}
-        {/* ================================================= */}
 
         {featuredActivity && (
           <section className="mb-14">
@@ -436,9 +385,7 @@ export default function ActivitiesClient({
               </p>
 
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
-                {isId
-                  ? "Satu aktivitas kecil"
-                  : "One small thing"}
+                {isId ? "Satu aktivitas kecil" : "One small thing"}
               </h2>
             </div>
 
@@ -452,29 +399,19 @@ export default function ActivitiesClient({
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#fdfbf7]/80">
                       {(() => {
-                        const Icon = getCategoryIcon(
-                          featuredActivity.category,
-                        );
+                        const Icon = getCategoryIcon(featuredActivity.category);
 
-                        return (
-                          <Icon className="h-5 w-5 text-[#5c6b9c]" />
-                        );
+                        return <Icon className="h-5 w-5 text-[#5c6b9c]" />;
                       })()}
                     </div>
 
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5c6b9c]">
-                        {formatCategory(
-                          featuredActivity.category,
-                          isId,
-                        )}
+                        {formatCategory(featuredActivity.category, isId)}
                       </p>
 
                       <p className="mt-0.5 text-xs text-[#4a3f35]/50">
-                        {getActivityMood(
-                          featuredActivity,
-                          isId,
-                        )}
+                        {getActivityMood(featuredActivity, isId)}
                       </p>
                     </div>
                   </div>
@@ -484,7 +421,11 @@ export default function ActivitiesClient({
                   </h3>
 
                   <p className="mt-3 max-w-xl text-sm leading-7 text-[#4a3f35]/65">
-                    {getWellbeingDescription(featuredActivity.title, featuredActivity.description, isId)}
+                    {getWellbeingDescription(
+                      featuredActivity.title,
+                      featuredActivity.description,
+                      isId,
+                    )}
                   </p>
 
                   <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#4a3f35]/55">
@@ -494,10 +435,7 @@ export default function ActivitiesClient({
                     </span>
 
                     <span>
-                      {formatDifficulty(
-                        featuredActivity.difficulty,
-                        isId,
-                      )}
+                      {formatDifficulty(featuredActivity.difficulty, isId)}
                     </span>
                   </div>
                 </div>
@@ -515,17 +453,11 @@ export default function ActivitiesClient({
           </section>
         )}
 
-        {/* ================================================= */}
-        {/* OTHER RECOMMENDATIONS                             */}
-        {/* ================================================= */}
-
         {otherRecommended.length > 0 && (
           <section className="mb-14">
             <div className="mb-6">
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
-                {isId
-                  ? "Pilihan lainnya"
-                  : "A few more"}
+                {isId ? "Pilihan lainnya" : "A few more"}
               </p>
 
               <h2 className="mt-2 text-xl font-semibold text-[#4a3f35]">
@@ -536,36 +468,26 @@ export default function ActivitiesClient({
             </div>
 
             <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
-              {otherRecommended.slice(0, 4).map(
-                (activity, index) => (
-                  <RecommendedRow
-                    key={activity.id}
-                    activity={activity}
-                    locale={locale}
-                    index={index}
-                  />
-                ),
-              )}
+              {otherRecommended.slice(0, 4).map((activity, index) => (
+                <RecommendedRow
+                  key={activity.id}
+                  activity={activity}
+                  locale={locale}
+                  index={index}
+                />
+              ))}
             </div>
           </section>
         )}
 
-        {/* ================================================= */}
-        {/* EXPLORE                                          */}
-        {/* ================================================= */}
-
         <section className="mb-14">
           <div className="mb-7 max-w-xl">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
-              {isId
-                ? "Jelajahi"
-                : "Explore"}
+              {isId ? "Jelajahi" : "Explore"}
             </p>
 
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
-              {isId
-                ? "Temukan yang terasa pas"
-                : "Find what feels right"}
+              {isId ? "Temukan yang terasa pas" : "Find what feels right"}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-[#4a3f35]/55">
@@ -579,16 +501,13 @@ export default function ActivitiesClient({
 
           <div className="mb-8 flex gap-5 overflow-x-auto border-b border-[#4a3f35]/10 pb-3">
             {categories.map((category) => {
-              const selected =
-                activeCategory === category;
+              const selected = activeCategory === category;
 
               return (
                 <button
                   key={category}
                   type="button"
-                  onClick={() =>
-                    setActiveCategory(category)
-                  }
+                  onClick={() => setActiveCategory(category)}
                   className={[
                     "relative shrink-0 pb-2 text-sm transition",
                     selected
@@ -600,10 +519,7 @@ export default function ActivitiesClient({
                     ? isId
                       ? "Semua"
                       : "All"
-                    : formatCategory(
-                        category,
-                        isId,
-                      )}
+                    : formatCategory(category, isId)}
 
                   {selected && (
                     <span className="absolute -bottom-3.25 left-0 right-0 h-0.5 rounded-full bg-[#e2725b]" />
@@ -623,16 +539,14 @@ export default function ActivitiesClient({
             </div>
           ) : (
             <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
-              {filteredActivities.map(
-                (activity, index) => (
-                  <ExploreActivityRow
-                    key={activity.id}
-                    activity={activity}
-                    locale={locale}
-                    index={index}
-                  />
-                ),
-              )}
+              {filteredActivities.map((activity, index) => (
+                <ExploreActivityRow
+                  key={activity.id}
+                  activity={activity}
+                  locale={locale}
+                  index={index}
+                />
+              ))}
             </div>
           )}
         </section>
@@ -644,15 +558,11 @@ export default function ActivitiesClient({
         <section className="border-t border-[#4a3f35]/10 pt-10">
           <div className="mb-7">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
-              {isId
-                ? "Jejakmu"
-                : "Your little record"}
+              {isId ? "Jejakmu" : "Your little record"}
             </p>
 
             <h2 className="mt-2 text-xl font-semibold text-[#4a3f35]">
-              {isId
-                ? "Yang sudah kamu lakukan"
-                : "What you've already tried"}
+              {isId ? "Yang sudah kamu lakukan" : "What you've already tried"}
             </h2>
           </div>
 
@@ -662,9 +572,7 @@ export default function ActivitiesClient({
                 <span className="h-2 w-2 rounded-full bg-[#c1d5c0]" />
 
                 <span className="text-sm font-medium">
-                  {isId
-                    ? "Belum ada riwayat"
-                    : "No history yet"}
+                  {isId ? "Belum ada riwayat" : "No history yet"}
                 </span>
               </div>
 
@@ -676,19 +584,14 @@ export default function ActivitiesClient({
             </div>
           ) : (
             <div className="max-w-3xl">
-              {history
-                .slice(0, 5)
-                .map((log, index) => (
-                  <HistoryItem
-                    key={log.id}
-                    log={log}
-                    locale={locale}
-                    last={
-                      index ===
-                      Math.min(history.length, 5) - 1
-                    }
-                  />
-                ))}
+              {history.slice(0, 5).map((log, index) => (
+                <HistoryItem
+                  key={log.id}
+                  log={log}
+                  locale={locale}
+                  last={index === Math.min(history.length, 5) - 1}
+                />
+              ))}
             </div>
           )}
         </section>
@@ -711,9 +614,7 @@ function RecommendedRow({
   index: number;
 }) {
   const isId = locale === "id";
-  const Icon = getCategoryIcon(
-    activity.category,
-  );
+  const Icon = getCategoryIcon(activity.category);
 
   return (
     <Link
@@ -744,18 +645,12 @@ function RecommendedRow({
         </p>
 
         <div className="mt-2 flex items-center gap-3 text-[11px] text-[#4a3f35]/40">
-          <span>
-            {formatCategory(
-              activity.category,
-              isId,
-            )}
-          </span>
+          <span>{formatCategory(activity.category, isId)}</span>
 
           <span>·</span>
 
           <span>
-            {activity.durationMinutes}{" "}
-            {isId ? "menit" : "min"}
+            {activity.durationMinutes} {isId ? "menit" : "min"}
           </span>
         </div>
       </div>
@@ -777,9 +672,7 @@ function ExploreActivityRow({
   index: number;
 }) {
   const isId = locale === "id";
-  const Icon = getCategoryIcon(
-    activity.category,
-  );
+  const Icon = getCategoryIcon(activity.category);
 
   return (
     <Link
@@ -810,22 +703,12 @@ function ExploreActivityRow({
         </p>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#4a3f35]/45">
-          <span>
-            {formatCategory(
-              activity.category,
-              isId,
-            )}
-          </span>
+          <span>{formatCategory(activity.category, isId)}</span>
+
+          <span>{formatDifficulty(activity.difficulty, isId)}</span>
 
           <span>
-            {formatDifficulty(
-              activity.difficulty,
-              isId,
-            )}
-          </span>
-
-          <span>{activity.durationMinutes}{" "}
-            {isId ? "menit" : "min"}
+            {activity.durationMinutes} {isId ? "menit" : "min"}
           </span>
         </div>
       </div>
@@ -867,17 +750,12 @@ function HistoryItem({
             </h3>
 
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#4a3f35]/45">
-              <span>
-                {formatCategory(
-                  log.activity.category,
-                  isId,
-                )}
-              </span>
+              <span>{formatCategory(log.activity.category, isId)}</span>
 
               <span>·</span>
 
-              <span>{log.activity.durationMinutes}{" "}
-                {isId ? "menit" : "min"}
+              <span>
+                {log.activity.durationMinutes} {isId ? "menit" : "min"}
               </span>
             </div>
           </div>

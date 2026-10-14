@@ -352,35 +352,26 @@ export async function GET() {
     // WEEKLY DATA
     // =========================
 
-    const weeklyData =
-      weeklyCheckins.map(
-        (checkin) => ({
-          id: checkin.id,
+    
+const weeklyData = weeklyCheckins.map((checkin) => ({
+  id: checkin.id,
+  date: checkin.checkinDate,
 
-          date: checkin.checkinDate,
+  // Samakan nama field dengan tipe data frontend.
+  overallIntensity: checkin.overallIntensity,
 
-          intensity:
-            checkin.overallIntensity,
+  emotions: checkin.emotions.map((item) => ({
+    id: item.emotion.id,
+    name: item.emotion.name,
+    slug: item.emotion.slug,
+    category: item.emotion.category,
+    intensity: item.intensity,
+    note: item.note,
+  })),
 
-          emotions:
-            checkin.emotions.map(
-              (item) => ({
-                id: item.emotion.id,
-                name: item.emotion.name,
-                slug: item.emotion.slug,
-                category:
-                  item.emotion.category,
-                intensity:
-                  item.intensity,
-                note: item.note,
-              }),
-            ),
+  analysis: checkin.aiAnalyses[0] ?? null,
+}));
 
-          analysis:
-            checkin.aiAnalyses[0] ??
-            null,
-        }),
-      );
 
     // =========================
     // TODAY ANALYSIS

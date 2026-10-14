@@ -36,10 +36,6 @@ export default function CheckInForm({ locale, userName }: Props) {
 
   const isEnglish = locale === "en";
 
-  // =========================================================
-  // DATA FROM DATABASE
-  // =========================================================
-
   const [emotions, setEmotions] = useState<Emotion[]>([]);
   const [contexts, setContexts] = useState<Context[]>([]);
 
@@ -71,24 +67,20 @@ export default function CheckInForm({ locale, userName }: Props) {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // =========================================================
-  // LOAD EMOTIONS + CONTEXTS
-  // =========================================================
-
-  // Array urutan sesuai desain palet
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const emotionOrder = [
     "happy",
     "loved",
-    "excited", // Afeksi & Energi Positif
+    "excited",
     "hopeful",
     "calm",
-    "tired", // Pemulihan Kognitif & Istirahat
+    "tired",
     "anxious",
     "stressed",
-    "angry", // Distres Akut
+    "angry",
     "lonely",
     "sad",
-    "overwhelmed", // Depresi & Penarikan Diri
+    "overwhelmed",
   ];
 
   useEffect(() => {
@@ -146,11 +138,7 @@ export default function CheckInForm({ locale, userName }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [isEnglish]);
-
-  // =========================================================
-  // EMOTION HELPERS
-  // =========================================================
+  }, [emotionOrder, isEnglish]);
 
   function toggleEmotion(slug: string) {
     setSelectedEmotions((current) => {
@@ -223,9 +211,6 @@ export default function CheckInForm({ locale, userName }: Props) {
     setError("");
   }
 
-  // =========================================================
-  // CONTEXT HELPERS
-  // =========================================================
 
   function toggleContext(slug: string) {
     setSelectedContexts((current) =>
@@ -234,10 +219,6 @@ export default function CheckInForm({ locale, userName }: Props) {
         : [...current, slug],
     );
   }
-
-  // =========================================================
-  // AI ANALYSIS
-  // =========================================================
 
   async function analyzeCheckin(checkinId: string) {
     setIsAnalyzing(true);
@@ -297,10 +278,6 @@ export default function CheckInForm({ locale, userName }: Props) {
       setIsAnalyzing(false);
     }
   }
-
-  // =========================================================
-  // SUBMIT
-  // =========================================================
 
   async function handleSubmit() {
     setError("");
@@ -410,14 +387,10 @@ export default function CheckInForm({ locale, userName }: Props) {
     }
   }
 
-  // =========================================================
-  // LOADING
-  // =========================================================
-
   if (isLoadingOptions) {
     return (
       <div className="mx-auto max-w-5xl">
-        <div className="flex min-h-[500px] items-center justify-center">
+        <div className="flex min-h-125 items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">
               <SpinnerIcon className="h-5 w-5 animate-spin text-[#5c6b9c]" />
@@ -434,16 +407,8 @@ export default function CheckInForm({ locale, userName }: Props) {
     );
   }
 
-  // =========================================================
-  // MAIN UI
-  // =========================================================
-
   return (
     <main className="mx-auto max-w-5xl pb-16 text-[#4a3f35]">
-      {/* =====================================================
-          INTRO
-      ====================================================== */}
-
       <header className="mb-12 max-w-3xl">
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-[#e2725b]" />
@@ -466,10 +431,6 @@ export default function CheckInForm({ locale, userName }: Props) {
       </header>
 
       <div className="space-y-16">
-        {/* ===================================================
-            EMOTIONS
-        ==================================================== */}
-
         <section>
           <div className="mb-7 flex items-end justify-between gap-5 border-b border-[#4a3f35]/10 pb-5">
             <div>
@@ -521,7 +482,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                         : undefined
                     }
                     className={[
-                      "group relative min-h-[105px] flex flex-col justify-center border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
+                      "group relative min-h-26.25 flex flex-col justify-center border-b border-r border-[#4a3f35]/10 p-4 text-left transition-all sm:p-5",
                       !selected ? "bg-[#fdfbf7] hover:bg-[#fbc4ab]/10" : "",
                       disabled ? "cursor-not-allowed opacity-30" : "",
                     ].join(" ")}
@@ -542,7 +503,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                           alt={getEmotionLabel(emotion, isEnglish)}
                           width={52}
                           height={52}
-                          className="h-[52px] w-[52px] shrink-0 object-contain"
+                          className="h-13 w-13 shrink-0 object-contain"
                         />
 
                         <span
@@ -743,7 +704,7 @@ export default function CheckInForm({ locale, userName }: Props) {
 
                         <label
                           htmlFor={`emotion-note-${selectedEmotion.slug}`}
-                          className="mt-7 block text-xs font-semibold uppercase tracking-[0.1em] text-[#5c6b9c]"
+                          className="mt-7 block text-xs font-semibold uppercase tracking-widest text-[#5c6b9c]"
                         >
                           {isEnglish
                             ? "What is behind it?"
@@ -835,7 +796,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                         ? "For example: I don't know exactly what I'm feeling. Since this morning everything feels heavy, I don't feel like talking, and I just want some time alone..."
                         : "Contoh: Aku nggak tahu sebenarnya aku merasa apa. Dari pagi rasanya berat, nggak terlalu sedih tapi juga nggak punya energi buat ngobrol dan pengen sendiri..."
                     }
-                    className="mt-6 min-h-[180px] w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-7 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
+                    className="mt-6 min-h-45 w-full resize-none border-b border-[#4a3f35]/15 bg-transparent px-0 py-3 text-sm leading-7 text-[#4a3f35] outline-none transition placeholder:text-[#4a3f35]/30 focus:border-[#e2725b]"
                   />
 
                   <div className="mt-2 flex justify-between gap-4 text-[10px] text-[#4a3f35]/35">
@@ -971,7 +932,7 @@ export default function CheckInForm({ locale, userName }: Props) {
                     ? "Start wherever feels natural..."
                     : "Mulai dari mana pun yang terasa natural..."
                 }
-                className="mt-7 min-h-[220px] w-full resize-none border-0 bg-transparent px-0 py-0 text-base leading-8 text-[#4a3f35] outline-none placeholder:text-[#4a3f35]/35"
+                className="mt-7 min-h-55 w-full resize-none border-0 bg-transparent px-0 py-0 text-base leading-8 text-[#4a3f35] outline-none placeholder:text-[#4a3f35]/35"
               />
 
               <div className="mt-6 flex items-center justify-between border-t border-[#4a3f35]/10 pt-4">
@@ -1040,20 +1001,14 @@ export default function CheckInForm({ locale, userName }: Props) {
           </section>
         )}
 
-        {/* ===================================================
-            ERROR
-        ==================================================== */}
-
+    
         {error && (
           <div className="border-l-2 border-red-400 bg-red-50/70 px-5 py-4">
             <p className="text-sm leading-6 text-red-600">{error}</p>
           </div>
         )}
 
-        {/* ===================================================
-            SUBMIT
-        ==================================================== */}
-
+      
         <section className="border-t border-[#4a3f35]/10 pt-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-md">
@@ -1113,10 +1068,6 @@ export default function CheckInForm({ locale, userName }: Props) {
     </main>
   );
 }
-
-// =========================================================
-// MOODIFY EMOTION VISUALS
-// =========================================================
 
 const emotionImages: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
@@ -1183,23 +1134,7 @@ function getEmotionLabel(emotion: Emotion, isEnglish: boolean) {
   return emotion.name; // Fallback ke database jika tidak ada di kamus
 }
 
-const categoryTranslations: Record<string, { en: string; id: string }> = {
-  "positive affection": { en: "Positive Affection", id: "Afeksi Positif" },
-  "cognitive recovery": { en: "Cognitive Recovery", id: "Pemulihan Kognitif" },
-  "acute distress": { en: "Acute Distress", id: "Distres Akut" },
-  "depression & withdrawal": {
-    en: "Depression & Withdrawal",
-    id: "Depresi & Penarikan Diri",
-  },
-};
 
-function getCategoryLabel(categoryName: string, isEnglish: boolean) {
-  const translation = categoryTranslations[categoryName.toLowerCase()];
-  if (translation) {
-    return isEnglish ? translation.en : translation.id;
-  }
-  return categoryName;
-}
 
 const contextTranslations: Record<string, { en: string; id: string }> = {
   family: { en: "Family", id: "Keluarga" },
@@ -1228,10 +1163,6 @@ function getContextLabel(context: Context, isEnglish: boolean) {
   return context.name;
 }
 
-// =========================================================
-// CUSTOM MOODIFY ICONS
-// No icon library dependency.
-// =========================================================
 
 type IconProps = SVGProps<SVGSVGElement>;
 

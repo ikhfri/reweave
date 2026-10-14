@@ -24,6 +24,12 @@ export const registerSchema = z.object({
     .string()
     .min(8, "Password minimal 8 karakter")
     .max(100, "Password terlalu panjang"),
+  aiConsent: z.literal(true, {
+    error: "Persetujuan penggunaan AI wajib disetujui.",
+  }),
+  privacyConsent: z.literal(true, {
+    error: "Persetujuan kebijakan privasi wajib disetujui.",
+  }),
 });
 
 export const loginSchema = z.object({

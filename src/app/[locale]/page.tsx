@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -127,13 +126,7 @@ export default async function LandingPage({ params }: PageProps) {
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[0.82fr_1.18fr] lg:px-10 lg:pb-32 lg:pt-28">
           <div className="relative z-10 max-w-2xl">
             <div className="mb-7 flex items-center gap-3">
-              <span className="h-px w-8 bg-[#E2725B]" />
-
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4A3F35]/45">
-                {isEnglish
-                  ? "A quieter place for your thoughts"
-                  : "Ruang kecil untuk pikiranmu"}
-              </span>
+          
             </div>
 
             <h1 className="max-w-175 text-[48px] font-semibold leading-[0.99] tracking-[-0.065em] sm:text-[62px] lg:text-[76px]">
