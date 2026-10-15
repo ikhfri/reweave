@@ -67,12 +67,12 @@ const emotions: EmotionItem[] = [
   },
 
   {
-    slug: "grateful",
+    slug: "hopeful",
     nameId: "Bersyukur",
-    nameEn: "Grateful",
+    nameEn: "Hopeful",
     category: "calm",
     descriptionId:
-      "Perasaan menghargai hal baik, bantuan, atau sesuatu yang berarti dalam hidup.",
+      "Perasaan menghargai sesuatu yang baik, bermakna, atau mendukung dalam hidupmu.",
     descriptionEn:
       "A feeling of appreciation for something good, meaningful, or supportive in your life.",
     image: "/emotions-emoji/hopefulrev.png",

@@ -66,34 +66,23 @@ function BookIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <path
         d="M5.5 4.5H9.2C10.7 4.5 12 5.7 12 7.2V19C12 17.7 10.9 16.7 9.5 16.7H5.5C4.7 16.7 4 16 4 15.2V6C4 5.2 4.7 4.5 5.5 4.5Z"
-
         stroke="currentColor"
-
         strokeWidth="1.6"
-
         strokeLinejoin="round"
       />
 
       <path
         d="M18.5 4.5H14.8C13.3 4.5 12 5.7 12 7.2V19C12 17.7 13.1 16.7 14.5 16.7H18.5C19.3 16.7 20 16 20 15.2V6C20 5.2 19.3 4.5 18.5 4.5Z"
-
         stroke="currentColor"
-
         strokeWidth="1.6"
-
         strokeLinejoin="round"
       />
     </svg>
@@ -112,40 +101,26 @@ function CalendarIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <rect
         x="3.5"
-
         y="5"
-
         width="17"
-
         height="15"
-
         rx="2.5"
-
         stroke="currentColor"
-
         strokeWidth="1.6"
       />
 
       <path
         d="M7.5 3.5V7M16.5 3.5V7M3.5 9.5H20.5"
-
         stroke="currentColor"
-
         strokeWidth="1.6"
-
         strokeLinecap="round"
       />
     </svg>
@@ -164,24 +139,16 @@ function PlusIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <path
         d="M12 5V19M5 12H19"
-
         stroke="currentColor"
-
         strokeWidth="1.8"
-
         strokeLinecap="round"
       />
     </svg>
@@ -200,24 +167,16 @@ function CloseIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <path
         d="M6 6L18 18M18 6L6 18"
-
         stroke="currentColor"
-
         strokeWidth="1.8"
-
         strokeLinecap="round"
       />
     </svg>
@@ -236,34 +195,23 @@ function PenIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <path
         d="M14.5 5.5L18.5 9.5"
-
         stroke="currentColor"
-
         strokeWidth="1.7"
-
         strokeLinecap="round"
       />
 
       <path
         d="M4.5 19.5L5.4 15.2L15.9 4.7C16.7 3.9 18 3.9 18.8 4.7L19.3 5.2C20.1 6 20.1 7.3 19.3 8.1L8.8 18.6L4.5 19.5Z"
-
         stroke="currentColor"
-
         strokeWidth="1.7"
-
         strokeLinejoin="round"
       />
     </svg>
@@ -282,34 +230,23 @@ function SparkleIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <path
         d="M12 3L13.3 8.7L19 10L13.3 11.3L12 17L10.7 11.3L5 10L10.7 8.7L12 3Z"
-
         stroke="currentColor"
-
         strokeWidth="1.5"
-
         strokeLinejoin="round"
       />
 
       <path
         d="M18.5 15L19.1 17.9L22 18.5L19.1 19.1L18.5 22L17.9 19.1L15 18.5L17.9 17.9L18.5 15Z"
-
         stroke="currentColor"
-
         strokeWidth="1.4"
-
         strokeLinejoin="round"
       />
     </svg>
@@ -328,36 +265,24 @@ function ArrowRightIcon({
   return (
     <svg
       width={size}
-
       height={size}
-
       viewBox="0 0 24 24"
-
       fill="none"
-
       className={className}
-
       aria-hidden="true"
     >
       <path
         d="M5 12H19"
-
         stroke="currentColor"
-
         strokeWidth="1.8"
-
         strokeLinecap="round"
       />
 
       <path
         d="M13 6L19 12L13 18"
-
         stroke="currentColor"
-
         strokeWidth="1.8"
-
         strokeLinecap="round"
-
         strokeLinejoin="round"
       />
     </svg>
@@ -376,9 +301,7 @@ function LoadingSpinner({
   return (
     <span
       aria-hidden="true"
-
       className={`inline-block animate-spin rounded-full border-2 border-current/20 border-t-current ${className}`}
-
       style={{
         width: size,
 
@@ -410,11 +333,11 @@ const emotionArtwork: Record<string, string> = {
 
   lonely: "/emotions-emoji/lonely.png",
 
-  grateful: "/emotions-emoji/grateful.png",
+  // grateful: "/emotions-emoji/grateful.png",
 
   frustrated: "/emotions-emoji/frustrated.png",
 
-  hopeful: "/emotions-emoji/hopeful.png",
+  hopeful: "/emotions-emoji/hopefulrev.png",
 
   loved: "/emotions-emoji/loved.png",
 
@@ -511,13 +434,9 @@ function EmotionArtwork({
   return (
     <Image
       src={getEmotionArtwork(slug)}
-
       alt={name}
-
       width={size}
-
       height={size}
-
       className="object-contain mix-blend-multiply"
     />
   );
@@ -773,11 +692,7 @@ export default function DiaryClient({
             <div className="max-w-2xl">
               <div className="flex items-center gap-2">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FBC4AB]/35">
-                  <BookIcon
-                    size={14}
-
-                    className="text-[#5C6B9C]"
-                  />
+                  <BookIcon size={14} className="text-[#5C6B9C]" />
                 </span>
 
                 <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
@@ -800,13 +715,11 @@ export default function DiaryClient({
 
             <button
               type="button"
-
               onClick={() => {
                 setShowComposer(true);
 
                 setError("");
               }}
-
               className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[11px] bg-[#E2725B] px-5 text-xs font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#D96852]"
             >
               <PlusIcon size={16} />
@@ -847,7 +760,6 @@ export default function DiaryClient({
 
               <button
                 type="button"
-
                 onClick={() => {
                   setShowComposer(false);
 
@@ -855,9 +767,7 @@ export default function DiaryClient({
 
                   setError("");
                 }}
-
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#4A3F35]/40 transition hover:bg-[#FDFBF7]/60 hover:text-[#4A3F35]"
-
                 aria-label={isId ? "Tutup" : "Close"}
               >
                 <CloseIcon size={16} />
@@ -867,19 +777,14 @@ export default function DiaryClient({
             <div className="mt-6">
               <textarea
                 value={content}
-
                 onChange={(event) => setContent(event.target.value)}
-
                 placeholder={
                   isId
                     ? "Tulis apa yang sedang ada di pikiranmu..."
                     : "Write what's on your mind..."
                 }
-
                 maxLength={10000}
-
                 rows={9}
-
                 className="w-full resize-none rounded-[15px] border border-[#4A3F35]/10 bg-[#FDFBF7]/80 p-5 text-sm leading-7 text-[#4A3F35] outline-none transition placeholder:text-[#4A3F35]/35 focus:border-[#E2725B]/60 focus:bg-[#FDFBF7] focus:ring-4 focus:ring-[#FBC4AB]/25"
               />
 
@@ -890,11 +795,8 @@ export default function DiaryClient({
 
                 <button
                   type="button"
-
                   onClick={handleCreateDiary}
-
                   disabled={saving || !content.trim()}
-
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-[#E2725B] px-5 text-xs font-semibold text-white transition hover:bg-[#D96852] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {saving ? (
@@ -930,7 +832,6 @@ export default function DiaryClient({
           ) : diaries.length === 0 ? (
             <EmptyDiary
               isId={isId}
-
               onCreate={() => {
                 setShowComposer(true);
 
@@ -969,21 +870,13 @@ export default function DiaryClient({
                     ) => (
                       <DiaryEntry
                         key={diary.id}
-
                         diary={diary}
-
                         locale={locale}
-
                         isId={isId}
-
                         index={index}
-
                         analyzing={analyzingDiaryId === diary.id}
-
                         onAnalyzeDiary={handleAnalyzeDiary}
-
                         formatDate={formatDate}
-
                         formatTime={formatTime}
                       />
                     ),
@@ -1077,18 +970,14 @@ function DiaryEntry({
                   {diary.checkin.emotions.map((item) => (
                     <span
                       key={`${diary.id}-${item.emotion.slug}`}
-
                       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-semibold text-[#4A3F35]"
-
                       style={{
                         backgroundColor: `${getEmotionColor(item.emotion.slug)}25`,
                       }}
                     >
                       <EmotionArtwork
                         slug={item.emotion.slug}
-
                         name={getEmotionLabel(item.emotion.slug, !isId)}
-
                         size={22}
                       />
 
@@ -1101,11 +990,7 @@ function DiaryEntry({
 
             {analysis && (
               <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#C1D5C0]/25 px-2.5 py-1 text-[9px] font-semibold text-[#4A3F35]/55">
-                <SparkleIcon
-                  size={12}
-
-                  className="text-[#5C6B9C]"
-                />
+                <SparkleIcon size={12} className="text-[#5C6B9C]" />
 
                 {isId ? "Sudah dianalisis" : "Analyzed"}
               </span>
@@ -1124,11 +1009,7 @@ function DiaryEntry({
 
           {analyzing && (
             <div className="mt-6 flex items-center gap-2 rounded-[12px] bg-[#C1D5C0]/20 px-4 py-3 text-[11px] text-[#4A3F35]/65">
-              <LoadingSpinner
-                size={14}
-
-                className="text-[#5C6B9C]"
-              />
+              <LoadingSpinner size={14} className="text-[#5C6B9C]" />
 
               {isId
                 ? "Reweave sedang membaca refleksimu..."
@@ -1142,11 +1023,7 @@ function DiaryEntry({
             <div className="mt-7 rounded-[16px] bg-[#FBC4AB]/15 p-5">
               <div className="flex items-center gap-2">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FDFBF7]/75">
-                  <SparkleIcon
-                    size={14}
-
-                    className="text-[#5C6B9C]"
-                  />
+                  <SparkleIcon size={14} className="text-[#5C6B9C]" />
                 </span>
 
                 <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-[#4A3F35]/45">
@@ -1208,8 +1085,7 @@ function DiaryEntry({
 
           {diary.checkinId && (
             <Link
-              href={`/${locale}/check-in/result/${diary.checkinId}`}
-
+              href={`/${locale}/moodlog/result/${diary.checkinId}`}
               className="mt-5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#5C6B9C] transition-colors hover:text-[#E2725B]"
             >
               {isId ? "Lihat check-in terkait" : "View related check-in"}
@@ -1244,11 +1120,7 @@ function EmptyDiary({
 
       <div className="relative mx-auto max-w-md">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FDFBF7]/70">
-          <BookIcon
-            size={24}
-
-            className="text-[#5C6B9C]"
-          />
+          <BookIcon size={24} className="text-[#5C6B9C]" />
         </div>
 
         <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
@@ -1267,9 +1139,7 @@ function EmptyDiary({
 
         <button
           type="button"
-
           onClick={onCreate}
-
           className="mt-6 inline-flex h-10 items-center gap-2 rounded-[10px] bg-[#E2725B] px-5 text-xs font-semibold text-white transition hover:bg-[#D96852]"
         >
           <PenIcon size={14} />

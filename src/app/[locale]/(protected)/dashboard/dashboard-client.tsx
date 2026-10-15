@@ -1,221 +1,298 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 "use client";
 
 import Image from "next/image";
-
 import Link from "next/link";
-
 import { useEffect, useMemo, useState } from "react";
-
 import type { Locale } from "@/i18n/config";
+
+/* =========================================================
+   TYPES
+========================================================= */
 
 type Emotion = {
   id: string;
-
   name: string;
-
   slug: string;
-
   category: string;
-
   intensity?: number;
-
   note?: string | null;
 };
 
 type Analysis = {
   id: string;
-
   summary: string;
-
   validationMessage?: string | null;
-
   stressScore?: number | null;
-
   sentiment?: string | null;
-
   emotionalState?: string | null;
-
   possibleTriggers?: unknown;
-
   thinkingPatterns?: unknown;
-
   recommendations?: unknown;
-
   riskLevel?: string | null;
-
   createdAt: string;
 };
 
 type Checkin = {
   date: string | number | Date;
-
   id: string;
-
   checkinDate: string;
-
   overallIntensity?: number | null;
-
   emotions: Emotion[];
-
   analysis: {
     stressScore?: number | null;
-
     sentiment?: string | null;
-
     emotionalState?: string | null;
-
     riskLevel?: string | null;
   } | null;
 };
 
 type Diary = {
   id: string;
-
   content?: string | null;
-
   entryType: string;
-
   audioUrl?: string | null;
-
   durationSeconds?: number | null;
-
   createdAt: string;
-
   aiAnalyses?: Analysis[];
 };
 
 type ActivityItem = {
   id: string;
-
   title: string;
-
   slug: string;
-
   description: string;
-
   category: string;
-
   durationMinutes: number;
-
   difficulty: string;
 };
 
 type DashboardData = {
   user: {
     id: string;
-
     name: string;
-
     nickname: string | null;
   };
-
   today: {
     hasCheckin: boolean;
-
     checkin: {
       id: string;
-
       emotions: Emotion[];
-
       diaryEntries?: Diary[];
     } | null;
-
     analysis: Analysis | null;
   };
-
   latestDiary: Diary | null;
-
   latestAnalysis: Analysis | null;
-
   recommendedActivities: ActivityItem[];
-
   meta?: {
     timezone?: string;
   };
-
   weekly: {
     startDate: string;
-
     endDate: string;
-
     checkins: Checkin[];
   };
 };
 
+/* =========================================================
+   EMOTIONS HELPERS (Disesuaikan dengan halaman Emosi)
+========================================================= */
+
 const emotionArtwork: Record<string, string> = {
   happy: "/emotions-emoji/happy.png",
-
-  sad: "/emotions-emoji/sad.png",
-
-  angry: "/emotions-emoji/angry.png",
-
-  anxious: "/emotions-emoji/anxious.png",
-
-  stressed: "/emotions-emoji/stressed.png",
-
-  calm: "/emotions-emoji/calm.png",
-
-  tired: "/emotions-emoji/tired.png",
-
+  loved: "/emotions-emoji/loved.png",
   excited: "/emotions-emoji/excited.png",
-
+  hopeful: "/emotions-emoji/hopefulrev.png",
+  calm: "/emotions-emoji/calm.png",
+  tired: "/emotions-emoji/tired.png",
+  anxious: "/emotions-emoji/anxious.png",
+  stressed: "/emotions-emoji/stressed.png",
+  angry: "/emotions-emoji/angry.png",
   lonely: "/emotions-emoji/lonely.png",
-
-  grateful: "/emotions-emoji/grateful.png",
-
-  frustrated: "/emotions-emoji/frustrated.png",
-
+  sad: "/emotions-emoji/sad.png",
   overwhelmed: "/emotions-emoji/overwhelmed.png",
 };
 
 const emotionColors: Record<string, string> = {
   happy: "#FBC4AB",
-
   loved: "#C39986",
-
   excited: "#8F7163",
-
   hopeful: "#D6E3D5",
-
   calm: "#B1C5B1",
-
   tired: "#879C87",
-
   anxious: "#D66F5A",
-
   stressed: "#A64D3B",
-
   angry: "#782E20",
-
   lonely: "#7182A4",
-
   sad: "#475677",
-
   overwhelmed: "#39405B",
-
-  // Additional supported emotion colors.
-
-  grateful: "#D6E3D5",
-
-  frustrated: "#A64D3B",
 };
+
+// Kamus translasi nama emosi (ID / EN)
+const emotionNamesMap: Record<string, { id: string; en: string }> = {
+  happy: { id: "Senang", en: "Happy" },
+  loved: { id: "Dicintai", en: "Loved" },
+  excited: { id: "Antusias", en: "Excited" },
+  hopeful: { id: "Bersyukur", en: "Hopeful" },
+  calm: { id: "Tenang", en: "Calm" },
+  tired: { id: "Lelah", en: "Tired" },
+  anxious: { id: "Cemas", en: "Anxious" },
+  stressed: { id: "Stres", en: "Stressed" },
+  angry: { id: "Marah", en: "Angry" },
+  lonely: { id: "Kesepian", en: "Lonely" },
+  sad: { id: "Sedih", en: "Sad" },
+  overwhelmed: { id: "Kewalahan", en: "Overwhelmed" },
+};
+
+function normalizeEmotionSlug(slug: string) {
+  return slug.toLowerCase().trim().replace(/\s+/g, "-");
+}
+
+function getEmotionColor(slug: string) {
+  const normalized = normalizeEmotionSlug(slug);
+  return emotionColors[normalized] ?? "#C1D5C0";
+}
+
+// Fungsi untuk mendapatkan nama emosi sesuai bahasa
+function getEmotionName(slug: string, fallbackName: string, isEnglish: boolean) {
+  const normalized = normalizeEmotionSlug(slug);
+  const translation = emotionNamesMap[normalized];
+  if (!translation) return fallbackName;
+  return isEnglish ? translation.en : translation.id;
+}
+
+function getEmotionArtwork(emotion: Emotion) {
+  const slug = normalizeEmotionSlug(emotion.slug);
+  return emotionArtwork[slug] ?? "/emotions-emoji/calm.png";
+}
+
+function EmotionArtwork({
+  emotion,
+  size = 42,
+  className = "",
+}: {
+  emotion: Emotion;
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <Image
+      src={getEmotionArtwork(emotion)}
+      alt={emotion.name}
+      width={size}
+      height={size}
+      className={`object-contain mix-blend-multiply ${className}`}
+    />
+  );
+}
+
+/* =========================================================
+   ACTIVITIES HELPERS (Disesuaikan dengan halaman Aktivitas)
+========================================================= */
+
+const wellbeingTranslations: Record<
+  string,
+  {
+    title: { en: string; id: string };
+    description: { en: string; id: string };
+  }
+> = {
+  "box breathing": {
+    title: { en: "Box Breathing", id: "Pernapasan Kotak" },
+    description: {
+      en: "A simple breathing exercise that can help you slow down and create a moment of calm.",
+      id: "Latihan pernapasan sederhana yang dapat membantumu rileks dan menciptakan momen ketenangan.",
+    },
+  },
+  "gratitude journal": {
+    title: { en: "Gratitude Journal", id: "Jurnal Rasa Syukur" },
+    description: {
+      en: "Reflect on a few things that you appreciate or that went well today.",
+      id: "Renungkan beberapa hal yang kamu hargai atau yang berjalan dengan baik hari ini.",
+    },
+  },
+  "grounding 5-4-3-2-1": {
+    title: { en: "Grounding 5-4-3-2-1", id: "Teknik Grounding 5-4-3-2-1" },
+    description: {
+      en: "A grounding activity that brings your attention back to the present moment.",
+      id: "Aktivitas grounding yang membawa kembali perhatianmu sepenuhnya ke masa kini.",
+    },
+  },
+  "short walk": {
+    title: { en: "Short Walk", id: "Jalan Kaki Sejenak" },
+    description: {
+      en: "Take a short mindful walk and give yourself some space away from your current environment.",
+      id: "Luangkan waktu sejenak untuk berjalan santai dan beri ruang bagi dirimu dari penatnya lingkungan saat ini.",
+    },
+  },
+  "progressive muscle relaxation": {
+    title: {
+      en: "Progressive Muscle Relaxation",
+      id: "Relaksasi Otot Progresif",
+    },
+    description: {
+      en: "A relaxation exercise involving gentle tensing and releasing of different muscle groups.",
+      id: "Latihan relaksasi yang melibatkan ketegangan dan pelepasan lembut pada berbagai kelompok otot secara berurutan.",
+    },
+  },
+};
+
+function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
+  if (!title) return "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation
+    ? isId
+      ? translation.title.id
+      : translation.title.en
+    : title;
+}
+
+function getWellbeingDescription(
+  title: string | null | undefined,
+  originalDesc: string | null | undefined,
+  isId: boolean,
+) {
+  if (!title) return originalDesc || "";
+  const translation = wellbeingTranslations[title.toLowerCase().trim()];
+  return translation
+    ? isId
+      ? translation.description.id
+      : translation.description.en
+    : originalDesc || "";
+}
+
+function formatCategory(category: string, isId: boolean) {
+  const value = category.toLowerCase();
+  if (value.includes("breath")) {
+    return isId ? "Pernapasan" : "Breathing";
+  }
+  if (value.includes("ground")) {
+    return "Grounding";
+  }
+  if (value.includes("movement")) {
+    return isId ? "Gerakan" : "Movement";
+  }
+  if (value.includes("reflection")) {
+    return isId ? "Refleksi" : "Reflection";
+  }
+  if (value.includes("relax")) {
+    return isId ? "Relaksasi" : "Relaxation";
+  }
+  return category;
+}
 
 function getDateKey(value: string | number | Date, timeZone = "Asia/Jakarta") {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   }).formatToParts(date);
-
   const part = (type: string) =>
     parts.find((item) => item.type === type)?.value ?? "";
-
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
@@ -223,75 +300,24 @@ function getTodayDateKey(timeZone = "Asia/Jakarta") {
   return getDateKey(new Date(), timeZone);
 }
 
-function normalizeEmotionSlug(slug: string) {
-  return slug
-
-    .toLowerCase()
-
-    .trim()
-
-    .replace(/\s+/g, "-");
-}
-
-function getEmotionColor(slug: string) {
-  const normalized = normalizeEmotionSlug(slug);
-
-  return emotionColors[normalized] ?? "#C1D5C0";
-}
-
-function getEmotionArtwork(emotion: Emotion) {
-  const slug = normalizeEmotionSlug(emotion.slug);
-
-  return emotionArtwork[slug] ?? "/emotions-emoji/calm.png";
-}
-
-function EmotionArtwork({
-  emotion,
-
-  size = 42,
-
-  className = "",
-}: {
-  emotion: Emotion;
-
-  size?: number;
-
-  className?: string;
-}) {
-  return (
-    <Image
-      src={getEmotionArtwork(emotion)}
-
-      alt={emotion.name}
-
-      width={size}
-
-      height={size}
-
-      className={`object-contain mix-blend-multiply ${className}`}
-    />
-  );
-}
+/* =========================================================
+   MAIN DASHBOARD COMPONENT
+========================================================= */
 
 export default function DashboardClient({
   locale,
-
   userName,
-
   nickname,
 }: {
   locale: Locale;
-
   userName: string;
-
   nickname: string | null;
 }) {
   const isEnglish = locale === "en";
+  const isId = locale === "id";
 
   const [data, setData] = useState<DashboardData | null>(null);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   const displayName =
@@ -303,18 +329,12 @@ export default function DashboardClient({
     async function loadDashboard() {
       try {
         setLoading(true);
-
         setError("");
 
-        const response = await fetch(
-          "/api/dashboard",
-
-          {
-            method: "GET",
-
-            cache: "no-store",
-          },
-        );
+        const response = await fetch("/api/dashboard", {
+          method: "GET",
+          cache: "no-store",
+        });
 
         const result = await response.json();
 
@@ -331,11 +351,7 @@ export default function DashboardClient({
           setData(result);
         }
       } catch (err) {
-        console.error(
-          "Dashboard load error:",
-
-          err,
-        );
+        console.error("Dashboard load error:", err);
 
         if (!cancelled) {
           setError(
@@ -361,7 +377,6 @@ export default function DashboardClient({
   }, [isEnglish]);
 
   const weeklyCheckins = data?.weekly.checkins ?? [];
-
   const timeZone = data?.meta?.timezone || "Asia/Jakarta";
 
   const streak = useMemo(() => {
@@ -369,7 +384,6 @@ export default function DashboardClient({
       weeklyCheckins.map((item) => getDateKey(item.date, timeZone)),
     );
 
-    // Use the check-in's actual local date, not UTC's calendar date.
     const cursorKey = getTodayDateKey(timeZone);
     const [year, month, day] = cursorKey.split("-").map(Number);
     const cursor = new Date(Date.UTC(year, month - 1, day));
@@ -389,7 +403,6 @@ export default function DashboardClient({
     const [year, month, day] = todayKey.split("-").map(Number);
     const todayUtc = new Date(Date.UTC(year, month - 1, day));
 
-    // Key the API data by the user's configured timezone.
     const checkinsByDate = new Map(
       weeklyCheckins.map((checkin) => [
         getDateKey(checkin.date, timeZone),
@@ -431,34 +444,24 @@ export default function DashboardClient({
       string,
       {
         name: string;
-
         count: number;
       }
     >();
 
     for (const emotion of emotions) {
       const slug = normalizeEmotionSlug(emotion.slug);
-
       const current = counts.get(slug);
 
-      counts.set(
-        slug,
-
-        {
-          name: emotion.name,
-
-          count: (current?.count ?? 0) + 1,
-        },
-      );
+      counts.set(slug, {
+        name: emotion.name,
+        count: (current?.count ?? 0) + 1,
+      });
     }
 
     return [...counts.entries()]
-
       .sort((a, b) => b[1].count - a[1].count)
-
       .map(([slug, value]) => ({
         slug,
-
         ...value,
       }))[0];
   }, [weeklyCheckins]);
@@ -471,11 +474,7 @@ export default function DashboardClient({
         const slug = normalizeEmotionSlug(emotion.slug);
 
         if (!seen.has(slug)) {
-          seen.set(
-            slug,
-
-            emotion,
-          );
+          seen.set(slug, emotion);
         }
       }
     }
@@ -484,32 +483,20 @@ export default function DashboardClient({
   }, [weeklyCheckins]);
 
   const todayAnalysis = data?.today.analysis;
-
   const latestDiary = data?.latestDiary;
-
   const recommendedActivity = data?.recommendedActivities?.[0];
 
   const formatDate = (value: string) =>
-    new Intl.DateTimeFormat(
-      isEnglish ? "en-US" : "id-ID",
-
-      {
-        day: "numeric",
-
-        month: "short",
-
-        year: "numeric",
-      },
-    ).format(new Date(value));
+    new Intl.DateTimeFormat(isEnglish ? "en-US" : "id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(value));
 
   const dayLabel = (date: Date) =>
-    new Intl.DateTimeFormat(
-      isEnglish ? "en-US" : "id-ID",
-
-      {
-        weekday: "short",
-      },
-    ).format(date);
+    new Intl.DateTimeFormat(isEnglish ? "en-US" : "id-ID", {
+      weekday: "short",
+    }).format(date);
 
   return (
     <main className="min-h-full bg-[#FDFBF7] pb-16 text-[#4A3F35]">
@@ -518,7 +505,7 @@ export default function DashboardClient({
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                {isEnglish ? "A moment for yourself" : "Sebentar untuk dirimu"}
+                {isEnglish ? "A moment for yourself" : "Sejenak untuk dirimu"}
               </p>
 
               <h1 className="mt-3 text-[34px] font-semibold leading-[1.12] tracking-[-0.045em] text-[#4A3F35] sm:text-[46px]">
@@ -538,17 +525,11 @@ export default function DashboardClient({
               </p>
 
               <p className="mt-2 text-sm font-medium text-[#4A3F35]/65">
-                {new Intl.DateTimeFormat(
-                  isEnglish ? "en-US" : "id-ID",
-
-                  {
-                    weekday: "long",
-
-                    day: "numeric",
-
-                    month: "long",
-                  },
-                ).format(new Date())}
+                {new Intl.DateTimeFormat(isEnglish ? "en-US" : "id-ID", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                }).format(new Date())}
               </p>
             </div>
           </div>
@@ -562,7 +543,6 @@ export default function DashboardClient({
 
         <section className="relative overflow-hidden rounded-[28px] bg-[#FBC4AB]/40 px-6 py-8 sm:px-9 sm:py-10 lg:px-11 lg:py-12">
           <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#FDFBF7]/50" />
-
           <div className="absolute -bottom-24 right-[20%] h-48 w-48 rounded-full bg-[#C1D5C0]/30" />
 
           <div className="relative max-w-3xl">
@@ -584,16 +564,15 @@ export default function DashboardClient({
               {data?.today.hasCheckin
                 ? isEnglish
                   ? "Your thoughts are here whenever you want to look back, reflect, or add something new."
-                  : "Catatanmu ada di sini kapan pun kamu ingin melihat kembali, berefleksi, atau menambahkan sesuatu."
+                  : "Catatanmu tersimpan di sini kapan pun kamu ingin melihat kembali, berefleksi, atau menambahkan sesuatu yang baru."
                 : isEnglish
                   ? "There is no right answer. Choose whatever feels closest to what you are experiencing."
-                  : "Tidak ada jawaban yang benar. Pilih saja yang paling dekat dengan apa yang sedang kamu rasakan."}
+                  : "Tidak ada jawaban yang salah. Pilih emosi yang paling menggambarkan perasaanmu saat ini."}
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
                 href={`/${locale}/check-in`}
-
                 className="flex h-11 w-full sm:w-auto items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
               >
                 {data?.today.hasCheckin
@@ -603,19 +582,13 @@ export default function DashboardClient({
                   : isEnglish
                     ? "Start check-in"
                     : "Mulai check-in"}
-
-                <span
-                  aria-hidden="true"
-
-                  className="ml-3"
-                >
+                <span aria-hidden="true" className="ml-3">
                   →
                 </span>
               </Link>
 
               <Link
                 href={`/${locale}/diary`}
-
                 className="flex h-11 w-full sm:w-auto items-center justify-center border border-[#4A3F35]/15 bg-[#FDFBF7]/45 px-6 text-sm font-medium text-[#4A3F35] transition-colors hover:bg-[#FDFBF7]/75"
               >
                 {isEnglish ? "Write a reflection" : "Tulis refleksi"}
@@ -627,17 +600,15 @@ export default function DashboardClient({
         <section>
           <SectionHeading
             eyebrow={isEnglish ? "Your week" : "Minggumu"}
-
             title={
               isEnglish
                 ? "A small look at your rhythm."
-                : "Sedikit melihat ritmemu."
+                : "Mengenali ritme emosimu."
             }
           />
 
           <div className="mt-7 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
             {/* STREAK */}
-
             <div className="relative overflow-hidden rounded-[24px] bg-[#5C6B9C] p-7 text-[#FDFBF7] sm:p-8">
               <div className="absolute -bottom-16 -right-12 h-40 w-40 rounded-full bg-[#FBC4AB]/15" />
 
@@ -650,7 +621,6 @@ export default function DashboardClient({
                   <span className="text-[52px] font-semibold leading-none tracking-[-0.06em]">
                     {loading ? "—" : streak}
                   </span>
-
                   <span className="mb-1.5 text-sm opacity-65">
                     {isEnglish ? "days" : "hari"}
                   </span>
@@ -660,59 +630,50 @@ export default function DashboardClient({
                   {streak > 0
                     ? isEnglish
                       ? "Small moments of checking in can become a meaningful rhythm."
-                      : "Momen kecil untuk check-in bisa menjadi ritme yang berarti."
+                      : "Langkah kecil melalui check-in dapat membangun kebiasaan yang bermakna."
                     : isEnglish
                       ? "Your first check-in can start here."
-                      : "Check-in pertamamu bisa dimulai dari sini."}
+                      : "Langkah pertamamu bisa dimulai dari sini."}
                 </p>
               </div>
             </div>
 
             {/* MOST PRESENT EMOTION */}
-
             <div className="rounded-[24px] border border-[#C1D5C0]/60 bg-[#FDFBF7] p-7 sm:p-8">
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4A3F35]/35">
-                {isEnglish
-                  ? "Most present emotion"
-                  : "Emosi yang paling terasa"}
+                {isEnglish ? "Most prominent emotion" : "Emosi paling dominan"}
               </p>
 
               <div className="mt-4 flex items-end justify-between gap-5">
                 <h3 className="text-[28px] font-semibold tracking-[-0.035em] text-[#4A3F35]">
-                  {weeklyEmotion?.name ??
-                    (loading
+                  {weeklyEmotion
+                    ? getEmotionName(
+                        weeklyEmotion.slug,
+                        weeklyEmotion.name,
+                        isEnglish,
+                      )
+                    : loading
                       ? "..."
                       : isEnglish
                         ? "No data yet"
-                        : "Belum ada data")}
+                        : "Belum ada data"}
                 </h3>
 
                 {weeklyEmotion && (
-                  <span className="text-sm text-[#4A3F35]/40">
+                  <span className="text-sm font-medium text-[#4A3F35]/40">
                     {weeklyEmotion.count}×
                   </span>
                 )}
               </div>
 
               <div className="mt-8 flex gap-1.5">
-                {Array.from({
-                  length: 7,
-                }).map((_, index) => {
-                  const filled =
-                    index <
-                    Math.min(
-                      7,
-
-                      weeklyEmotion?.count ?? 0,
-                    );
-
+                {Array.from({ length: 7 }).map((_, index) => {
+                  const filled = index < Math.min(7, weeklyEmotion?.count ?? 0);
                   return (
                     <span
                       key={index}
-
                       className={[
                         "h-1.5 flex-1 rounded-full",
-
                         filled ? "bg-[#E2725B]" : "bg-[#C1D5C0]/35",
                       ].join(" ")}
                     />
@@ -723,11 +684,11 @@ export default function DashboardClient({
               <p className="mt-4 text-xs leading-5 text-[#4A3F35]/45">
                 {weeklyEmotion
                   ? isEnglish
-                    ? `Appeared ${weeklyEmotion.count} times in your check-ins this week.`
-                    : `Muncul ${weeklyEmotion.count} kali dalam check-in minggu ini.`
+                    ? `Logged ${weeklyEmotion.count} ${weeklyEmotion.count === 1 ? "time" : "times"} in your check-ins this week.`
+                    : `Dirasakan ${weeklyEmotion.count} kali dalam check-in minggu ini.`
                   : isEnglish
-                    ? "Your emotional pattern will appear here."
-                    : "Pola emosimu akan muncul di sini."}
+                    ? "Your emotional patterns for this week will appear here."
+                    : "Pola emosimu minggu ini akan muncul di sini."}
               </p>
             </div>
           </div>
@@ -737,13 +698,11 @@ export default function DashboardClient({
           <div className="flex items-end justify-between gap-5">
             <SectionHeading
               eyebrow={isEnglish ? "Seven day view" : "Tujuh hari terakhir"}
-
               title={isEnglish ? "Your emotional rhythm." : "Ritme emosimu."}
             />
 
             <Link
               href={`/${locale}/insights`}
-
               className="hidden text-xs font-semibold text-[#5C6B9C] transition-opacity hover:opacity-70 sm:block"
             >
               {isEnglish ? "See insights" : "Lihat insight"} →
@@ -751,85 +710,65 @@ export default function DashboardClient({
           </div>
 
           <div className="mt-7 border-y border-[#C1D5C0]/50 bg-[#FDFBF7] px-2 py-10 sm:px-6">
-            {/* GRAPH */}
-
-            <div className="overflow-x-auto pb-5">
+            {/* GRAPH - Tambahkan pt-12 agar ada ruang untuk gambar PNG di atas bar */}
+            <div className="overflow-x-auto pt-12 pb-5">
               <div className="flex min-w-140 items-end gap-4">
                 {weeklyBars.map((item) => {
                   const emotions = [...item.emotions]
-
                     .sort((a, b) => (b.intensity ?? 0) - (a.intensity ?? 0))
-
                     .slice(0, 3);
 
                   return (
                     <div
                       key={item.key}
-
                       className="flex min-w-0 flex-1 flex-col items-center"
                     >
                       {/* BAR AREA */}
-
                       <div className="relative flex h-57.5 w-full items-end justify-center border-b border-[#4A3F35]/10">
                         {emotions.length > 0 ? (
                           <div className="flex h-full w-full max-w-29.5 items-end justify-center gap-2">
                             {emotions.map((emotion) => {
                               const intensity = Math.max(
                                 1,
-
                                 Math.min(
                                   5,
-
                                   emotion.intensity ??
                                     item.checkin?.overallIntensity ??
                                     3,
                                 ),
                               );
 
+                              // Skala tinggi bar dibatasi maks 75% agar tidak keluar batas atas
                               const height = Math.max(
-                                14,
-
-                                Math.min(
-                                  100,
-
-                                  intensity * 20,
-                                ),
+                                16,
+                                Math.min(75, intensity * 15),
                               );
-
                               const color = getEmotionColor(emotion.slug);
 
                               return (
                                 <div
                                   key={`${item.key}-${emotion.slug}`}
-
                                   className="group relative flex h-full max-w-8.5 flex-1 items-end justify-center"
-
-                                  title={`${emotion.name} · ${intensity}/5`}
+                                  title={`${getEmotionName(emotion.slug, emotion.name, isEnglish)} · ${intensity}/5`}
                                 >
-                                  {/* EMOTION IMAGE */}
-
+                                  {/* GAMBAR PNG EMOSI */}
                                   <div
                                     className="absolute left-1/2 z-10 flex w-8 -translate-x-1/2 items-center justify-center transition-transform duration-200 group-hover:-translate-y-1"
-
                                     style={{
                                       bottom: `calc(${height}% + 10px)`,
                                     }}
                                   >
                                     <EmotionArtwork
                                       emotion={emotion}
-
                                       size={48}
                                     />
                                   </div>
 
-                                  {/* COLORED BAR */}
-
+                                  {/* BAR WARNA */}
                                   <div
                                     className="w-full rounded-t-[9px] transition-all duration-300 group-hover:brightness-95"
-
                                     style={{
                                       height: `${height}%`,
-
                                       backgroundColor: color,
                                     }}
                                   />
@@ -842,8 +781,7 @@ export default function DashboardClient({
                         )}
                       </div>
 
-                      {/* DAY */}
-
+                      {/* HARI */}
                       <span className="mt-8 text-[10px] font-medium text-[#4A3F35]/40">
                         {dayLabel(item.date)}
                       </span>
@@ -853,31 +791,20 @@ export default function DashboardClient({
               </div>
             </div>
 
+            {/* LEGENDA EMOSI - Menggunakan getEmotionName untuk translasi */}
             {weeklyEmotionLegend.length > 0 && (
               <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 border-t border-[#4A3F35]/6 pt-6">
-                {weeklyEmotionLegend.map((emotion) => {
-                  const color = getEmotionColor(emotion.slug);
-
-                  return (
-                    <div
-                      key={emotion.slug}
-
-                      className="flex items-center gap-2"
-                    >
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-
-                        style={{
-                          backgroundColor: color,
-                        }}
-                      />
-
-                      <span className="text-[9px] font-medium text-[#4A3F35]/45">
-                        {emotion.name}
-                      </span>
-                    </div>
-                  );
-                })}
+                {weeklyEmotionLegend.map((emotion) => (
+                  <div key={emotion.slug} className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: getEmotionColor(emotion.slug) }}
+                    />
+                    <span className="text-[9px] font-medium text-[#4A3F35]/45">
+                      {getEmotionName(emotion.slug, emotion.name, isEnglish)}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -885,7 +812,6 @@ export default function DashboardClient({
 
         <section className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr]">
           {/* DIARY */}
-
           <div className="border-t border-[#C1D5C0]/60 pt-6">
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4A3F35]/35">
               {isEnglish ? "From your diary" : "Dari diary-mu"}
@@ -893,13 +819,12 @@ export default function DashboardClient({
 
             <div className="mt-3 flex items-end justify-between gap-5">
               <h3 className="text-[25px] font-semibold tracking-[-0.03em]">
-                {isEnglish ? "A recent thought." : "Cerita terakhirmu."}
+                {isEnglish ? "A recent thought." : "Catatan terbarumu."}
               </h3>
 
               {latestDiary && (
                 <Link
                   href={`/${locale}/diary`}
-
                   className="text-xs font-semibold text-[#5C6B9C]"
                 >
                   {isEnglish ? "Open diary" : "Buka diary"}
@@ -923,7 +848,6 @@ export default function DashboardClient({
                     &quot;
                   </p>
                 </div>
-
                 <p className="mt-5 text-[10px] font-medium uppercase tracking-widest text-[#4A3F35]/30">
                   {formatDate(latestDiary.createdAt)}
                 </p>
@@ -935,10 +859,8 @@ export default function DashboardClient({
                     ? "Nothing written here yet."
                     : "Belum ada refleksi di sini."}
                 </p>
-
                 <Link
                   href={`/${locale}/diary`}
-
                   className="mt-4 inline-block text-xs font-semibold text-[#5C6B9C]"
                 >
                   {isEnglish
@@ -951,10 +873,9 @@ export default function DashboardClient({
           </div>
 
           {/* AI REFLECTION */}
-
           <div className="bg-[#FBC4AB]/30 p-7 sm:p-8">
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
-              {isEnglish ? "A little reflection" : "Sedikit refleksi"}
+              {isEnglish ? "A little reflection" : "Refleksi sejenak"}
             </p>
 
             {todayAnalysis ? (
@@ -962,12 +883,10 @@ export default function DashboardClient({
                 <p className="text-[15px] leading-8 text-[#4A3F35]/75">
                   {todayAnalysis.summary}
                 </p>
-
                 <div className="mt-7 border-t border-[#4A3F35]/10 pt-5">
                   <p className="text-[9px] font-semibold uppercase tracking-widest text-[#4A3F35]/35">
                     {isEnglish ? "Emotional state" : "Kondisi emosional"}
                   </p>
-
                   <p className="mt-2 text-sm font-semibold capitalize text-[#4A3F35]">
                     {todayAnalysis.emotionalState ?? "—"}
                   </p>
@@ -978,12 +897,10 @@ export default function DashboardClient({
                 <p className="text-[15px] leading-8 text-[#4A3F35]/65">
                   {isEnglish
                     ? "Once you complete a check-in, your reflection will appear here."
-                    : "Setelah kamu menyelesaikan check-in, refleksi untukmu akan muncul di sini."}
+                    : "Refleksi harianmu akan muncul di sini setelah kamu menyelesaikan check-in."}
                 </p>
-
                 <Link
                   href={`/${locale}/check-in`}
-
                   className="mt-5 inline-block text-xs font-semibold text-[#5C6B9C]"
                 >
                   {isEnglish ? "Start a check-in" : "Mulai check-in"} →
@@ -996,11 +913,10 @@ export default function DashboardClient({
         <section>
           <SectionHeading
             eyebrow={isEnglish ? "For you" : "Untukmu"}
-
             title={
               isEnglish
                 ? "Something gentle to try."
-                : "Sesuatu yang bisa kamu coba."
+                : "Langkah kecil yang bisa dicoba."
             }
           />
 
@@ -1011,7 +927,7 @@ export default function DashboardClient({
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
-                        {recommendedActivity.category}
+                        {formatCategory(recommendedActivity.category, isId)}
                       </span>
 
                       <span className="h-1 w-1 rounded-full bg-[#C1D5C0]" />
@@ -1023,17 +939,20 @@ export default function DashboardClient({
                     </div>
 
                     <h3 className="mt-3 text-[23px] font-semibold tracking-tight">
-                      {recommendedActivity.title}
+                      {getWellbeingTitle(recommendedActivity.title, isId)}
                     </h3>
 
                     <p className="mt-2 max-w-xl text-sm leading-7 text-[#4A3F35]/55">
-                      {recommendedActivity.description}
+                      {getWellbeingDescription(
+                        recommendedActivity.title,
+                        recommendedActivity.description,
+                        isId,
+                      )}
                     </p>
                   </div>
 
                   <Link
                     href={`/${locale}/activities/${recommendedActivity.slug}`}
-
                     className="inline-flex h-11 items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
                   >
                     {isEnglish ? "Try this" : "Coba ini"} →
@@ -1060,7 +979,6 @@ export default function DashboardClient({
                   ? "You don't have to handle everything alone."
                   : "Kamu tidak harus menghadapi semuanya sendirian."}
               </p>
-
               <p className="mt-2 max-w-xl text-xs leading-5 text-[#4A3F35]/45">
                 {isEnglish
                   ? "Support resources are available whenever you need them."
@@ -1070,7 +988,6 @@ export default function DashboardClient({
 
             <Link
               href={`/${locale}/support`}
-
               className="shrink-0 text-xs font-semibold text-[#5C6B9C]"
             >
               {isEnglish ? "Explore support" : "Lihat dukungan"} →
@@ -1084,11 +1001,9 @@ export default function DashboardClient({
 
 function SectionHeading({
   eyebrow,
-
   title,
 }: {
   eyebrow: string;
-
   title: string;
 }) {
   return (
@@ -1096,7 +1011,6 @@ function SectionHeading({
       <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6B9C]">
         {eyebrow}
       </p>
-
       <h2 className="mt-2 text-[23px] font-semibold tracking-[-0.03em] text-[#4A3F35] sm:text-[25px]">
         {title}
       </h2>
@@ -1106,14 +1020,11 @@ function SectionHeading({
 
 function getGreeting(isEnglish: boolean) {
   const hour = new Date().getHours();
-
   if (hour >= 5 && hour < 12) {
     return isEnglish ? "Good morning" : "Selamat pagi";
   }
-
   if (hour >= 12 && hour < 18) {
     return isEnglish ? "Good afternoon" : "Selamat siang";
   }
-
   return isEnglish ? "Good evening" : "Selamat malam";
 }

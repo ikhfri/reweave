@@ -275,9 +275,9 @@ const emotions: EmotionDetail[] = [
   },
 
   {
-    slug: "grateful",
+    slug: "hopeful",
     nameId: "Bersyukur",
-    nameEn: "Grateful",
+    nameEn: "Hopeful",
     category: "positive",
     image: "/emotions-emoji/hopefulrev.png",
     color: "#D6E3D5",
@@ -286,7 +286,7 @@ const emotions: EmotionDetail[] = [
       "Bersyukur adalah perasaan menghargai sesuatu yang dianggap berarti atau baik dalam hidup. Hal yang disyukuri tidak harus besar; bisa berupa seseorang, kesempatan, pengalaman, atau hal sederhana.",
 
     descriptionEn:
-      "Gratitude is a feeling of appreciating something that feels meaningful or good in life. What we appreciate does not have to be big; it can be a person, opportunity, experience, or simple moment.",
+      "Hopefulness is a feeling of optimism and expectation for positive outcomes in life. What we hope for does not have to be big; it can be a person, opportunity, experience, or simple moment.",
 
     feelingsId: [
       "Merasa hangat ketika mengingat sesuatu",
@@ -324,7 +324,7 @@ const emotions: EmotionDetail[] = [
 
     thoughtsEn: [
       "I appreciate this.",
-      "I am grateful to have experienced this.",
+      "I am fortunate to have this experience.",
       "I want to thank someone.",
     ],
 
@@ -712,78 +712,78 @@ const emotions: EmotionDetail[] = [
       "Anger can give information that something matters to you. You still have choices about how to respond.",
   },
 
-  {
-    slug: "frustrated",
-    nameId: "Frustrasi",
-    nameEn: "Frustrated",
-    category: "difficult",
-    image: "/emotions-emoji/frustrated.png",
-    color: "#A64D3B",
+  // {
+  //   slug: "frustrated",
+  //   nameId: "Frustrasi",
+  //   nameEn: "Frustrated",
+  //   category: "difficult",
+  //   image: "/emotions-emoji/frustrated.png",
+  //   color: "#A64D3B",
 
-    descriptionId:
-      "Frustrasi dapat muncul ketika usaha, harapan, atau kebutuhan kita terhambat dan sesuatu tidak berjalan seperti yang diinginkan.",
+  //   descriptionId:
+  //     "Frustrasi dapat muncul ketika usaha, harapan, atau kebutuhan kita terhambat dan sesuatu tidak berjalan seperti yang diinginkan.",
 
-    descriptionEn:
-      "Frustration can appear when our efforts, expectations, or needs are blocked and something does not go as hoped.",
+  //   descriptionEn:
+  //     "Frustration can appear when our efforts, expectations, or needs are blocked and something does not go as hoped.",
 
-    feelingsId: [
-      "Kesal karena sesuatu tidak berjalan",
-      "Merasa usaha tidak menghasilkan perubahan",
-      "Ingin menyerah atau berhenti",
-      "Sulit menerima hambatan",
-    ],
+  //   feelingsId: [
+  //     "Kesal karena sesuatu tidak berjalan",
+  //     "Merasa usaha tidak menghasilkan perubahan",
+  //     "Ingin menyerah atau berhenti",
+  //     "Sulit menerima hambatan",
+  //   ],
 
-    feelingsEn: [
-      "Feeling irritated when something does not work",
-      "Feeling that effort is not producing change",
-      "Wanting to give up or stop",
-      "Finding obstacles difficult to accept",
-    ],
+  //   feelingsEn: [
+  //     "Feeling irritated when something does not work",
+  //     "Feeling that effort is not producing change",
+  //     "Wanting to give up or stop",
+  //     "Finding obstacles difficult to accept",
+  //   ],
 
-    bodySignalsId: [
-      "Tubuh terasa tegang",
-      "Mudah menghela napas",
-      "Gelisah",
-      "Energi terasa tertahan",
-    ],
+  //   bodySignalsId: [
+  //     "Tubuh terasa tegang",
+  //     "Mudah menghela napas",
+  //     "Gelisah",
+  //     "Energi terasa tertahan",
+  //   ],
 
-    bodySignalsEn: [
-      "Physical tension",
-      "Sighing more often",
-      "Restlessness",
-      "Feeling like energy is stuck",
-    ],
+  //   bodySignalsEn: [
+  //     "Physical tension",
+  //     "Sighing more often",
+  //     "Restlessness",
+  //     "Feeling like energy is stuck",
+  //   ],
 
-    thoughtsId: [
-      "Kenapa ini tidak berhasil?",
-      "Aku sudah mencoba.",
-      "Aku ingin semuanya berjalan sesuai rencana.",
-    ],
+  //   thoughtsId: [
+  //     "Kenapa ini tidak berhasil?",
+  //     "Aku sudah mencoba.",
+  //     "Aku ingin semuanya berjalan sesuai rencana.",
+  //   ],
 
-    thoughtsEn: [
-      "Why is this not working?",
-      "I have already tried.",
-      "I want this to go according to plan.",
-    ],
+  //   thoughtsEn: [
+  //     "Why is this not working?",
+  //     "I have already tried.",
+  //     "I want this to go according to plan.",
+  //   ],
 
-    reflectionId: [
-      "Apa yang sebenarnya kuharapkan?",
-      "Bagian mana yang masih bisa kukendalikan?",
-      "Apakah aku perlu mencoba pendekatan yang berbeda?",
-    ],
+  //   reflectionId: [
+  //     "Apa yang sebenarnya kuharapkan?",
+  //     "Bagian mana yang masih bisa kukendalikan?",
+  //     "Apakah aku perlu mencoba pendekatan yang berbeda?",
+  //   ],
 
-    reflectionEn: [
-      "What was I actually expecting?",
-      "What part can I still control?",
-      "Would a different approach help?",
-    ],
+  //   reflectionEn: [
+  //     "What was I actually expecting?",
+  //     "What part can I still control?",
+  //     "Would a different approach help?",
+  //   ],
 
-    reminderId:
-      "Frustrasi bisa menunjukkan bahwa sesuatu penting bagimu. Kamu tidak harus menyelesaikan semuanya dalam satu percobaan.",
+  //   reminderId:
+  //     "Frustrasi bisa menunjukkan bahwa sesuatu penting bagimu. Kamu tidak harus menyelesaikan semuanya dalam satu percobaan.",
 
-    reminderEn:
-      "Frustration can show that something matters to you. You do not have to solve everything in one attempt.",
-  },
+  //   reminderEn:
+  //     "Frustration can show that something matters to you. You do not have to solve everything in one attempt.",
+  // },
 
   {
     slug: "lonely",
