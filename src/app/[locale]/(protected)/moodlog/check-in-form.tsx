@@ -1177,29 +1177,29 @@ export default function CheckInForm({ locale, userName }: Props) {
 }
 
 const emotionImages: Record<string, string> = {
-  happy: "/emotions-emoji/happy.png",
+  happy: "/emotions-emoji/happy.webp",
 
-  loved: "/emotions-emoji/loved.png",
+  loved: "/emotions-emoji/loved.webp",
 
-  excited: "/emotions-emoji/excited.png",
+  excited: "/emotions-emoji/excited.webp",
 
   hopeful: "/emotions-emoji/hopefulrev.png",
 
-  calm: "/emotions-emoji/calm.png",
+  calm: "/emotions-emoji/calm.webp",
 
-  tired: "/emotions-emoji/tired.png",
+  tired: "/emotions-emoji/tired.webp",
 
-  anxious: "/emotions-emoji/anxious.png",
+  anxious: "/emotions-emoji/anxious.webp",
 
-  stressed: "/emotions-emoji/stressed.png",
+  stressed: "/emotions-emoji/stressed.webp",
 
-  angry: "/emotions-emoji/angry.png",
+  angry: "/emotions-emoji/angry.webp",
 
-  lonely: "/emotions-emoji/lonely.png",
+  lonely: "/emotions-emoji/lonely.webp",
 
-  sad: "/emotions-emoji/sad.png",
+  sad: "/emotions-emoji/sad.webp",
 
-  overwhelmed: "/emotions-emoji/overwhelmed.png",
+  overwhelmed: "/emotions-emoji/overwhelmed.webp",
 };
 
 function getEmotionImage(slug: string) {
