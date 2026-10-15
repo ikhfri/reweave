@@ -4,7 +4,7 @@ import crypto from "crypto";
 import { prisma } from "./prisma";
 
 const SESSION_COOKIE = "reweave_session";
-const SESSION_DURATION = 1000 * 60 * 60 * 24 * 30; // 30 days
+const SESSION_DURATION = 1000 * 60 * 60 * 24 * 30; 
 
 export async function createSession(userId: string) {
   const token = crypto.randomBytes(32).toString("hex");

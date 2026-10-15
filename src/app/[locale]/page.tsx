@@ -14,799 +14,386 @@ import { isValidLocale, type Locale } from "@/i18n/config";
 import { ArrowRight, Check, LockKeyhole } from "lucide-react";
 
 type PageProps = {
-  params: Promise<{
-    locale: string;
-  }>;
+  params: Promise<{ locale: string }>;
 };
 
-type TrustItemProps = {
-  number: string;
-  icon: ReactNode;
-  title: string;
-  description: string;
+type Copy = {
+  nav: { features: string; process: string; privacy: string; login: string; signup: string };
+  hero: { eyebrow: string; title: ReactNode; description: string; signup: string; login: string; privacyNote: string };
+  principles: { title: string; description: string; icon: ReactNode }[];
+  features: { number: string; title: string; description: string; icon: ReactNode }[];
+  featureIntro: { eyebrow: string; title: string; description: string };
+  history: { eyebrow: string; title: string; description: string };
+  privacyCard: { title: string; description: string };
+  process: { eyebrow: string; title: string; description: string; steps: { title: string; description: string }[] };
+  privacy: { eyebrow: string; title: string; description: string; points: string[]; link: string };
+  cta: { eyebrow: string; title: string; description: string; signup: string; login: string };
+  footer: { description: string; explore: string; account: string; language: string; rights: string; privacy: string };
 };
 
-type EditorialFeatureProps = TrustItemProps;
-
-type TimelineStepProps = {
-  number: string;
-  title: string;
-  description: string;
-};
-
-type PrivacyPointProps = {
-  text: string;
-};
-
-type FooterLink = {
-  href: string;
-  label: string;
-};
-
-type FooterColumnProps = {
-  title: string;
-  links: FooterLink[];
-};
+function getCopy(isEnglish: boolean): Copy {
+  return isEnglish
+    ? {
+        nav: { features: "Inside", process: "How it works", privacy: "Privacy", login: "Log in", signup: "Get started" },
+        hero: {
+          eyebrow: "A little more room to feel",
+          title: <>Understand what<br className="hidden sm:block" /> you’re feeling.</>,
+          description: "A private space to put your thoughts into words, notice emotional patterns, and make a little more sense of your days.",
+          signup: "Create your space",
+          login: "I already have an account",
+          privacyNote: "Your thoughts stay yours.",
+        },
+        principles: [
+          { title: "Name it", description: "Start with what you feel, without needing a perfect explanation.", icon: <WellbeingIcon className="h-5 w-5" /> },
+          { title: "Let it out", description: "Write a little or tell the whole story. Go at your own pace.", icon: <DiaryIcon className="h-5 w-5" /> },
+          { title: "Look back", description: "Notice patterns over time, without judging yourself.", icon: <InsightIcon className="h-5 w-5" /> },
+        ],
+        featureIntro: { eyebrow: "A space for you", title: "Small rituals. More self-understanding.", description: "No pressure to have it all figured out. Just thoughtful tools to help you check in with yourself." },
+        features: [
+          { number: "01", title: "Daily reflections", description: "Choose the feelings that fit and add context when you want.", icon: <WellbeingIcon className="h-5 w-5" /> },
+          { number: "02", title: "A personal diary", description: "Write, record, or leave a few words for another day.", icon: <DiaryIcon className="h-5 w-5" /> },
+          { number: "03", title: "Gentle insights", description: "Find observations in what you choose to share.", icon: <InsightIcon className="h-5 w-5" /> },
+          { number: "04", title: "Small ways to reset", description: "Explore simple activities when you need a pause.", icon: <ActivityIcon className="h-5 w-5" /> },
+        ],
+        history: { eyebrow: "Your story, over time", title: "Today is one page, not the whole story.", description: "Reweave helps you look back at the days around today and notice what keeps coming up." },
+        privacyCard: { title: "A space that stays yours.", description: "Your diary is personal, not a public feed. Your entries belong to your account." },
+        process: {
+          eyebrow: "Keep it simple",
+          title: "Start wherever you are.",
+          description: "There’s no perfect way to do this. A few honest minutes are enough.",
+          steps: [
+            { title: "Pause", description: "Ask yourself how you’re feeling right now." },
+            { title: "Put it into words", description: "Write as much or as little as feels right." },
+            { title: "Notice", description: "Return when you’re ready and look for patterns." },
+          ],
+        },
+        privacy: {
+          eyebrow: "Privacy, by design",
+          title: "Some thoughts are just for you.",
+          description: "Your diary and reflections are connected to your account. They aren’t a public timeline or shared with other users.",
+          points: ["Your entries stay attached to your account.", "You can export or delete your data.", "AI reflections use only what you choose to submit."],
+          link: "Create your private space",
+        },
+        cta: { eyebrow: "One page at a time", title: "Make room for how you feel.", description: "No perfect words. No pressure to solve everything today. Just a place to begin.", signup: "Get started for free", login: "Log in" },
+        footer: { description: "A quiet place to write, reflect, and understand your days.", explore: "Explore", account: "Account", language: "Language", rights: "All rights reserved.", privacy: "Your data stays with you." },
+      }
+    : {
+        nav: { features: "Fitur", process: "Cara kerja", privacy: "Privasi", login: "Masuk", signup: "Mulai" },
+        hero: {
+          eyebrow: "Ruang kecil untuk memahami diri",
+          title: <>Pahami apa yang<br className="hidden sm:block" /> sedang kamu rasakan.</>,
+          description: "Ruang pribadi untuk menuangkan pikiran, mengenali pola emosi, dan memahami hari-harimu dengan lebih pelan.",
+          signup: "Buat ruangmu",
+          login: "Sudah punya akun",
+          privacyNote: "Pikiranmu tetap milikmu.",
+        },
+        principles: [
+          { title: "Kenali", description: "Mulai dari apa yang kamu rasakan, tanpa harus menjelaskannya dengan sempurna.", icon: <WellbeingIcon className="h-5 w-5" /> },
+          { title: "Tuangkan", description: "Tulis sedikit atau ceritakan semuanya. Ikuti ritmemu sendiri.", icon: <DiaryIcon className="h-5 w-5" /> },
+          { title: "Lihat kembali", description: "Kenali pola yang muncul seiring waktu, tanpa menghakimi diri sendiri.", icon: <InsightIcon className="h-5 w-5" /> },
+        ],
+        featureIntro: { eyebrow: "Ruang untukmu", title: "Ritual kecil untuk lebih memahami diri.", description: "Kamu tidak harus punya semua jawabannya. Mulai saja dengan alat sederhana untuk memahami apa yang kamu rasakan." },
+        features: [
+          { number: "01", title: "Refleksi harian", description: "Pilih perasaan yang paling mendekati dan tambahkan konteks jika mau.", icon: <WellbeingIcon className="h-5 w-5" /> },
+          { number: "02", title: "Diary pribadi", description: "Menulis, merekam, atau meninggalkan beberapa kata untuk nanti.", icon: <DiaryIcon className="h-5 w-5" /> },
+          { number: "03", title: "Insight yang lembut", description: "Temukan pengamatan dari hal-hal yang kamu pilih untuk dibagikan.", icon: <InsightIcon className="h-5 w-5" /> },
+          { number: "04", title: "Aktivitas sederhana", description: "Coba aktivitas ringan saat kamu membutuhkan jeda.", icon: <ActivityIcon className="h-5 w-5" /> },
+        ],
+        history: { eyebrow: "Ceritamu dari waktu ke waktu", title: "Hari ini satu halaman, bukan seluruh cerita.", description: "Reweave membantumu melihat kembali hari-hari sebelumnya dan mengenali hal yang terus muncul." },
+        privacyCard: { title: "Ruang yang tetap milikmu.", description: "Diary-mu bersifat pribadi, bukan feed publik. Catatanmu tetap terhubung dengan akunmu." },
+        process: {
+          eyebrow: "Tidak perlu rumit",
+          title: "Mulai dari mana pun kamu berada.",
+          description: "Tidak ada cara yang paling benar. Beberapa menit untuk jujur pada diri sendiri sudah cukup.",
+          steps: [
+            { title: "Berhenti sejenak", description: "Tanyakan pada diri sendiri apa yang sedang dirasakan." },
+            { title: "Tuangkan ke kata-kata", description: "Tulis sebanyak atau sesedikit yang terasa nyaman." },
+            { title: "Perhatikan", description: "Kembali saat siap dan lihat pola yang mungkin muncul." },
+          ],
+        },
+        privacy: {
+          eyebrow: "Privasi sejak awal",
+          title: "Ada hal yang cukup menjadi milikmu.",
+          description: "Diary dan refleksimu terhubung ke akunmu. Catatan itu bukan timeline publik dan tidak dibagikan kepada pengguna lain.",
+          points: ["Catatan tetap terhubung dengan akunmu.", "Kamu bisa mengekspor atau menghapus datamu.", "Refleksi AI hanya menggunakan hal yang kamu pilih untuk dikirim."],
+          link: "Buat ruang pribadimu",
+        },
+        cta: { eyebrow: "Satu halaman setiap kali", title: "Beri ruang untuk perasaanmu.", description: "Tidak perlu kata-kata sempurna atau menyelesaikan semuanya hari ini. Cukup mulai dari sini.", signup: "Mulai gratis", login: "Masuk" },
+        footer: { description: "Ruang tenang untuk menulis, berefleksi, dan memahami hari-harimu.", explore: "Jelajahi", account: "Akun", language: "Bahasa", rights: "Semua hak dilindungi.", privacy: "Datamu tetap milikmu." },
+      };
+}
 
 export default async function LandingPage({ params }: PageProps) {
   const { locale } = await params;
 
-  if (!isValidLocale(locale)) {
-    redirect("/id");
-  }
+  if (!isValidLocale(locale)) redirect("/id");
 
   const typedLocale = locale as Locale;
   const isEnglish = typedLocale === "en";
+  const copy = getCopy(isEnglish);
+
+  const footerLinks = [
+    { href: "#features", label: copy.nav.features },
+    { href: "#how-it-works", label: copy.nav.process },
+    { href: "#privacy", label: copy.nav.privacy },
+  ];
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#FDFBF7] text-[#4A3F35]">
-      <header className="sticky top-0 z-50 border-b border-[#4A3F35]/6 bg-[#FDFBF7]/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-          <Link
-            href={`/${typedLocale}`}
-            className="flex shrink-0 items-center"
-            aria-label="Reweave"
-          >
-            <Image
-              src="/reweave-logo.webp"
-              alt="Reweave"
-              width={150}
-              height={45}
-              priority
-              className="h-15 w-auto object-contain"
-            />
+    <main className="min-h-screen overflow-x-clip bg-[#FDFBF7] text-[#4A3F35]">
+      <header className="sticky top-0 z-50 border-b border-[#4A3F35]/10 bg-[#FDFBF7]/95 backdrop-blur-md">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+          <Link href={`/${typedLocale}`} aria-label="Reweave home" className="shrink-0">
+            <Image src="/reweave-logo.webp" alt="Reweave" width={150} height={45} priority className="h-11 w-auto object-contain" />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
-            <a
-              href="#features"
-              className="text-sm text-[#4A3F35]/50 transition hover:text-[#4A3F35]"
-            >
-              {isEnglish ? "Inside" : "Isi"}
-            </a>
-
-            <a
-              href="#how-it-works"
-              className="text-sm text-[#4A3F35]/50 transition hover:text-[#4A3F35]"
-            >
-              {isEnglish ? "How it works" : "Cara kerja"}
-            </a>
-
-            <a
-              href="#privacy"
-              className="text-sm text-[#4A3F35]/50 transition hover:text-[#4A3F35]"
-            >
-              {isEnglish ? "Privacy" : "Privasi"}
-            </a>
+          <nav aria-label="Main navigation" className="hidden items-center gap-8 md:flex">
+            {footerLinks.map((item) => (
+              <a key={item.href} href={item.href} className="text-sm text-[#4A3F35]/65 transition-colors hover:text-[#5C6B9C]">
+                {item.label}
+              </a>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link
-              href={`/${typedLocale}/login`}
-              className="hidden rounded-xl px-4 py-2.5 text-sm text-[#4A3F35]/60 transition hover:bg-[#4A3F35]/4 hover:text-[#4A3F35] sm:inline-flex"
-            >
-              {isEnglish ? "Login" : "Masuk"}
+            <Link href={`/${typedLocale}/login`} className="hidden rounded-lg px-3 py-2 text-sm text-[#4A3F35]/70 transition-colors hover:text-[#4A3F35] sm:inline-flex">
+              {copy.nav.login}
             </Link>
-
-            <Link
-              href={`/${typedLocale}/register`}
-              className="group inline-flex items-center gap-2 rounded-xl bg-[#5C6B9C] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
-            >
-              {isEnglish ? "Start free" : "Mulai gratis"}
-              <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            <Link href={`/${typedLocale}/register`} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#5C6B9C] px-4 text-sm font-medium text-white transition-colors hover:bg-[#485784]">
+              {copy.nav.signup}
+              <ArrowRightIcon className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </header>
 
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -right-56 -top-48 h-150 w-150 rounded-full bg-[#FBC4AB]/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-45 -left-48 h-130 w-130 rounded-full bg-[#C1D5C0]/25 blur-3xl" />
-
-        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[0.82fr_1.18fr] lg:px-10 lg:pb-32 lg:pt-28">
-          <div className="relative z-10 max-w-2xl">
-            <div className="mb-7 flex items-center gap-3">
-          
-            </div>
-
-            <h1 className="max-w-175 text-[48px] font-semibold leading-[0.99] tracking-[-0.065em] sm:text-[62px] lg:text-[76px]">
-              {isEnglish ? (
-                <>
-                  Know what
-                  <br />
-                  you actually feel.
-                </>
-              ) : (
-                <>
-                  Tahu apa yang
-                  <br />
-                  kamu rasakan.
-                </>
-              )}
+      <section className="relative isolate overflow-hidden">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[28rem] w-[28rem] rounded-full bg-[#FBC4AB]/25 blur-[100px]" />
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:min-h-[calc(100svh-72px)] lg:grid-cols-[0.88fr_1.12fr] lg:gap-6 lg:px-10 lg:py-10">
+          <div className="relative z-10 max-w-[600px]">
+            
+            <h1 className="max-w-[640px] text-[clamp(2.8rem,5.2vw,5rem)] font-medium leading-[0.99] tracking-[-0.065em]">
+              {copy.hero.title}
             </h1>
-
-            <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4A3F35]/58 sm:text-base">
-              {isEnglish
-                ? "A private place to check in, write things down, and slowly understand the patterns behind your days."
-                : "Tempat pribadi buat check-in, menulis, dan perlahan memahami pola yang muncul dari hari-harimu."}
+            <p className="mt-7 max-w-lg text-[15px] leading-7 text-[#4A3F35]/70 sm:text-base sm:leading-8">
+              {copy.hero.description}
             </p>
-
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={`/${typedLocale}/register`}
-                className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-6 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
-              >
-                {isEnglish ? "Start free" : "Mulai gratis"}
-                <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href={`/${typedLocale}/register`} className="group inline-flex h-12 items-center justify-center gap-3 rounded-lg bg-[#E2725B] px-5 text-sm font-medium text-white transition-colors hover:bg-[#c9614c]">
+                {copy.hero.signup}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
-
-              <Link
-                href={`/${typedLocale}/login`}
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white/55 px-6 text-sm font-medium text-[#4A3F35]/65 transition hover:bg-white hover:text-[#4A3F35]"
-              >
-                {isEnglish
-                  ? "I already have an account"
-                  : "Sudah punya akun"}
+              <Link href={`/${typedLocale}/login`} className="inline-flex h-12 items-center justify-center rounded-lg border border-[#4A3F35]/15 px-5 text-sm font-medium text-[#4A3F35]/80 transition-colors hover:border-[#4A3F35]/30 hover:bg-white/60">
+                {copy.hero.login}
               </Link>
             </div>
-
-            <div className="mt-8 flex items-center gap-2 text-xs text-[#4A3F35]/38">
+            <p className="mt-6 flex items-center gap-2 text-xs text-[#4A3F35]/55">
               <LockKeyhole className="h-3.5 w-3.5" strokeWidth={1.7} />
-
-              <span>
-                {isEnglish
-                  ? "Your thoughts stay private."
-                  : "Pikiranmu tetap pribadi."}
-              </span>
-            </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-none lg:ml-auto lg:-mr-10 xl:-mr-16">
-            <div className="pointer-events-none absolute -right-24 -top-20 h-80 w-80 rounded-full bg-[#FBC4AB]/30 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 -left-20 h-72 w-72 rounded-full bg-[#C1D5C0]/35 blur-3xl" />
-
-            <div className="relative">
-              <Image
-                src="/hero-visual3.png"
-                alt={
-                  isEnglish
-                    ? "A quiet Reweave journal page"
-                    : "Halaman jurnal Reweave yang tenang"
-                }
-                width={900}
-                height={900}
-                priority
-                sizes="(max-width: 1023px) 100vw, (max-width: 1279px) 58vw, 65vw"
-                className="relative z-10 h-auto w-full object-contain drop-shadow-[0_35px_55px_rgba(74,63,53,0.14)]"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-[#4A3F35]/6 bg-[#F5EFE6]/45">
-        <div className="mx-auto grid max-w-7xl md:grid-cols-3">
-          <TrustItem
-            number="01"
-            icon={<WellbeingIcon className="h-4 w-4" />}
-            title={isEnglish ? "Check in" : "Check-in"}
-            description={
-              isEnglish
-                ? "Name what you feel without having to explain everything."
-                : "Sebutkan apa yang kamu rasakan tanpa harus menjelaskan semuanya."
-            }
-          />
-
-          <TrustItem
-            number="02"
-            icon={<DiaryIcon className="h-4 w-4" />}
-            title={isEnglish ? "Put it down" : "Tuangkan"}
-            description={
-              isEnglish
-                ? "Write a few words or let the whole story out."
-                : "Tulis beberapa kata atau ceritakan semuanya."
-            }
-          />
-
-          <TrustItem
-            number="03"
-            icon={<InsightIcon className="h-4 w-4" />}
-            title={isEnglish ? "Look back" : "Lihat kembali"}
-            description={
-              isEnglish
-                ? "Understand your days through patterns, not pressure."
-                : "Pahami harimu lewat pola, bukan tekanan."
-            }
-          />
-        </div>
-      </section>
-
-      <section
-        id="features"
-        className="scroll-mt-24 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
-      >
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="h-px w-7 bg-[#E2725B]" />
-
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                  {isEnglish ? "Inside Reweave" : "Di dalam Reweave"}
-                </p>
-              </div>
-
-              <h2 className="mt-5 max-w-lg text-[38px] font-semibold leading-[1.04] tracking-tighter sm:text-[50px]">
-                {isEnglish
-                  ? "A little space to understand yourself."
-                  : "Sedikit ruang untuk memahami dirimu."}
-              </h2>
-
-              <p className="mt-6 max-w-md text-sm leading-7 text-[#4A3F35]/52">
-                {isEnglish
-                  ? "Nothing complicated. Just a few tools that make it easier to notice what is happening inside your days."
-                  : "Tidak ada yang rumit. Hanya beberapa hal sederhana untuk membantu melihat apa yang sedang terjadi di dalam hari-harimu."}
-              </p>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <EditorialFeature
-                number="01"
-                icon={<WellbeingIcon className="h-5 w-5" />}
-                title={isEnglish ? "Daily check-in" : "Check-in harian"}
-                description={
-                  isEnglish
-                    ? "Choose the feeling that comes closest. Add context when you want."
-                    : "Pilih perasaan yang paling mendekati. Tambahkan konteks kalau kamu mau."
-                }
-              />
-
-              <EditorialFeature
-                number="02"
-                icon={<DiaryIcon className="h-5 w-5" />}
-                title={isEnglish ? "Personal diary" : "Diary pribadi"}
-                description={
-                  isEnglish
-                    ? "Write, record, or simply leave a few words for yourself."
-                    : "Tulis, rekam, atau tinggalkan beberapa kata untuk dirimu sendiri."
-                }
-              />
-
-              <EditorialFeature
-                number="03"
-                icon={<InsightIcon className="h-5 w-5" />}
-                title={isEnglish ? "Reflections" : "Refleksi"}
-                description={
-                  isEnglish
-                    ? "See small observations from what you choose to share."
-                    : "Lihat pengamatan kecil dari apa yang kamu pilih untuk dibagikan."
-                }
-              />
-
-              <EditorialFeature
-                number="04"
-                icon={<ActivityIcon className="h-5 w-5" />}
-                title={isEnglish ? "Gentle activities" : "Aktivitas ringan"}
-                description={
-                  isEnglish
-                    ? "Simple things to try when you need to pause for a moment."
-                    : "Hal sederhana yang bisa dicoba saat kamu butuh berhenti sejenak."
-                }
-              />
-            </div>
-          </div>
-
-          <div className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
-            <div className="relative min-h-70 overflow-hidden rounded-[30px] bg-[#5C6B9C] p-8 text-[#FDFBF7] sm:p-10">
-              <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full border border-white/10" />
-              <div className="absolute right-16 top-16 h-24 w-24 rounded-full border border-[#FBC4AB]/30" />
-
-              <div className="relative max-w-lg">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#FBC4AB]">
-                  {isEnglish ? "Your history" : "Riwayatmu"}
-                </span>
-
-                <h3 className="mt-5 text-[30px] font-semibold leading-tight tracking-[-0.04em] sm:text-[38px]">
-                  {isEnglish
-                    ? "Today is only one page."
-                    : "Hari ini hanya satu halaman."}
-                </h3>
-
-                <p className="mt-5 max-w-md text-sm leading-7 text-white/60">
-                  {isEnglish
-                    ? "Reweave helps you look at the pages around it, so you can notice what keeps appearing over time."
-                    : "Reweave membantumu melihat halaman-halaman di sekitarnya, supaya kamu bisa memperhatikan apa yang terus muncul dari waktu ke waktu."}
-                </p>
-              </div>
-
-              <div className="absolute bottom-8 right-8 hidden w-48 sm:block">
-                <div className="flex items-end gap-2">
-                  <div className="h-8 flex-1 rounded-t-full bg-white/15" />
-                  <div className="h-14 flex-1 rounded-t-full bg-[#FBC4AB]/35" />
-                  <div className="h-10 flex-1 rounded-t-full bg-white/20" />
-                  <div className="h-20 flex-1 rounded-t-full bg-[#FBC4AB]/50" />
-                  <div className="h-12 flex-1 rounded-t-full bg-white/15" />
-                </div>
-              </div>
-            </div>
-
-            <div className="relative overflow-hidden rounded-[30px] border border-[#4A3F35]/[0.07] bg-[#F5EFE6] p-8 sm:p-10">
-              <div className="absolute -bottom-12 -right-12 h-36 w-36 rounded-full bg-[#C1D5C0]/60" />
-
-              <div className="relative">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/75 text-[#5C6B9C]">
-                  <PrivacyIcon className="h-5 w-5" />
-                </div>
-
-                <h3 className="mt-7 text-2xl font-semibold tracking-[-0.035em]">
-                  {isEnglish ? "Yours means yours." : "Punyamu tetap milikmu."}
-                </h3>
-
-                <p className="mt-4 text-sm leading-7 text-[#4A3F35]/52">
-                  {isEnglish
-                    ? "Your journal is not a public feed. It belongs to your account."
-                    : "Diary-mu bukan feed publik. Semuanya terhubung ke akunmu."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="how-it-works"
-        className="scroll-mt-24 border-y border-[#4A3F35]/6 bg-[#F1E9DB]"
-      >
-        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-3">
-              <span className="h-px w-7 bg-[#5C6B9C]" />
-
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-                {isEnglish ? "A simple ritual" : "Ritual sederhana"}
-              </p>
-            </div>
-
-            <h2 className="mt-5 text-[38px] font-semibold leading-[1.04] tracking-tighter sm:text-[50px]">
-              {isEnglish
-                ? "No complicated routine."
-                : "Tidak perlu rutinitas yang rumit."}
-            </h2>
-
-            <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
-              {isEnglish
-                ? "Open Reweave when you have a moment. Start wherever you are."
-                : "Buka Reweave saat kamu punya waktu sebentar. Mulai dari mana pun kamu berada."}
+              {copy.hero.privacyNote}
             </p>
           </div>
 
-          <div className="relative mt-16">
-            <div className="absolute left-5 top-7 hidden h-px w-[calc(100%-40px)] bg-[#4A3F35]/10 md:block" />
-
-            <div className="grid gap-12 md:grid-cols-3 md:gap-8">
-              <TimelineStep
-                number="01"
-                title={isEnglish ? "Check in" : "Check-in"}
-                description={
-                  isEnglish
-                    ? "Start with one question: how am I feeling right now?"
-                    : "Mulai dengan satu pertanyaan: bagaimana perasaanku sekarang?"
-                }
-              />
-
-              <TimelineStep
-                number="02"
-                title={isEnglish ? "Put it into words" : "Tuangkan"}
-                description={
-                  isEnglish
-                    ? "Write as little or as much as you need. There is no right amount."
-                    : "Tulis sedikit atau sebanyak yang kamu butuhkan. Tidak ada jumlah yang benar."
-                }
-              />
-
-              <TimelineStep
-                number="03"
-                title={isEnglish ? "Notice" : "Perhatikan"}
-                description={
-                  isEnglish
-                    ? "Come back later and see what your days have been trying to tell you."
-                    : "Kembali lagi nanti dan lihat apa yang sedang coba dikatakan oleh hari-harimu."
-                }
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      
-
-<section
-  id="privacy"
-  className="scroll-mt-24 border-b border-[#4A3F35]/6"
->
-  <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
-    <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
-      <div className="relative w-full">
-        <Image
-          src="/private-diary.png"
-          alt={
-            isEnglish
-              ? "Private diary pages representing personal thoughts"
-              : "Halaman diary pribadi yang menggambarkan pikiran personal"
-          }
-          width={1356}
-          height={1118}
-          sizes="(max-width: 1023px) 100vw, 46vw"
-          className="block h-auto w-full object-contain"
-        />
-      </div>
-
-      <div className="py-2 lg:py-8">
-        <div className="flex items-center gap-3">
-          <span className="h-px w-7 bg-[#5C6B9C]" />
-
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
-            {isEnglish ? "Privacy" : "Privasi"}
-          </p>
-        </div>
-
-        <h2 className="mt-5 max-w-xl text-[38px] font-semibold leading-[1.04] tracking-[-0.055em] sm:text-[48px] lg:text-[54px]">
-          {isEnglish
-            ? "Some thoughts are meant to stay yours."
-            : "Ada hal yang memang cukup menjadi milikmu."}
-        </h2>
-
-        <p className="mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/65 sm:text-base sm:leading-8">
-          {isEnglish
-            ? "Your diary and check-ins are connected to your account. They are not a public timeline and are not shared with other users."
-            : "Diary dan check-inmu terhubung ke akunmu. Bukan timeline publik dan tidak dibagikan kepada pengguna lain."}
-        </p>
-
-        <div className="mt-9 space-y-5">
-          <PrivacyPoint
-            text={
-              isEnglish
-                ? "Your entries stay attached to your account."
-                : "Catatan tetap terhubung dengan akunmu."
-            }
-          />
-
-          <PrivacyPoint
-            text={
-              isEnglish
-                ? "You can export or delete your data."
-                : "Kamu bisa mengekspor atau menghapus datamu."
-            }
-          />
-
-          <PrivacyPoint
-            text={
-              isEnglish
-                ? "AI reflections only use what you choose to submit."
-                : "Refleksi AI hanya menggunakan apa yang kamu pilih untuk dikirim."
-            }
-          />
-        </div>
-
-        <Link
-          href={`/${typedLocale}/register`}
-          className="group mt-10 inline-flex items-center gap-2 text-sm font-semibold text-[#5C6B9C] transition-colors hover:text-[#4A3F35]"
-        >
-          {isEnglish ? "Create your space" : "Buat ruangmu"}
-
-          <ArrowRight
-            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-            strokeWidth={1.8}
-          />
-        </Link>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-105 w-105 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FBC4AB]/20 blur-3xl" />
-
-        <div className="relative mx-auto max-w-4xl px-5 py-28 text-center sm:px-8 lg:py-36">
-          <div className="mx-auto flex items-center justify-center">
+          <div className="relative mx-auto flex w-full max-w-[760px] items-center justify-center lg:-mr-8 xl:-mr-12">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-[12%] rounded-full bg-[#C1D5C0]/30 blur-[75px]" />
             <Image
-              src="/reweave-logo.png"
-              alt="Reweave"
-              width={170}
-              height={52}
-              className="h-20 w-auto object-contain"
+              src="/hero-visual2.png"
+              alt={isEnglish ? "A preview of the Reweave journaling experience" : "Pratinjau pengalaman menulis diary di Reweave"}
+              width={1200}
+              height={1200}
+              priority
+              sizes="(max-width: 1023px) 100vw, (max-width: 1279px) 55vw, 60vw"
+              className="relative z-10 block h-auto w-full max-w-[760px] object-contain drop-shadow-[0_24px_40px_rgba(74,63,53,0.10)] lg:-translate-y-3"
             />
           </div>
+        </div>
+      </section>
 
-          <p className="mt-8 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5C6B9C]">
-            {isEnglish ? "One page at a time" : "Satu halaman setiap kali"}
-          </p>
+      <section aria-label={isEnglish ? "How Reweave helps" : "Cara Reweave membantu"} className="border-y border-[#4A3F35]/10 bg-[#F5EFE6]/55">
+        <div className="mx-auto grid max-w-7xl divide-y divide-[#4A3F35]/10 px-5 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-10">
+          {copy.principles.map((item, index) => (
+            <article key={item.title} className="flex gap-4 py-6 md:px-6 md:py-7 first:md:pl-0 last:md:pr-0">
+              <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#FDFBF7] text-[#5C6B9C]">
+                {item.icon}
+              </div>
+              <div>
+                <p className="mb-1 text-[10px] font-semibold tracking-[0.16em] text-[#E2725B]">0{index + 1}</p>
+                <h2 className="text-sm font-semibold">{item.title}</h2>
+                <p className="mt-1.5 max-w-xs text-sm leading-6 text-[#4A3F35]/65">{item.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
-          <h2 className="mx-auto mt-5 max-w-3xl text-[40px] font-semibold leading-[1.02] tracking-[-0.055em] sm:text-[58px]">
-            {isEnglish
-              ? "Start with how you feel today."
-              : "Mulai dari apa yang kamu rasakan hari ini."}
-          </h2>
+      <section id="features" className="scroll-mt-24 px-5 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16">
+            <div className="max-w-xl">
+              <p className="flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-[#5C6B9C]">
+                <span aria-hidden="true" className="h-px w-7 bg-[#E2725B]" />
+                {copy.featureIntro.eyebrow}
+              </p>
+              <h2 className="mt-5 text-4xl font-medium leading-[1.04] tracking-[-0.055em] sm:text-5xl">
+                {copy.featureIntro.title}
+              </h2>
+              <p className="mt-5 max-w-md text-sm leading-7 text-[#4A3F35]/65">{copy.featureIntro.description}</p>
+            </div>
 
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-[#4A3F35]/52">
-            {isEnglish
-              ? "No long setup. No perfect words. Just a small place to be honest with yourself."
-              : "Tidak perlu setup panjang. Tidak perlu kata-kata sempurna. Hanya ruang kecil untuk jujur pada diri sendiri."}
-          </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {copy.features.map((feature) => (
+                <article key={feature.number} className="rounded-2xl border border-[#4A3F35]/10 bg-white/45 p-6 sm:p-7">
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F1E9DB] text-[#5C6B9C]">{feature.icon}</span>
+                    <span className="text-[10px] font-medium tracking-[0.12em] text-[#4A3F35]/35">{feature.number}</span>
+                  </div>
+                  <h3 className="mt-6 text-base font-semibold tracking-[-0.02em]">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#4A3F35]/65">{feature.description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
 
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href={`/${typedLocale}/register`}
-              className="group inline-flex h-12 items-center justify-center gap-3 rounded-xl bg-[#E2725B] px-7 text-sm font-semibold text-white transition hover:bg-[#4A3F35]"
-            >
-              {isEnglish ? "Create account" : "Buat akun"}
+          <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <article className="relative min-h-[300px] overflow-hidden rounded-2xl bg-[#5C6B9C] p-7 text-[#FDFBF7] sm:p-10">
+              <div aria-hidden="true" className="absolute -right-20 -top-24 h-64 w-64 rounded-full border border-white/15" />
+              <div aria-hidden="true" className="absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[#FBC4AB]/35" />
+              <div className="relative max-w-lg">
+                <p className="text-xs font-medium tracking-[0.14em] text-[#FBC4AB]">{copy.history.eyebrow}</p>
+                <h3 className="mt-5 max-w-md text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-4xl">{copy.history.title}</h3>
+                <p className="mt-4 max-w-md text-sm leading-7 text-white/75">{copy.history.description}</p>
+              </div>
+              <div aria-hidden="true" className="absolute bottom-0 right-8 hidden h-24 items-end gap-2 sm:flex">
+                {[32, 56, 42, 76, 48, 64].map((height, index) => (
+                  <span key={index} className={`w-5 rounded-t-full ${index % 2 ? "bg-[#FBC4AB]/55" : "bg-white/20"}`} style={{ height }} />
+                ))}
+              </div>
+            </article>
 
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.8} />
-            </Link>
+            <article className="relative overflow-hidden rounded-2xl border border-[#4A3F35]/10 bg-[#F1E9DB] p-7 sm:p-9">
+              <div aria-hidden="true" className="absolute -bottom-16 -right-12 h-48 w-48 rounded-full bg-[#C1D5C0]/45 blur-2xl" />
+              <div className="relative">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 text-[#5C6B9C]">
+                  <PrivacyIcon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-6 text-2xl font-medium leading-tight tracking-[-0.04em]">{copy.privacyCard.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[#4A3F35]/70">{copy.privacyCard.description}</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
 
-            <Link
-              href={`/${typedLocale}/login`}
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-[#4A3F35]/10 bg-white px-7 text-sm font-medium text-[#4A3F35]/65 transition hover:border-[#5C6B9C]/20 hover:text-[#4A3F35]"
-            >
-              {isEnglish ? "Login" : "Masuk"}
+      <section id="how-it-works" className="scroll-mt-24 border-y border-[#4A3F35]/10 bg-[#F5EFE6]/65 px-5 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-2xl">
+            <p className="flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-[#5C6B9C]">
+              <span aria-hidden="true" className="h-px w-7 bg-[#E2725B]" />
+              {copy.process.eyebrow}
+            </p>
+            <h2 className="mt-5 text-4xl font-medium leading-[1.04] tracking-[-0.055em] sm:text-5xl">{copy.process.title}</h2>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-[#4A3F35]/65">{copy.process.description}</p>
+          </div>
+
+          <div className="mt-12 grid gap-8 md:grid-cols-3 md:gap-10">
+            {copy.process.steps.map((step, index) => (
+              <article key={step.title} className="border-t border-[#4A3F35]/20 pt-5">
+                <p className="text-xs font-semibold tracking-[0.12em] text-[#E2725B]">0{index + 1}</p>
+                <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em]">{step.title}</h3>
+                <p className="mt-2 max-w-sm text-sm leading-7 text-[#4A3F35]/65">{step.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="privacy" className="scroll-mt-24 border-b border-[#4A3F35]/10 px-5 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-20">
+          <div className="relative mx-auto w-full max-w-xl">
+            <Image src="/private-diary.png" alt={isEnglish ? "Private diary pages" : "Halaman diary pribadi"} width={1356} height={1118} sizes="(max-width: 1023px) 100vw, 46vw" className="block h-auto w-full object-contain" />
+          </div>
+          <div className="max-w-xl">
+            <p className="flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-[#5C6B9C]">
+              <span aria-hidden="true" className="h-px w-7 bg-[#E2725B]" />
+              {copy.privacy.eyebrow}
+            </p>
+            <h2 className="mt-5 text-4xl font-medium leading-[1.04] tracking-[-0.055em] sm:text-5xl">{copy.privacy.title}</h2>
+            <p className="mt-5 text-sm leading-7 text-[#4A3F35]/70 sm:text-base sm:leading-8">{copy.privacy.description}</p>
+            <ul className="mt-7 space-y-4">
+              {copy.privacy.points.map((point) => (
+                <li key={point} className="flex items-start gap-3 text-sm leading-6 text-[#4A3F35]/75">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C1D5C0]/60">
+                    <Check className="h-3 w-3" strokeWidth={2} />
+                  </span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <Link href={`/${typedLocale}/register`} className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#5C6B9C] transition-colors hover:text-[#E2725B]">
+              {copy.privacy.link}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-[#4A3F35]/6 bg-[#F5EFE6]/40">
-        <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
-          <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-            <div className="max-w-xs">
-              <Link
-                href={`/${typedLocale}`}
-                className="inline-flex items-center"
-                aria-label="Reweave"
-              >
-                <Image
-                  src="/reweave-logo.webp"
-                  alt="Reweave"
-                  width={130}
-                  height={40}
-                  className="h-16 w-auto object-contain"
-                />
-              </Link>
+      <section className="relative overflow-hidden px-5 py-20 sm:px-8 sm:py-28">
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FBC4AB]/25 blur-[90px]" />
+        <div className="relative mx-auto max-w-3xl text-center">
+          <Image src="/reweave-logo.png" alt="Reweave" width={170} height={52} className="mx-auto h-14 w-auto object-contain" />
+          <p className="mt-7 text-xs font-semibold tracking-[0.16em] text-[#5C6B9C]">{copy.cta.eyebrow}</p>
+          <h2 className="mx-auto mt-4 max-w-2xl text-4xl font-medium leading-[1.02] tracking-[-0.06em] sm:text-6xl">{copy.cta.title}</h2>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-[#4A3F35]/65 sm:text-base">{copy.cta.description}</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href={`/${typedLocale}/register`} className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#E2725B] px-6 text-sm font-medium text-white transition-colors hover:bg-[#c9614c]">
+              {copy.cta.signup}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link href={`/${typedLocale}/login`} className="inline-flex h-12 items-center justify-center rounded-lg border border-[#4A3F35]/15 bg-white/50 px-6 text-sm font-medium transition-colors hover:bg-white">
+              {copy.cta.login}
+            </Link>
+          </div>
+        </div>
+      </section>
 
-              <p className="mt-4 text-xs leading-6 text-[#4A3F35]/42">
-                {isEnglish
-                  ? "A quiet place to check in, write things down, and understand your days."
-                  : "Ruang tenang untuk check-in, menulis, dan memahami hari-harimu."}
-              </p>
+      <footer className="border-t border-[#4A3F35]/10 bg-[#F5EFE6]/45">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.7fr_0.7fr_0.7fr]">
+            <div className="max-w-xs">
+              <Link href={`/${typedLocale}`} aria-label="Reweave home" className="inline-flex">
+                <Image src="/reweave-logo.webp" alt="Reweave" width={130} height={40} className="h-10 w-auto object-contain" />
+              </Link>
+              <p className="mt-3 text-sm leading-6 text-[#4A3F35]/60">{copy.footer.description}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-14 gap-y-8 sm:grid-cols-3">
-              <FooterColumn
-                title={isEnglish ? "Explore" : "Jelajahi"}
-                links={[
-                  {
-                    href: "#features",
-                    label: isEnglish ? "Inside" : "Isi",
-                  },
-                  {
-                    href: "#how-it-works",
-                    label: isEnglish ? "How it works" : "Cara kerja",
-                  },
-                  {
-                    href: "#privacy",
-                    label: isEnglish ? "Privacy" : "Privasi",
-                  },
-                ]}
-              />
+            <div>
+              <h2 className="text-xs font-semibold">{copy.footer.explore}</h2>
+              <ul className="mt-4 space-y-3">
+                {footerLinks.map((item) => <li key={item.href}><a href={item.href} className="text-sm text-[#4A3F35]/60 transition-colors hover:text-[#5C6B9C]">{item.label}</a></li>)}
+              </ul>
+            </div>
 
-              <FooterColumn
-                title={isEnglish ? "Account" : "Akun"}
-                links={[
-                  {
-                    href: `/${typedLocale}/login`,
-                    label: isEnglish ? "Login" : "Masuk",
-                  },
-                  {
-                    href: `/${typedLocale}/register`,
-                    label: isEnglish ? "Register" : "Daftar",
-                  },
-                ]}
-              />
+            <div>
+              <h2 className="text-xs font-semibold">{copy.footer.account}</h2>
+              <ul className="mt-4 space-y-3">
+                <li><Link href={`/${typedLocale}/login`} className="text-sm text-[#4A3F35]/60 hover:text-[#5C6B9C]">{copy.nav.login}</Link></li>
+                <li><Link href={`/${typedLocale}/register`} className="text-sm text-[#4A3F35]/60 hover:text-[#5C6B9C]">{copy.nav.signup}</Link></li>
+              </ul>
+            </div>
 
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/30">
-                  {isEnglish ? "Language" : "Bahasa"}
-                </p>
-
-                <div className="mt-4 flex items-center gap-2">
-                  <Link
-                    href="/id"
-                    lang="id"
-                    hrefLang="id"
-                    aria-current={!isEnglish ? "page" : undefined}
-                    className={`rounded-lg px-2.5 py-1.5 text-xs transition ${
-                      !isEnglish
-                        ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]"
-                        : "text-[#4A3F35]/40 hover:text-[#4A3F35]"
-                    }`}
-                  >
-                    ID
-                  </Link>
-
-                  <Link
-                    href="/en"
-                    lang="en"
-                    hrefLang="en"
-                    aria-current={isEnglish ? "page" : undefined}
-                    className={`rounded-lg px-2.5 py-1.5 text-xs transition ${
-                      isEnglish
-                        ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]"
-                        : "text-[#4A3F35]/40 hover:text-[#4A3F35]"
-                    }`}
-                  >
-                    EN
-                  </Link>
-                </div>
+            <div>
+              <h2 className="text-xs font-semibold">{copy.footer.language}</h2>
+              <div className="mt-4 flex gap-2">
+                <Link href="/id" lang="id" hrefLang="id" aria-current={!isEnglish ? "page" : undefined} className={`rounded-md px-3 py-1.5 text-xs ${!isEnglish ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]" : "text-[#4A3F35]/60 hover:bg-white/70"}`}>ID</Link>
+                <Link href="/en" lang="en" hrefLang="en" aria-current={isEnglish ? "page" : undefined} className={`rounded-md px-3 py-1.5 text-xs ${isEnglish ? "bg-[#5C6B9C]/10 font-semibold text-[#5C6B9C]" : "text-[#4A3F35]/60 hover:bg-white/70"}`}>EN</Link>
               </div>
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#4A3F35]/6 pt-6 text-center sm:flex-row sm:text-left">
-            <p className="text-[10px] text-[#4A3F35]/30">
-              © {new Date().getFullYear()} Reweave.{" "}
-              {isEnglish
-                ? "All rights reserved."
-                : "Semua hak dilindungi."}
-            </p>
-
-            <div className="flex items-center gap-2 text-[10px] text-[#4A3F35]/30">
-              <PrivacyIcon className="h-3 w-3" />
-
-              <span>
-                {isEnglish
-                  ? "Your data stays with you."
-                  : "Datamu tetap milikmu."}
-              </span>
-            </div>
+          <div className="mt-10 flex flex-col gap-3 border-t border-[#4A3F35]/10 pt-5 text-xs text-[#4A3F35]/50 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} Reweave. {copy.footer.rights}</p>
+            <p className="flex items-center gap-2"><PrivacyIcon className="h-3.5 w-3.5" />{copy.footer.privacy}</p>
           </div>
         </div>
       </footer>
     </main>
-  );
-}
-
-function TrustItem({
-  number,
-  icon,
-  title,
-  description,
-}: TrustItemProps) {
-  return (
-    <div className="group flex gap-4 border-b border-[#4A3F35]/[0.07] px-5 py-7 last:border-b-0 sm:px-8 md:border-b-0 md:border-r md:last:border-r-0 lg:px-10">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#FDFBF7] text-[#5C6B9C]">
-        {icon}
-      </div>
-
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] font-semibold tracking-[0.12em] text-[#E2725B]">
-            {number}
-          </span>
-
-          <p className="text-xs font-semibold">{title}</p>
-        </div>
-
-        <p className="mt-1.5 max-w-xs text-[11px] leading-5 text-[#4A3F35]/43">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function EditorialFeature({
-  number,
-  icon,
-  title,
-  description,
-}: EditorialFeatureProps) {
-  return (
-    <div className="group relative rounded-[26px] border border-[#4A3F35]/[0.07] bg-white/55 p-7 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-[0_20px_55px_rgba(74,63,53,0.07)]">
-      <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5EFE6] text-[#5C6B9C] transition group-hover:bg-[#5C6B9C] group-hover:text-white">
-          {icon}
-        </div>
-
-        <span className="text-[9px] font-semibold tracking-[0.16em] text-[#4A3F35]/20">
-          {number}
-        </span>
-      </div>
-
-      <h3 className="mt-7 text-base font-semibold tracking-[-0.02em]">
-        {title}
-      </h3>
-
-      <p className="mt-3 text-xs leading-6 text-[#4A3F35]/48">
-        {description}
-      </p>
-    </div>
-  );
-}
-
-function TimelineStep({
-  number,
-  title,
-  description,
-}: TimelineStepProps) {
-  return (
-    <div className="relative">
-      <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#4A3F35]/10 bg-[#F1E9DB]">
-        <span className="text-[10px] font-semibold tracking-[0.12em] text-[#5C6B9C]">
-          {number}
-        </span>
-      </div>
-
-      <div className="mt-7">
-        <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
-
-        <p className="mt-3 max-w-xs text-sm leading-7 text-[#4A3F35]/50">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function PrivacyPoint({ text }: PrivacyPointProps) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C1D5C0]/55">
-        <Check className="h-3 w-3 text-[#4A3F35]" strokeWidth={2} />
-      </div>
-
-      <p className="text-sm text-[#4A3F35]/58">{text}</p>
-    </div>
-  );
-}
-
-function FooterColumn({ title, links }: FooterColumnProps) {
-  return (
-    <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/30">
-        {title}
-      </p>
-
-      <div className="mt-4 space-y-3">
-        {links.map((link) => (
-          <a
-            key={link.href}
-            href={link.href}
-            className="block text-xs text-[#4A3F35]/48 transition hover:text-[#4A3F35]"
-          >
-            {link.label}
-          </a>
-        ))}
-      </div>
-    </div>
   );
 }
