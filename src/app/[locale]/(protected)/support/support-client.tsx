@@ -3,12 +3,6 @@
 import Link from "next/link";
 
 import type { Locale } from "@/i18n/config";
-
-type Props = {
-  locale: Locale;
-  userName: string;
-};
-
 import {
   ArrowRightIcon,
   DiaryIcon,
@@ -18,6 +12,12 @@ import {
   WellbeingIcon,
 } from "@/components/reweave-icons";
 
+type Props = {
+  locale: Locale;
+  userName: string;
+  nickname?: string | null;
+};
+
 /* ========================================================= */
 /* COMPONENT                                                 */
 /* ========================================================= */
@@ -25,8 +25,10 @@ import {
 export default function SupportClient({
   locale,
   userName,
+  nickname,
 }: Props) {
   const isEnglish = locale === "en";
+  const displayName = nickname?.trim() || userName.trim();
 
   const resources = [
     {
@@ -70,22 +72,19 @@ export default function SupportClient({
   return (
     <main className="min-h-full bg-[#fdfbf7] px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
       <div className="mx-auto max-w-6xl text-[#4a3f35]">
-
         {/* ================================================= */}
         {/* HEADER                                            */}
         {/* ================================================= */}
 
         <header className="mb-12 max-w-3xl">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5c6b9c]">
-            {isEnglish
-              ? "A space to lean on"
-              : "Ruang untuk bersandar"}
+            {isEnglish ? "A space to lean on" : "Ruang untuk bersandar"}
           </p>
 
           <h1 className="text-3xl font-semibold tracking-[-0.035em] text-[#4a3f35] sm:text-4xl">
             {isEnglish
-              ? `You don't have to figure everything out alone, ${userName}.`
-              : `Kamu tidak harus memahami semuanya sendirian, ${userName}.`}
+              ? `You don't have to figure everything out alone, ${displayName}.`
+              : `Kamu tidak harus memahami semuanya sendirian, ${displayName}.`}
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[#4a3f35]/60 sm:text-[15px]">
@@ -111,9 +110,7 @@ export default function SupportClient({
 
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5c6b9c]">
-                {isEnglish
-                  ? "A gentle reminder"
-                  : "Pengingat kecil"}
+                {isEnglish ? "A gentle reminder" : "Pengingat kecil"}
               </p>
 
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35] sm:text-3xl">
@@ -138,9 +135,7 @@ export default function SupportClient({
         <section className="mb-14">
           <div className="mb-7">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5c6b9c]">
-              {isEnglish
-                ? "Choose what you need"
-                : "Pilih yang kamu butuhkan"}
+              {isEnglish ? "Choose what you need" : "Pilih yang kamu butuhkan"}
             </p>
 
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4a3f35]">
@@ -169,9 +164,7 @@ export default function SupportClient({
                     index !== resources.length - 1
                       ? "border-b border-[#4a3f35]/10 md:border-b-0 md:border-r"
                       : "",
-                    index === 0
-                      ? "md:pl-0"
-                      : "",
+                    index === 0 ? "md:pl-0" : "",
                   ].join(" ")}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -252,9 +245,7 @@ export default function SupportClient({
         <footer className="border-t border-[#4a3f35]/10 pt-7">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5c6b9c]">
-              {isEnglish
-                ? "About Reweave"
-                : "Tentang Reweave"}
+              {isEnglish ? "About Reweave" : "Tentang Reweave"}
             </p>
 
             <p className="mt-2 text-xs leading-6 text-[#4a3f35]/50">

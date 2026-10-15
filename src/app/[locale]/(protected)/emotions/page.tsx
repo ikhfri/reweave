@@ -36,7 +36,7 @@ const emotions: EmotionItem[] = [
       "Perasaan ringan dan menyenangkan ketika sesuatu terasa berjalan dengan baik.",
     descriptionEn:
       "A pleasant and uplifting feeling when something feels like it is going well.",
-    image: "/emotions-emoji/happy.png",
+    image: "/emotions-emoji/happy.webp",
     color: "#FBC4AB",
   },
 
@@ -49,7 +49,7 @@ const emotions: EmotionItem[] = [
       "Perasaan dihargai dan dicintai oleh orang lain.",
     descriptionEn:
       "A feeling of being valued and cared for by others.",
-    image: "/emotions-emoji/loved.png",
+    image: "/emotions-emoji/loved.webp",
     color: "#C39986",
   },
 
@@ -62,7 +62,7 @@ const emotions: EmotionItem[] = [
       "Perasaan penuh energi dan ketertarikan terhadap sesuatu yang akan terjadi.",
     descriptionEn:
       "A feeling of energy and anticipation toward something that may happen.",
-    image: "/emotions-emoji/excited.png",
+    image: "/emotions-emoji/excited.webp",
     color: "#8F7163",
   },
 
@@ -88,7 +88,7 @@ const emotions: EmotionItem[] = [
       "Keadaan ketika tubuh dan pikiran terasa lebih stabil dan tidak terlalu terburu-buru.",
     descriptionEn:
       "A state where your body and mind feel relatively settled and unhurried.",
-    image: "/emotions-emoji/calm.png",
+    image: "/emotions-emoji/calm.webp",
     color: "#B1C5B1",
   },
 
@@ -101,7 +101,7 @@ const emotions: EmotionItem[] = [
       "Perasaan berkurangnya energi setelah banyak aktivitas, pikiran, atau tekanan.",
     descriptionEn:
       "A feeling of reduced energy after activity, mental effort, or ongoing demands.",
-    image: "/emotions-emoji/tired.png",
+    image: "/emotions-emoji/tired.webp",
     color: "#879C87",
   },
 
@@ -114,7 +114,7 @@ const emotions: EmotionItem[] = [
       "Perasaan khawatir atau tidak tenang ketika menghadapi ketidakpastian atau sesuatu yang terasa mengancam.",
     descriptionEn:
       "A feeling of worry or unease when facing uncertainty or something that feels threatening.",
-    image: "/emotions-emoji/anxious.png",
+    image: "/emotions-emoji/anxious.webp",
     color: "#D66F5A",
   },
 
@@ -127,7 +127,7 @@ const emotions: EmotionItem[] = [
       "Perasaan tertekan ketika tuntutan yang dihadapi terasa lebih besar daripada kapasitas yang tersedia.",
     descriptionEn:
       "A feeling of pressure when the demands you face feel greater than your available capacity.",
-    image: "/emotions-emoji/stressed.png",
+    image: "/emotions-emoji/stressed.webp",
     color: "#A64D3B",
   },
 
@@ -140,7 +140,7 @@ const emotions: EmotionItem[] = [
       "Perasaan kuat ketika sesuatu terasa tidak adil, mengganggu, menyakiti, atau melewati batas.",
     descriptionEn:
       "A strong feeling that can arise when something feels unfair, hurtful, disruptive, or crosses a boundary.",
-    image: "/emotions-emoji/angry.png",
+    image: "/emotions-emoji/angry.webp",
     color: "#782E20",
   },
 
@@ -153,7 +153,7 @@ const emotions: EmotionItem[] = [
   //     "Perasaan kesal atau terhambat ketika sesuatu tidak berjalan seperti yang diharapkan.",
   //   descriptionEn:
   //     "A feeling of irritation or difficulty when something does not go as expected.",
-  //   image: "/emotions-emoji/frustrated.png",
+  //   image: "/emotions-emoji/frustrated.webp",
   //   color: "#A64D3B",
   // },
 
@@ -166,7 +166,7 @@ const emotions: EmotionItem[] = [
       "Perasaan terputus atau kurang terhubung dengan orang lain, meskipun sedang tidak sendirian.",
     descriptionEn:
       "A feeling of disconnection or lack of meaningful connection, even when other people are around.",
-    image: "/emotions-emoji/lonely.png",
+    image: "/emotions-emoji/lonely.webp",
     color: "#7182A4",
   },
 
@@ -179,7 +179,7 @@ const emotions: EmotionItem[] = [
       "Perasaan berat yang dapat muncul ketika kehilangan sesuatu, kecewa, terluka, atau menghadapi keadaan yang sulit.",
     descriptionEn:
       "A heavy feeling that can arise from loss, disappointment, hurt, or difficult circumstances.",
-    image: "/emotions-emoji/sad.png",
+    image: "/emotions-emoji/sad.webp",
     color: "#475677",
   },
 
@@ -192,7 +192,7 @@ const emotions: EmotionItem[] = [
       "Perasaan ketika banyak hal datang bersamaan sampai terasa sulit mengetahui harus mulai dari mana.",
     descriptionEn:
       "A feeling that too many demands are happening at once, making it difficult to know where to begin.",
-    image: "/emotions-emoji/overwhelmed.png",
+    image: "/emotions-emoji/overwhelmed.webp",
     color: "#39405B",
   },
 ];

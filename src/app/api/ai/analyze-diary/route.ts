@@ -110,8 +110,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Reuse the saved analysis. Opening the diary or retrying the same request
-    // should not consume another Gemini request.
     const existingAnalysis = await prisma.aIAnalysis.findFirst({
       where: { userId: user.id, diaryEntryId: diary.id },
       orderBy: { createdAt: "desc" },
@@ -163,9 +161,12 @@ ${languageInstruction}
 ${personalization}
 
 Optional onboarding background (use only if relevant and never assume it is still true):
-- Goals: ${onboarding.goals ?? "Not provided"}
-- Earlier feeling: ${onboarding.currentFeeling ?? "Not provided"}
-- Earlier contexts: ${onboarding.contexts ?? "Not provided"}
+- Goals: 
+${onboarding.goals ?? "Not provided"}
+- Earlier feeling: 
+${onboarding.currentFeeling ?? "Not provided"}
+- Earlier contexts: 
+${onboarding.contexts ?? "Not provided"}
 
 Analyze the diary entry below. Treat it as the user's own description, not proof of a disorder.
 
@@ -212,18 +213,18 @@ ${content}
       );
     }
 
-    let rawResult: unknown;
+    let parsedJson: unknown;
     try {
-      rawResult = JSON.parse(response.text);
+      parsedJson = JSON.parse(response.text);
     } catch {
-      console.error("[Diary AI] Gemini returned invalid JSON.");
+      console.error("[Diary AI] AI returned invalid JSON.");
       return NextResponse.json(
         { success: false, error: "AI returned invalid JSON" },
         { status: 502 },
       );
     }
 
-    const validated = aiResponseSchema.safeParse(rawResult);
+    const validated = aiResponseSchema.safeParse(parsedJson);
     if (!validated.success) {
       console.error("[Diary AI] Invalid response schema:", validated.error.flatten());
       return NextResponse.json(
@@ -234,9 +235,6 @@ ${content}
 
     const result = validated.data;
 
-    // Re-check before create to avoid a second record in the common retry case.
-    // A database uniqueness constraint is recommended if strict concurrency
-    // protection is required for simultaneous requests.
     const racedAnalysis = await prisma.aIAnalysis.findFirst({
       where: { userId: user.id, diaryEntryId: diary.id },
       orderBy: { createdAt: "desc" },

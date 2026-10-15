@@ -52,21 +52,22 @@ type CalendarResponse = {
 type Props = {
   locale: Locale;
   userName: string;
+  nickname?: string | null;
 };
 
 const emotionArtwork: Record<string, string> = {
-  happy: "/emotions-emoji/happy.png",
-  loved: "/emotions-emoji/loved.png",
-  excited: "/emotions-emoji/excited.png",
-  hopeful: "/emotions-emoji/hopeful.png",
-  calm: "/emotions-emoji/calm.png",
-  tired: "/emotions-emoji/tired.png",
-  anxious: "/emotions-emoji/anxious.png",
-  stressed: "/emotions-emoji/stressed.png",
-  angry: "/emotions-emoji/angry.png",
-  lonely: "/emotions-emoji/lonely.png",
-  sad: "/emotions-emoji/sad.png",
-  overwhelmed: "/emotions-emoji/overwhelmed.png",
+  happy: "/emotions-emoji/happy.webp",
+  loved: "/emotions-emoji/loved.webp",
+  excited: "/emotions-emoji/excited.webp",
+  hopeful: "/emotions-emoji/hopefulrev.png",
+  calm: "/emotions-emoji/calm.webp",
+  tired: "/emotions-emoji/tired.webp",
+  anxious: "/emotions-emoji/anxious.webp",
+  stressed: "/emotions-emoji/stressed.webp",
+  angry: "/emotions-emoji/angry.webp",
+  lonely: "/emotions-emoji/lonely.webp",
+  sad: "/emotions-emoji/sad.webp",
+  overwhelmed: "/emotions-emoji/overwhelmed.webp",
 };
 
 function getEmotionArtwork(slug: string) {
@@ -75,7 +76,7 @@ function getEmotionArtwork(slug: string) {
     .trim()
     .replace(/\s+/g, "-");
 
-  return emotionArtwork[normalized] ?? "/emotions-emoji/calm.png";
+  return emotionArtwork[normalized] ?? "/emotions-emoji/calm.webp";
 }
 
 const emotionTranslations: Record<string, { en: string; id: string }> = {
@@ -295,75 +296,40 @@ function getHighestEmotion(emotions: CalendarEmotion[]) {
     return null;
   }
 
-  return [...emotions].sort(
-    (a, b) => b.intensity - a.intensity,
-  )[0];
+  return [...emotions].sort((a, b) => b.intensity - a.intensity)[0];
 }
 
-function getMonthName(
-  year: number,
-  month: number,
-  locale: Locale,
-) {
-  return new Intl.DateTimeFormat(
-    locale === "id" ? "id-ID" : "en-US",
-    {
-      month: "long",
-      year: "numeric",
-    },
-  ).format(
-    new Date(
-      Date.UTC(
-        year,
-        month - 1,
-        1,
-      ),
-    ),
-  );
+function getMonthName(year: number, month: number, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(Date.UTC(year, month - 1, 1)));
 }
 
-function formatDate(
-  dateKey: string,
-  locale: Locale,
-) {
-  return new Intl.DateTimeFormat(
-    locale === "id" ? "id-ID" : "en-US",
-    {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    },
-  ).format(
-    new Date(`${dateKey}T00:00:00`),
-  );
+function formatDate(dateKey: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(`${dateKey}T00:00:00`));
 }
 
 export default function MoodCalendarClient({
   locale,
   userName,
+  nickname,
 }: Props) {
   const isId = locale === "id";
+  const displayName = nickname?.trim() || userName.trim();
 
   const now = new Date();
 
-  const [year, setYear] = useState(
-    now.getFullYear(),
-  );
-
-  const [month, setMonth] = useState(
-    now.getMonth() + 1,
-  );
-
-  const [data, setData] =
-    useState<CalendarResponse | null>(null);
-
-  const [selectedDate, setSelectedDate] =
-    useState<string | null>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [data, setData] = useState<CalendarResponse | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -382,8 +348,7 @@ export default function MoodCalendarClient({
           },
         );
 
-        const result =
-          (await response.json()) as CalendarResponse;
+        const result = (await response.json()) as CalendarResponse;
 
         if (!response.ok || !result.success) {
           throw new Error(
@@ -402,12 +367,10 @@ export default function MoodCalendarClient({
         setSelectedDate((current) => {
           const monthPrefix = `${year}-${String(month).padStart(2, "0")}`;
 
-          // Jika user sudah memilih tanggal dan masih di bulan yang sama, pertahankan
           if (current && current.startsWith(monthPrefix)) {
             return current;
           }
 
-          // Dapatkan tanggal real hari ini dari sistem
           const realNow = new Date();
           const realTodayKey = [
             realNow.getFullYear(),
@@ -415,19 +378,14 @@ export default function MoodCalendarClient({
             String(realNow.getDate()).padStart(2, "0"),
           ].join("-");
 
-          // Jika kalender yang dibuka adalah bulan ini, default ke hari ini
           if (realTodayKey.startsWith(monthPrefix)) {
             return realTodayKey;
           }
 
-          // Jika user membuka bulan lalu/depan, fallback pilih tanggal 1
           return result.days[0]?.date ?? null;
         });
       } catch (err) {
-        console.error(
-          "[MoodCalendar]",
-          err,
-        );
+        console.error("[MoodCalendar]", err);
 
         if (!cancelled) {
           setError(
@@ -463,54 +421,24 @@ export default function MoodCalendarClient({
   }, [data]);
 
   const calendarCells = useMemo(() => {
-    const firstDay = new Date(
-      Date.UTC(
-        year,
-        month - 1,
-        1,
-      ),
-    );
+    const firstDay = new Date(Date.UTC(year, month - 1, 1));
+    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
 
-    const daysInMonth = new Date(
-      Date.UTC(
-        year,
-        month,
-        0,
-      ),
-    ).getUTCDate();
-
-    // Monday = 0 ... Sunday = 6
-    const mondayIndex =
-      (firstDay.getUTCDay() + 6) % 7;
+    const mondayIndex = (firstDay.getUTCDay() + 6) % 7;
 
     const cells: Array<
-      | {
-          type: "empty";
-          key: string;
-        }
-      | {
-          type: "day";
-          key: string;
-          day: number;
-        }
+      | { type: "empty"; key: string }
+      | { type: "day"; key: string; day: number }
     > = [];
 
-    for (
-      let index = 0;
-      index < mondayIndex;
-      index++
-    ) {
+    for (let index = 0; index < mondayIndex; index++) {
       cells.push({
         type: "empty",
         key: `empty-${index}`,
       });
     }
 
-    for (
-      let day = 1;
-      day <= daysInMonth;
-      day++
-    ) {
+    for (let day = 1; day <= daysInMonth; day++) {
       cells.push({
         type: "day",
         day,
@@ -521,9 +449,7 @@ export default function MoodCalendarClient({
     return cells;
   }, [month, year]);
 
-  const selectedDay = selectedDate
-    ? dayMap.get(selectedDate) ?? null
-    : null;
+  const selectedDay = selectedDate ? dayMap.get(selectedDate) ?? null : null;
 
   const selectedEmotion = selectedDay
     ? getHighestEmotion(selectedDay.emotions)
@@ -535,16 +461,8 @@ export default function MoodCalendarClient({
     String(now.getDate()).padStart(2, "0"),
   ].join("-");
 
-  function changeMonth(
-    direction: -1 | 1,
-  ) {
-    const next = new Date(
-      Date.UTC(
-        year,
-        month - 1 + direction,
-        1,
-      ),
-    );
+  function changeMonth(direction: -1 | 1) {
+    const next = new Date(Date.UTC(year, month - 1 + direction, 1));
 
     setYear(next.getUTCFullYear());
     setMonth(next.getUTCMonth() + 1);
@@ -554,7 +472,6 @@ export default function MoodCalendarClient({
   return (
     <main className="min-h-screen bg-[#FDFBF7] px-4 py-6 text-[#4A3F35] md:px-8 md:py-10">
       <div className="mx-auto max-w-6xl">
-
         {/* HEADER */}
         <header className="mb-6 md:mb-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -563,9 +480,10 @@ export default function MoodCalendarClient({
                 {isId ? "Perjalanan mood" : "Mood journey"}
               </p>
 
-              {/* Ubah text-3xl menjadi text-2xl untuk mobile */}
               <h1 className="text-2xl font-semibold tracking-[-0.03em] text-[#4A3F35] md:text-4xl">
-                {isId ? `Kalender mood, ${userName}` : `Your mood calendar, ${userName}`}
+                {isId
+                  ? `Kalender mood, ${displayName}`
+                  : `Your mood calendar, ${displayName}`}
               </h1>
 
               <p className="mt-2 max-w-xl text-sm leading-6 text-[#4A3F35]/60 md:mt-3 md:text-[15px] md:leading-7">
@@ -578,16 +496,17 @@ export default function MoodCalendarClient({
         </header>
 
         {/* MAIN CARD */}
-        {/* Kurangi padding di mobile (p-4) dan gunakan rounded-3xl */}
         <section className="rounded-3xl border border-[#4A3F35]/10 bg-[#FDFBF7] p-4 sm:p-6 md:rounded-[2rem] md:p-8">
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-
             {/* CALENDAR */}
             <div className="min-w-0">
               <div className="mb-5 flex items-center justify-between gap-4 md:mb-6">
                 <div>
                   <div className="flex items-center gap-1.5 md:gap-2">
-                    <CalendarIcon size={14} className="text-[#5C6B9C] md:h-4 md:w-4" />
+                    <CalendarIcon
+                      size={14}
+                      className="text-[#5C6B9C] md:h-4 md:w-4"
+                    />
                     <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5C6B9C] md:text-xs">
                       {isId ? "Kalender mood" : "Mood calendar"}
                     </span>
@@ -603,9 +522,15 @@ export default function MoodCalendarClient({
                     type="button"
                     onClick={() => changeMonth(-1)}
                     className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C] md:h-9 md:w-9"
-                    aria-label={isId ? "Bulan sebelumnya" : "Previous month"}
+                    aria-label={
+                      isId ? "Bulan sebelumnya" : "Previous month"
+                    }
                   >
-                    <ArrowIcon direction="left" size={14} className="md:h-4 md:w-4" />
+                    <ArrowIcon
+                      direction="left"
+                      size={14}
+                      className="md:h-4 md:w-4"
+                    />
                   </button>
 
                   <button
@@ -614,7 +539,11 @@ export default function MoodCalendarClient({
                     className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#4A3F35]/10 text-[#4A3F35]/60 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C] md:h-9 md:w-9"
                     aria-label={isId ? "Bulan berikutnya" : "Next month"}
                   >
-                    <ArrowIcon direction="right" size={14} className="md:h-4 md:w-4" />
+                    <ArrowIcon
+                      direction="right"
+                      size={14}
+                      className="md:h-4 md:w-4"
+                    />
                   </button>
                 </div>
               </div>
@@ -626,7 +555,6 @@ export default function MoodCalendarClient({
               ) : (
                 <>
                   {/* WEEKDAYS */}
-                  {/* Tambahkan gap yang sama persis dengan kalender grid di bawahnya */}
                   <div className="mb-1 grid grid-cols-7 gap-1 sm:gap-1.5 md:mb-2 md:gap-2">
                     {(isId
                       ? ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
@@ -642,12 +570,15 @@ export default function MoodCalendarClient({
                   </div>
 
                   {/* CALENDAR GRID */}
-                  {/* Kecilkan gap untuk mobile (gap-1) */}
                   <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2">
                     {calendarCells.map((cell) => {
                       if (cell.type === "empty") {
-                        // Tambahkan w-full agar ukurannya konsisten
-                        return <div key={cell.key} className="aspect-square w-full" />;
+                        return (
+                          <div
+                            key={cell.key}
+                            className="aspect-square w-full"
+                          />
+                        );
                       }
 
                       const dateKey = [
@@ -657,7 +588,9 @@ export default function MoodCalendarClient({
                       ].join("-");
 
                       const day = dayMap.get(dateKey);
-                      const emotion = day ? getHighestEmotion(day.emotions) : null;
+                      const emotion = day
+                        ? getHighestEmotion(day.emotions)
+                        : null;
                       const selected = selectedDate === dateKey;
                       const isToday = todayKey === dateKey;
 
@@ -667,8 +600,6 @@ export default function MoodCalendarClient({
                           type="button"
                           onClick={() => setSelectedDate(dateKey)}
                           className={[
-                            // HAPUS class min-h-*. Cukup gunakan w-full dan aspect-square 
-                            // agar ukurannya otomatis membentuk kotak sempurna mengikuti grid
                             "group relative flex aspect-square w-full flex-col items-center justify-center rounded-lg border text-center transition sm:rounded-xl",
                             selected
                               ? "border-[#5C6B9C]/50 bg-[#5C6B9C]/8"
@@ -713,36 +644,31 @@ export default function MoodCalendarClient({
                   {/* LEGEND */}
                   <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-[#4A3F35]/8 pt-4 text-[11px] text-[#4A3F35]/50">
                     <span className="font-medium text-[#4A3F35]/65">
-                      {isId
-                        ? "Intensitas"
-                        : "Intensity"}
+                      {isId ? "Intensitas" : "Intensity"}
                     </span>
 
-                    {[1, 2, 3, 4, 5].map(
-                      (level) => (
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <span
+                        key={level}
+                        className="flex items-center gap-1.5"
+                      >
                         <span
-                          key={level}
-                          className="flex items-center gap-1.5"
-                        >
-                          <span
-                            className={[
-                              "h-2.5 w-2.5 rounded-full",
-                              level === 1
-                                ? "bg-[#5C6B9C]"
-                                : level === 2
-                                  ? "bg-[#C1D5C0]"
-                                  : level === 3
-                                    ? "bg-[#FBC4AB]"
-                                    : level === 4
-                                      ? "bg-[#E2725B]"
-                                      : "bg-[#4A3F35]",
-                            ].join(" ")}
-                          />
-
-                          {level}
-                        </span>
-                      ),
-                    )}
+                          className={[
+                            "h-2.5 w-2.5 rounded-full",
+                            level === 1
+                              ? "bg-[#5C6B9C]"
+                              : level === 2
+                                ? "bg-[#C1D5C0]"
+                                : level === 3
+                                  ? "bg-[#FBC4AB]"
+                                  : level === 4
+                                    ? "bg-[#E2725B]"
+                                    : "bg-[#4A3F35]",
+                          ].join(" ")}
+                        />
+                        {level}
+                      </span>
+                    ))}
                   </div>
                 </>
               )}
@@ -754,7 +680,6 @@ export default function MoodCalendarClient({
                 <div className="flex min-h-[320px] items-center justify-center">
                   <div className="text-center">
                     <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#5C6B9C]/20 border-t-[#5C6B9C]" />
-
                     <p className="text-sm text-[#4A3F35]/50">
                       {isId
                         ? "Memuat kalender..."
@@ -766,16 +691,11 @@ export default function MoodCalendarClient({
                 <div>
                   <div className="mb-6">
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
-                      {isId
-                        ? "Detail hari"
-                        : "Day detail"}
+                      {isId ? "Detail hari" : "Day detail"}
                     </p>
 
                     <h3 className="mt-2 text-xl font-semibold leading-tight text-[#4A3F35]">
-                      {formatDate(
-                        selectedDay.date,
-                        locale,
-                      )}
+                      {formatDate(selectedDay.date, locale)}
                     </h3>
                   </div>
 
@@ -786,12 +706,8 @@ export default function MoodCalendarClient({
                           <div>
                             <div className="flex h-16 w-16 items-center justify-center">
                               <EmotionArtwork
-                                slug={
-                                  selectedEmotion.slug
-                                }
-                                name={
-                                  selectedEmotion.name
-                                }
+                                slug={selectedEmotion.slug}
+                                name={selectedEmotion.name}
                                 size={64}
                               />
                             </div>
@@ -809,11 +725,8 @@ export default function MoodCalendarClient({
 
                           <div className="text-right">
                             <span className="text-2xl font-semibold text-[#4A3F35]">
-                              {
-                                selectedEmotion.intensity
-                              }
+                              {selectedEmotion.intensity}
                             </span>
-
                             <span className="text-sm text-[#4A3F35]/40">
                               /5
                             </span>
@@ -822,28 +735,15 @@ export default function MoodCalendarClient({
 
                         <div className="mt-6">
                           <div className="mb-2 flex justify-between text-[11px] text-[#4A3F35]/45">
-                            <span>
-                              {isId
-                                ? "Intensitas"
-                                : "Intensity"}
-                            </span>
-
-                            <span>
-                              {
-                                selectedEmotion.intensity
-                              }
-                              /5
-                            </span>
+                            <span>{isId ? "Intensitas" : "Intensity"}</span>
+                            <span>{selectedEmotion.intensity}/5</span>
                           </div>
 
                           <div className="h-2 overflow-hidden rounded-full bg-[#FDFBF7]">
                             <div
                               className="h-full rounded-full bg-[#E2725B]"
                               style={{
-                                width: `${
-                                  selectedEmotion.intensity *
-                                  20
-                                }%`,
+                                width: `${selectedEmotion.intensity * 20}%`,
                               }}
                             />
                           </div>
@@ -852,15 +752,11 @@ export default function MoodCalendarClient({
                         {selectedEmotion.note && (
                           <div className="mt-6 border-t border-[#4A3F35]/10 pt-5">
                             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
-                              {isId
-                                ? "Catatan"
-                                : "Note"}
+                              {isId ? "Catatan" : "Note"}
                             </p>
 
                             <p className="mt-2 text-sm leading-6 text-[#4A3F35]/70">
-                              {
-                                selectedEmotion.note
-                              }
+                              {selectedEmotion.note}
                             </p>
                           </div>
                         )}
@@ -878,7 +774,6 @@ export default function MoodCalendarClient({
                                 key={context.id}
                                 className="rounded-full bg-[#C1D5C0]/25 px-3 py-1.5 text-xs text-[#4A3F35]/70"
                               >
-                                {/* 3. Panggil fungsi dengan isId */}
                                 {getContextLabel(context, isId)}
                               </span>
                             ))}
@@ -886,21 +781,14 @@ export default function MoodCalendarClient({
                         </div>
                       )}
 
-                      {selectedDay.diary
-                        ?.content && (
+                      {selectedDay.diary?.content && (
                         <div className="mt-6 border-t border-[#4A3F35]/8 pt-5">
                           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4A3F35]/40">
-                            {isId
-                              ? "Diary"
-                              : "Diary"}
+                            Diary
                           </p>
 
                           <p className="mt-2 line-clamp-4 text-sm leading-6 text-[#4A3F35]/60">
-                            {
-                              selectedDay
-                                .diary
-                                .content
-                            }
+                            {selectedDay.diary.content}
                           </p>
                         </div>
                       )}
@@ -911,14 +799,10 @@ export default function MoodCalendarClient({
                           className="mt-6 flex items-center justify-between rounded-xl border border-[#4A3F35]/10 px-4 py-3 text-sm font-medium text-[#4A3F35]/70 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
                         >
                           <span>
-                            {isId
-                              ? "Lihat check-in"
-                              : "View check-in"}
+                            {isId ? "Lihat check-in" : "View check-in"}
                           </span>
 
-                          <ChevronRightIcon
-                            size={16}
-                          />
+                          <ChevronRightIcon size={16} />
                         </Link>
                       )}
                     </div>
@@ -926,16 +810,11 @@ export default function MoodCalendarClient({
                     <div className="flex min-h-[320px] items-center justify-center text-center">
                       <div>
                         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#C1D5C0]/25">
-                          <HeartIcon
-                            size={24}
-                            className="text-[#5C6B9C]"
-                          />
+                          <HeartIcon size={24} className="text-[#5C6B9C]" />
                         </div>
 
                         <h4 className="mt-4 text-base font-semibold text-[#4A3F35]">
-                          {isId
-                            ? "Belum ada mood"
-                            : "No mood recorded"}
+                          {isId ? "Belum ada mood" : "No mood recorded"}
                         </h4>
 
                         <p className="mt-2 text-sm leading-6 text-[#4A3F35]/50">
@@ -951,16 +830,11 @@ export default function MoodCalendarClient({
                 <div className="flex min-h-[320px] items-center justify-center text-center">
                   <div>
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FBC4AB]/25">
-                      <CalendarIcon
-                        size={24}
-                        className="text-[#5C6B9C]"
-                      />
+                      <CalendarIcon size={24} className="text-[#5C6B9C]" />
                     </div>
 
                     <h4 className="mt-4 text-base font-semibold text-[#4A3F35]">
-                      {isId
-                        ? "Pilih tanggal"
-                        : "Select a date"}
+                      {isId ? "Pilih tanggal" : "Select a date"}
                     </h4>
 
                     <p className="mt-2 text-sm leading-6 text-[#4A3F35]/50">

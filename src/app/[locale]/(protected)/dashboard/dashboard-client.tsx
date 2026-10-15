@@ -100,18 +100,18 @@ type DashboardData = {
 ========================================================= */
 
 const emotionArtwork: Record<string, string> = {
-  happy: "/emotions-emoji/happy.png",
-  loved: "/emotions-emoji/loved.png",
-  excited: "/emotions-emoji/excited.png",
+  happy: "/emotions-emoji/happy.webp",
+  loved: "/emotions-emoji/loved.webp",
+  excited: "/emotions-emoji/excited.webp",
   hopeful: "/emotions-emoji/hopefulrev.png",
-  calm: "/emotions-emoji/calm.png",
-  tired: "/emotions-emoji/tired.png",
-  anxious: "/emotions-emoji/anxious.png",
-  stressed: "/emotions-emoji/stressed.png",
-  angry: "/emotions-emoji/angry.png",
-  lonely: "/emotions-emoji/lonely.png",
-  sad: "/emotions-emoji/sad.png",
-  overwhelmed: "/emotions-emoji/overwhelmed.png",
+  calm: "/emotions-emoji/calm.webp",
+  tired: "/emotions-emoji/tired.webp",
+  anxious: "/emotions-emoji/anxious.webp",
+  stressed: "/emotions-emoji/stressed.webp",
+  angry: "/emotions-emoji/angry.webp",
+  lonely: "/emotions-emoji/lonely.webp",
+  sad: "/emotions-emoji/sad.webp",
+  overwhelmed: "/emotions-emoji/overwhelmed.webp",
 };
 
 const emotionColors: Record<string, string> = {
@@ -155,7 +155,11 @@ function getEmotionColor(slug: string) {
 }
 
 // Fungsi untuk mendapatkan nama emosi sesuai bahasa
-function getEmotionName(slug: string, fallbackName: string, isEnglish: boolean) {
+function getEmotionName(
+  slug: string,
+  fallbackName: string,
+  isEnglish: boolean,
+) {
   const normalized = normalizeEmotionSlug(slug);
   const translation = emotionNamesMap[normalized];
   if (!translation) return fallbackName;
@@ -164,7 +168,7 @@ function getEmotionName(slug: string, fallbackName: string, isEnglish: boolean) 
 
 function getEmotionArtwork(emotion: Emotion) {
   const slug = normalizeEmotionSlug(emotion.slug);
-  return emotionArtwork[slug] ?? "/emotions-emoji/calm.png";
+  return emotionArtwork[slug] ?? "/emotions-emoji/calm.webp";
 }
 
 function EmotionArtwork({
@@ -710,7 +714,7 @@ export default function DashboardClient({
           </div>
 
           <div className="mt-7 border-y border-[#C1D5C0]/50 bg-[#FDFBF7] px-2 py-10 sm:px-6">
-            {/* GRAPH - Tambahkan pt-12 agar ada ruang untuk gambar PNG di atas bar */}
+            {/* GRAPH - Tambahkan pt-12 agar ada ruang untuk gambar webp di atas bar */}
             <div className="overflow-x-auto pt-12 pb-5">
               <div className="flex min-w-140 items-end gap-4">
                 {weeklyBars.map((item) => {
@@ -751,16 +755,16 @@ export default function DashboardClient({
                                   className="group relative flex h-full max-w-8.5 flex-1 items-end justify-center"
                                   title={`${getEmotionName(emotion.slug, emotion.name, isEnglish)} · ${intensity}/5`}
                                 >
-                                  {/* GAMBAR PNG EMOSI */}
+                                  {/* GAMBAR webp EMOSI */}
                                   <div
-                                    className="absolute left-1/2 z-10 flex w-8 -translate-x-1/2 items-center justify-center transition-transform duration-200 group-hover:-translate-y-1"
+                                    className="absolute left-1/2 z-10 flex w-6.5 -translate-x-1/2 items-center justify-center transition-transform duration-200 group-hover:-translate-y-1 sm:w-8"
                                     style={{
-                                      bottom: `calc(${height}% + 10px)`,
+                                      bottom: `calc(${height}% + 6px)`,
                                     }}
                                   >
                                     <EmotionArtwork
                                       emotion={emotion}
-                                      size={48}
+                                      size={28}
                                     />
                                   </div>
 

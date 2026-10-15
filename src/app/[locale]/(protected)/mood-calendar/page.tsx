@@ -1,10 +1,8 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
-import {
-  isValidLocale,
-  type Locale,
-} from "@/i18n/config";
+import { isValidLocale, type Locale } from "@/i18n/config";
+import { prisma } from "@/lib/prisma";
 
 import MoodCalendarClient from "./mood-calendar-client";
 
@@ -14,9 +12,7 @@ type Props = {
   }>;
 };
 
-export default async function MoodCalendarPage({
-  params,
-}: Props) {
+export default async function MoodCalendarPage({ params }: Props) {
   const { locale } = await params;
 
   if (!isValidLocale(locale)) {
@@ -33,10 +29,22 @@ export default async function MoodCalendarPage({
     redirect(`/${locale}/onboarding`);
   }
 
+  // Ambil data user beserta nickname dari database
+  const dbUser = await prisma.user.findUnique({
+    where: {
+      id: user.id,
+    },
+    select: {
+      name: true,
+      nickname: true,
+    },
+  });
+
   return (
     <MoodCalendarClient
       locale={locale as Locale}
-      userName={user.name}
+      userName={dbUser?.name ?? user.name ?? ""}
+      nickname={dbUser?.nickname ?? null}
     />
   );
 }

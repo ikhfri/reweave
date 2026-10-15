@@ -60,7 +60,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Senang",
     nameEn: "Happy",
     category: "positive",
-    image: "/emotions-emoji/happy.png",
+    image: "/emotions-emoji/happy.webp",
     color: "#FBC4AB",
 
     descriptionId:
@@ -133,7 +133,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Dicintai",
     nameEn: "Loved",
     category: "positive",
-    image: "/emotions-emoji/loved.png",
+    image: "/emotions-emoji/loved.webp",
     color: "#C39986",
 
     descriptionId:
@@ -206,7 +206,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Antusias",
     nameEn: "Excited",
     category: "positive",
-    image: "/emotions-emoji/excited.png",
+    image: "/emotions-emoji/excited.webp",
     color: "#8F7163",
 
     descriptionId:
@@ -352,7 +352,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Tenang",
     nameEn: "Calm",
     category: "calm",
-    image: "/emotions-emoji/calm.png",
+    image: "/emotions-emoji/calm.webp",
     color: "#B1C5B1",
 
     descriptionId:
@@ -425,7 +425,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Lelah",
     nameEn: "Tired",
     category: "difficult",
-    image: "/emotions-emoji/tired.png",
+    image: "/emotions-emoji/tired.webp",
     color: "#879C87",
 
     descriptionId:
@@ -498,7 +498,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Cemas",
     nameEn: "Anxious",
     category: "difficult",
-    image: "/emotions-emoji/anxious.png",
+    image: "/emotions-emoji/anxious.webp",
     color: "#D66F5A",
 
     descriptionId:
@@ -571,7 +571,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Stres",
     nameEn: "Stressed",
     category: "difficult",
-    image: "/emotions-emoji/stressed.png",
+    image: "/emotions-emoji/stressed.webp",
     color: "#A64D3B",
 
     descriptionId:
@@ -644,7 +644,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Marah",
     nameEn: "Angry",
     category: "difficult",
-    image: "/emotions-emoji/angry.png",
+    image: "/emotions-emoji/angry.webp",
     color: "#782E20",
 
     descriptionId:
@@ -717,7 +717,7 @@ const emotions: EmotionDetail[] = [
   //   nameId: "Frustrasi",
   //   nameEn: "Frustrated",
   //   category: "difficult",
-  //   image: "/emotions-emoji/frustrated.png",
+  //   image: "/emotions-emoji/frustrated.webp",
   //   color: "#A64D3B",
 
   //   descriptionId:
@@ -790,7 +790,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Kesepian",
     nameEn: "Lonely",
     category: "difficult",
-    image: "/emotions-emoji/lonely.png",
+    image: "/emotions-emoji/lonely.webp",
     color: "#7182A4",
 
     descriptionId:
@@ -863,7 +863,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Sedih",
     nameEn: "Sad",
     category: "difficult",
-    image: "/emotions-emoji/sad.png",
+    image: "/emotions-emoji/sad.webp",
     color: "#475677",
 
     descriptionId:
@@ -936,7 +936,7 @@ const emotions: EmotionDetail[] = [
     nameId: "Kewalahan",
     nameEn: "Overwhelmed",
     category: "difficult",
-    image: "/emotions-emoji/overwhelmed.png",
+    image: "/emotions-emoji/overwhelmed.webp",
     color: "#39405B",
 
     descriptionId:

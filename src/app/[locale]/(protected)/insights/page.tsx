@@ -26,10 +26,13 @@ export default async function InsightsPage({
     redirect(`/${locale}/onboarding`);
   }
 
+  const userWithNickname = user as typeof user & { nickname?: string | null };
+
   return (
     <InsightsClient
       locale={locale as Locale}
-      userName={user.name}
+      userName={user.name ?? ""}
+      nickname={userWithNickname.nickname ?? null}
     />
   );
 }

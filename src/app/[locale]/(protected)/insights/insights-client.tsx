@@ -1,65 +1,45 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
 import type { Locale } from "@/i18n/config";
 
 type EmotionSummary = {
   name: string;
-
   slug: string;
-
   category: string;
-
   count: number;
-
   totalIntensity: number;
-
   averageIntensity: number;
 };
 
 type DailyTrend = {
   date: string;
-
   checkinCount: number;
-
   diaryCount: number;
-
   averageStress: number | null;
-
   dominantEmotion: string | null;
 };
 
 type WeeklySummary = {
   totalCheckins: number;
-
   totalDiaries: number;
-
   totalAnalyses: number;
-
   dominantEmotion: EmotionSummary | null;
-
   averageStress: number | null;
-
   sentiment: {
     POSITIVE: number;
-
     NEUTRAL: number;
-
     NEGATIVE: number;
   };
 
   commonContexts: Array<{
     name: string;
-
     slug: string;
-
     count: number;
   }>;
 
   possibleTriggers: Array<{
     name: string;
-
     count: number;
   }>;
 
@@ -67,18 +47,12 @@ type WeeklySummary = {
 
   activity: {
     totalStarted: number;
-
     totalCompleted: number;
-
     completionRate: number;
-
     averageRating: number | null;
-
     mostUsed: {
       id: string;
-
       title: string;
-
       count: number;
     } | null;
   };
@@ -87,427 +61,195 @@ type WeeklySummary = {
 type WeeklyData = {
   period: {
     start: string;
-
     end: string;
   };
-
   summary: WeeklySummary;
+  user?: {
+    nickname?: string | null;
+    name?: string | null;
+  };
 };
 
 type Props = {
   locale: Locale;
-
   userName: string;
+  nickname?: string | null; // Tambahkan nickname prop
 };
 
 type WeeklyAI = {
   headline: string;
-
   summary: string;
-
   highlights: string[];
-
   reflectionPrompt: string;
-
   gentleSuggestion: string;
 };
-/* =========================================================**
 
-*-   CUSTOM MOODIFY ICONS*
-
+/* =========================================================
+   CUSTOM MOODIFY ICONS
 ========================================================= */
 
-function ActivityIcon({
-  size = 16,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+function ActivityIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M4 13.5H7L9.2 7L13 17L15.5 10.5L17 13.5H20"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M4 13.5H7L9.2 7L13 17L15.5 10.5L17 13.5H20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function ChartIcon({
-  size = 16,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+function BookIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M5 20V10M12 20V5M19 20V8"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-
-      <path
-        d="M3.5 20H20.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M5.5 4.5H9.2C10.7 4.5 12 5.7 12 7.2V19C12 17.7 10.9 16.7 9.5 16.7H5.5C4.7 16.7 4 16 4 15.2V6C4 5.2 4.7 4.5 5.5 4.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M18.5 4.5H14.8C13.3 4.5 12 5.7 12 7.2V19C12 17.7 13.1 16.7 14.5 16.7H18.5C19.3 16.7 20 16 20 15.2V6C20 5.2 19.3 4.5 18.5 4.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function BookIcon({
-  size = 16,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+function CalendarIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M5.5 4.5H9.2C10.7 4.5 12 5.7 12 7.2V19C12 17.7 10.9 16.7 9.5 16.7H5.5C4.7 16.7 4 16 4 15.2V6C4 5.2 4.7 4.5 5.5 4.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-
-      <path
-        d="M18.5 4.5H14.8C13.3 4.5 12 5.7 12 7.2V19C12 17.7 13.1 16.7 14.5 16.7H18.5C19.3 16.7 20 16 20 15.2V6C20 5.2 19.3 4.5 18.5 4.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M7.5 3.5V7M16.5 3.5V7M3.5 9.5H20.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 
-function CalendarIcon({
-  size = 16,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+function TrendUpIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect
-        x="3.5"
-        y="5"
-        width="17"
-        height="15"
-        rx="2.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-
-      <path
-        d="M7.5 3.5V7M16.5 3.5V7M3.5 9.5H20.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M4 16L10 10L14 14L20 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15 7H20V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function TrendUpIcon({
-  size = 16,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+function TrendDownIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M4 16L10 10L14 14L20 7"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      <path
-        d="M15 7H20V12"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M4 8L10 14L14 10L20 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15 17H20V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function TrendDownIcon({
-  size = 16,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M4 8L10 14L14 10L20 17"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      <path
-        d="M15 17H20V12"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function LoadingSpinner({
-  size = 18,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+function LoadingSpinner({ size = 18, className = "" }: { size?: number; className?: string }) {
   return (
     <span
       aria-hidden="true"
-
       className={`inline-block animate-spin rounded-full border-2 border-current/20 border-t-current ${className}`}
-
       style={{ width: size, height: size }}
     />
   );
 }
-/* =========================================================**
 
-*-   TRANSLATIONS & HELPERS*
-
+/* =========================================================
+   TRANSLATIONS & HELPERS
 ========================================================= */
 
 const emotionTranslations: Record<string, { en: string; id: string }> = {
   happy: { en: "Happy", id: "Senang" },
-
   loved: { en: "Loved", id: "Dicintai" },
-
   excited: { en: "Excited", id: "Bersemangat" },
-
   hopeful: { en: "Hopeful", id: "Penuh Harapan" },
-
   calm: { en: "Calm", id: "Tenang" },
-
   tired: { en: "Tired", id: "Lelah" },
-
   anxious: { en: "Anxious", id: "Cemas" },
-
   stressed: { en: "Stressed", id: "Stres" },
-
   angry: { en: "Angry", id: "Marah" },
-
   lonely: { en: "Lonely", id: "Kesepian" },
-
   sad: { en: "Sad", id: "Sedih" },
-
   overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
 };
 
 function getEmotionLabel(slug: string, fallbackName: string, isId: boolean) {
   const translation = emotionTranslations[slug.toLowerCase()];
-
   return translation ? (isId ? translation.id : translation.en) : fallbackName;
 }
 
 const contextTranslations: Record<string, { en: string; id: string }> = {
   family: { en: "Family", id: "Keluarga" },
-
   financial: { en: "Financial", id: "Keuangan" },
-
   "life changes": { en: "Life Changes", id: "Perubahan Hidup" },
-
   "life-changes": { en: "Life Changes", id: "Perubahan Hidup" },
-
   other: { en: "Other", id: "Lainnya" },
-
   "physical health": { en: "Physical Health", id: "Kesehatan Fisik" },
-
   "physical-health": { en: "Physical Health", id: "Kesehatan Fisik" },
-
   relationship: { en: "Relationship", id: "Hubungan" },
-
   "school / work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
-
   "school-work": { en: "School / Work", id: "Sekolah / Pekerjaan" },
-
   sleep: { en: "Sleep", id: "Tidur" },
-
   social: { en: "Social", id: "Sosial" },
 };
 
 function getContextLabel(slug: string, fallbackName: string, isId: boolean) {
   const translation = contextTranslations[slug.toLowerCase()];
-
   return translation ? (isId ? translation.id : translation.en) : fallbackName;
 }
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
-// KAMUS JUDUL DAN DESKRIPSI AKTIVITAS*
 
 const wellbeingTranslations: Record<
   string,
   {
     title: { en: string; id: string };
-
     description: { en: string; id: string };
   }
 > = {
   "box breathing": {
     title: { en: "Box Breathing", id: "Pernapasan Kotak" },
-
     description: {
       en: "A simple breathing exercise that can help you slow down and create a moment of calm.",
-
       id: "Latihan pernapasan sederhana yang dapat membantumu rileks dan menciptakan momen ketenangan.",
     },
   },
-
   "gratitude journal": {
     title: { en: "Gratitude Journal", id: "Jurnal Rasa Syukur" },
-
     description: {
       en: "Reflect on a few things that you appreciate or that went well today.",
-
       id: "Renungkan beberapa hal yang kamu hargai atau yang berjalan dengan baik hari ini.",
     },
   },
-
   "grounding 5-4-3-2-1": {
     title: { en: "Grounding 5-4-3-2-1", id: "Teknik Grounding 5-4-3-2-1" },
-
     description: {
       en: "A grounding activity that brings your attention back to the present moment.",
-
       id: "Aktivitas grounding yang membawa kembali perhatianmu sepenuhnya ke masa kini.",
     },
   },
-
   "short walk": {
     title: { en: "Short Walk", id: "Jalan Kaki Sejenak" },
-
     description: {
       en: "Take a short mindful walk and give yourself some space away from your current environment.",
-
       id: "Luangkan waktu sejenak untuk berjalan santai dan beri ruang bagi dirimu dari penatnya lingkungan saat ini.",
     },
   },
-
   "progressive muscle relaxation": {
     title: {
       en: "Progressive Muscle Relaxation",
       id: "Relaksasi Otot Progresif",
     },
-
     description: {
       en: "A relaxation exercise involving gentle tensing and releasing of different muscle groups.",
-
       id: "Latihan relaksasi yang melibatkan ketegangan dan pelepasan lembut pada berbagai kelompok otot secara berurutan.",
     },
   },
 };
-// 1. Tambahkan pengecekan (!title) agar tidak crash kalau data telat load*
 
 function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
-  if (!title) return ""; // Fallback aman*
-
+  if (!title) return "";
   const translation = wellbeingTranslations[title.toLowerCase().trim()];
-
   return translation
     ? isId
       ? translation.title.id
       : translation.title.en
     : title;
 }
-// 2. Tambahkan pengecekan juga di sini*
-
-function getWellbeingDescription(
-  title: string | null | undefined,
-  originalDesc: string | null | undefined,
-  isId: boolean,
-) {
-  if (!title) return originalDesc || ""; // Fallback aman*
-
-  const translation = wellbeingTranslations[title.toLowerCase().trim()];
-
-  return translation
-    ? isId
-      ? translation.description.id
-      : translation.description.en
-    : originalDesc || "";
-}
 
 function getDayLabel(date: string, locale: Locale) {
-  // Potong cuma ambil "YYYY-MM-DD" lalu pecah jadi angka*
-
   const [year, month, day] = date.substring(0, 10).split("-").map(Number);
-  // Buat date menggunakan zona waktu lokal secara eksplisit*
-
   const localDate = new Date(year, month - 1, day);
-
   return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
     weekday: "short",
   }).format(localDate);
@@ -515,54 +257,43 @@ function getDayLabel(date: string, locale: Locale) {
 
 function getDateLabel(date: string, locale: Locale) {
   const [year, month, day] = date.substring(0, 10).split("-").map(Number);
-
   const localDate = new Date(year, month - 1, day);
-
   return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
     day: "numeric",
-
     month: "short",
   }).format(localDate);
 }
-/* =========================================================**
 
-*-   MAIN COMPONENT*
-
+/* =========================================================
+   MAIN COMPONENT
 ========================================================= */
 
-export default function InsightsClient({ locale, userName }: Props) {
+export default function InsightsClient({ locale, userName, nickname }: Props) {
   const isId = locale === "id";
 
   const [data, setData] = useState<WeeklyData | null>(null);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   const [weeklyAI, setWeeklyAI] = useState<WeeklyAI | null>(null);
-
   const [loadingAI, setLoadingAI] = useState(false);
-
   const [weeklyAIStale, setWeeklyAIStale] = useState(false);
-
   const [weeklyAIError, setWeeklyAIError] = useState("");
+
+  const displayName = nickname?.trim() || userName.trim();
 
   async function handleRefreshWeeklyAI() {
     if (loadingAI) return;
 
     try {
       setLoadingAI(true);
-
       setWeeklyAIError("");
 
       const response = await fetch("/api/ai/weekly-summary", {
         method: "POST",
-
         headers: { "Content-Type": "application/json" },
-
         body: JSON.stringify({
           language: locale === "id" ? "id" : "en",
-
           regenerate: true,
         }),
       });
@@ -579,11 +310,9 @@ export default function InsightsClient({ locale, userName }: Props) {
       }
 
       setWeeklyAI(result.summary);
-
       setWeeklyAIStale(false);
     } catch (err) {
       console.error("[Insights:refresh-weekly-ai]", err);
-
       setWeeklyAIError(
         err instanceof Error
           ? err.message
@@ -602,12 +331,10 @@ export default function InsightsClient({ locale, userName }: Props) {
     async function fetchInsights() {
       try {
         setLoading(true);
-
         setError("");
 
         const response = await fetch("/api/insights/weekly", {
           method: "GET",
-
           cache: "no-store",
         });
 
@@ -621,17 +348,13 @@ export default function InsightsClient({ locale, userName }: Props) {
         }
 
         if (cancelled) return;
-
         setData(result);
-
         setLoadingAI(true);
 
         try {
           const aiResponse = await fetch("/api/ai/weekly-summary", {
             method: "POST",
-
             headers: { "Content-Type": "application/json" },
-
             body: JSON.stringify({
               language: locale === "id" ? "id" : "en",
             }),
@@ -641,7 +364,6 @@ export default function InsightsClient({ locale, userName }: Props) {
 
           if (!cancelled && aiResponse.ok && aiResult.summary) {
             setWeeklyAI(aiResult.summary);
-
             setWeeklyAIStale(Boolean(aiResult.stale));
           }
         } catch (aiError) {
@@ -651,7 +373,6 @@ export default function InsightsClient({ locale, userName }: Props) {
         }
       } catch (err) {
         console.error("[Insights]", err);
-
         if (!cancelled) {
           setError(
             err instanceof Error
@@ -675,14 +396,11 @@ export default function InsightsClient({ locale, userName }: Props) {
 
   const weekLabel = useMemo(() => {
     if (!data) return "";
-
     const start = new Date(data.period.start);
-
     const end = new Date(data.period.end);
 
     const formatter = new Intl.DateTimeFormat(isId ? "id-ID" : "en-US", {
       day: "numeric",
-
       month: "short",
     });
 
@@ -691,29 +409,22 @@ export default function InsightsClient({ locale, userName }: Props) {
 
   const stressTrend = useMemo(() => {
     if (!data) return "stable";
-
     const values = data.summary.dailyTrend
-
       .map((item) => item.averageStress)
-
       .filter((value): value is number => typeof value === "number");
 
     if (values.length < 2) return "stable";
 
     const first = values[0];
-
     const last = values[values.length - 1];
 
     if (last > first + 8) return "up";
-
     if (last < first - 8) return "down";
-
     return "stable";
   }, [data]);
 
   const totalSentiment = useMemo(() => {
     if (!data) return 0;
-
     return (
       data.summary.sentiment.POSITIVE +
       data.summary.sentiment.NEUTRAL +
@@ -730,11 +441,9 @@ export default function InsightsClient({ locale, userName }: Props) {
       positive: Math.round(
         (data.summary.sentiment.POSITIVE / totalSentiment) * 100,
       ),
-
       neutral: Math.round(
         (data.summary.sentiment.NEUTRAL / totalSentiment) * 100,
       ),
-
       negative: Math.round(
         (data.summary.sentiment.NEGATIVE / totalSentiment) * 100,
       ),
@@ -743,13 +452,10 @@ export default function InsightsClient({ locale, userName }: Props) {
 
   const highestStress = useMemo(() => {
     if (!data) return null;
-
     return data.summary.dailyTrend.reduce<DailyTrend | null>(
       (highest, current) => {
         if (current.averageStress === null) return highest;
-
         if (!highest || highest.averageStress === null) return current;
-
         return current.averageStress > highest.averageStress
           ? current
           : highest;
@@ -760,7 +466,6 @@ export default function InsightsClient({ locale, userName }: Props) {
 
   const activeDays = useMemo(() => {
     if (!data) return 0;
-
     return data.summary.dailyTrend.filter(
       (day) => day.checkinCount > 0 || day.diaryCount > 0,
     ).length;
@@ -774,13 +479,11 @@ export default function InsightsClient({ locale, userName }: Props) {
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#FBC4AB]/35">
               <LoadingSpinner size={20} className="text-[#5C6B9C]" />
             </div>
-
             <p className="text-sm font-medium text-[#4A3F35]">
               {isId
                 ? "Menyusun perjalanan minggumu..."
                 : "Putting your week together..."}
             </p>
-
             <p className="mt-1 text-xs text-[#4A3F35]/50">
               {isId
                 ? "Sebentar, kita lihat polanya."
@@ -803,7 +506,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                   ? "Data insights belum tersedia."
                   : "Insights data is not available.")}
             </p>
-
             <p className="mt-1 text-sm leading-6 text-[#4A3F35]/60">
               {isId
                 ? "Coba kembali setelah kamu memiliki beberapa check-in atau diary."
@@ -820,8 +522,7 @@ export default function InsightsClient({ locale, userName }: Props) {
   return (
     <main className="min-h-screen bg-[#FDFBF7] px-4 py-6 text-[#4A3F35] md:px-8 md:py-10">
       <div className="mx-auto max-w-6xl">
-        {/*INTRO */}
-
+        {/* INTRO */}
         <header className="mb-10">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
@@ -831,8 +532,8 @@ export default function InsightsClient({ locale, userName }: Props) {
 
               <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#4A3F35] md:text-4xl">
                 {isId
-                  ? `Minggumu bersama dirimu, ${userName}`
-                  : `A look back at your week, ${userName}`}
+                  ? `Minggumu bersama dirimu, ${displayName}`
+                  : `A look back at your week, ${displayName}`}
               </h1>
 
               <p className="mt-3 max-w-xl text-sm leading-7 text-[#4A3F35]/60 md:text-[15px]">
@@ -844,14 +545,12 @@ export default function InsightsClient({ locale, userName }: Props) {
 
             <div className="flex w-fit items-center gap-2 border-b border-[#4A3F35]/15 pb-2 text-sm text-[#4A3F35]/65">
               <CalendarIcon size={16} className="text-[#5C6B9C]" />
-
               <span>{weekLabel}</span>
             </div>
           </div>
         </header>
 
-        {/*WEEK IN NUMBERS */}
-
+        {/* WEEK IN NUMBERS */}
         <section className="mb-12">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
@@ -873,7 +572,6 @@ export default function InsightsClient({ locale, userName }: Props) {
             <div className="border-b border-[#4A3F35]/10 py-5 md:border-b-0 md:border-r md:pr-8">
               <div className="flex items-center gap-3">
                 <ActivityIcon size={16} className="text-[#5C6B9C]" />
-
                 <span className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                   {isId ? "Check-in" : "Check-ins"}
                 </span>
@@ -893,7 +591,6 @@ export default function InsightsClient({ locale, userName }: Props) {
             <div className="border-b border-[#4A3F35]/10 py-5 md:border-b-0 md:border-r md:px-8">
               <div className="flex items-center gap-3">
                 <BookIcon size={16} className="text-[#5C6B9C]" />
-
                 <span className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                   Diary
                 </span>
@@ -910,8 +607,7 @@ export default function InsightsClient({ locale, userName }: Props) {
           </div>
         </section>
 
-        {/*AI REFLECTION */}
-
+        {/* AI REFLECTION */}
         <section className="mb-12">
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.6fr]">
             <div>
@@ -934,7 +630,6 @@ export default function InsightsClient({ locale, userName }: Props) {
 
             <div className="relative overflow-hidden rounded-[2rem] bg-[#FBC4AB]/35 p-6 md:p-8">
               <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#FDFBF7]/50" />
-
               <div className="absolute -bottom-20 right-16 h-36 w-36 rounded-full bg-[#C1D5C0]/30" />
 
               <div className="relative">
@@ -943,7 +638,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                     <div>
                       <div className="mb-4 flex items-center gap-2 text-[#5C6B9C]">
                         <LoadingSpinner size={16} />
-
                         <span className="text-xs font-semibold uppercase tracking-[0.12em]">
                           {isId ? "Membaca pola" : "Reading your patterns"}
                         </span>
@@ -968,17 +662,13 @@ export default function InsightsClient({ locale, userName }: Props) {
 
                         <button
                           type="button"
-
                           onClick={handleRefreshWeeklyAI}
-
                           disabled={loadingAI}
-
                           className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-[#E2725B] px-4 text-xs font-semibold text-white transition hover:bg-[#D96852] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {loadingAI ? (
                             <>
                               <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-
                               {isId ? "Memperbarui..." : "Refreshing..."}
                             </>
                           ) : isId ? (
@@ -1018,7 +708,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                             <span className="mb-2 block text-xs font-semibold text-[#5C6B9C]">
                               0{index + 1}
                             </span>
-
                             <p className="text-sm leading-6 text-[#4A3F35]/75">
                               {highlight}
                             </p>
@@ -1035,7 +724,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                               ? "Untuk direnungkan"
                               : "Something to reflect on"}
                           </p>
-
                           <p className="mt-2 text-sm leading-6 text-[#4A3F35]/80">
                             {weeklyAI.reflectionPrompt}
                           </p>
@@ -1047,7 +735,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                           <p className="text-xs font-semibold text-[#5C6B9C]">
                             {isId ? "Langkah kecil" : "A gentle next step"}
                           </p>
-
                           <p className="mt-2 text-sm leading-6 text-[#4A3F35]/80">
                             {weeklyAI.gentleSuggestion}
                           </p>
@@ -1059,9 +746,26 @@ export default function InsightsClient({ locale, userName }: Props) {
                   <div className="py-6">
                     <p className="text-sm leading-7 text-[#4A3F35]/65">
                       {isId
-                        ? "Belum ada cukup data untuk membuat refleksi mingguan."
-                        : "There is not enough data to create a weekly reflection yet."}
+                        ? "Belum ada refleksi mingguan yang tersedia. Silakan buat atau perbarui refleksi dengan menekan tombol di bawah."
+                        : "There is no weekly reflection available yet. Click below to generate one."}
                     </p>
+                    <button
+                      type="button"
+                      onClick={handleRefreshWeeklyAI}
+                      disabled={loadingAI}
+                      className="mt-4 inline-flex h-9 items-center justify-center gap-2 rounded-[10px] bg-[#E2725B] px-4 text-xs font-semibold text-white transition hover:bg-[#D96852] disabled:opacity-60"
+                    >
+                      {loadingAI ? (
+                        <>
+                          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                          {isId ? "Menyusun..." : "Generating..."}
+                        </>
+                      ) : isId ? (
+                        "Buat Refleksi AI"
+                      ) : (
+                        "Generate AI Reflection"
+                      )}
+                    </button>
                   </div>
                 )}
               </div>
@@ -1069,8 +773,7 @@ export default function InsightsClient({ locale, userName }: Props) {
           </div>
         </section>
 
-        {/*EMOTIONAL RHYTHM */}
-
+        {/* EMOTIONAL RHYTHM */}
         <section className="mb-12">
           <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -1092,7 +795,6 @@ export default function InsightsClient({ locale, userName }: Props) {
             {stressTrend === "up" && (
               <div className="flex items-center gap-2 text-xs font-medium text-[#E2725B]">
                 <TrendUpIcon size={16} />
-
                 {isId ? "Stress cenderung meningkat" : "Stress tended upward"}
               </div>
             )}
@@ -1100,7 +802,6 @@ export default function InsightsClient({ locale, userName }: Props) {
             {stressTrend === "down" && (
               <div className="flex items-center gap-2 text-xs font-medium text-[#5C6B9C]">
                 <TrendDownIcon size={16} />
-
                 {isId ? "Stress cenderung menurun" : "Stress tended downward"}
               </div>
             )}
@@ -1118,10 +819,8 @@ export default function InsightsClient({ locale, userName }: Props) {
             <div className="grid min-h-[320px] grid-cols-7 gap-2 px-4 pb-5 pt-8 md:px-8">
               {summary.dailyTrend.map((day) => {
                 const stress = day.averageStress ?? 0;
-
                 const height =
                   stress > 0 ? Math.max(7, Math.min(100, stress)) : 4;
-
                 const hasActivity = day.checkinCount > 0 || day.diaryCount > 0;
 
                 return (
@@ -1135,14 +834,10 @@ export default function InsightsClient({ locale, userName }: Props) {
                       <div
                         className={[
                           "relative z-10 w-[70%] max-w-10 rounded-t-[1rem] transition-all duration-300",
-
                           hasActivity ? "bg-[#FBC4AB]" : "bg-[#C1D5C0]/45",
-
                           "group-hover:bg-[#E2725B]",
                         ].join(" ")}
-
                         style={{ height: `${height}%` }}
-
                         title={
                           day.averageStress !== null
                             ? `Stress: ${day.averageStress}`
@@ -1173,9 +868,7 @@ export default function InsightsClient({ locale, userName }: Props) {
 
             <div className="flex items-center justify-between border-t border-[#4A3F35]/8 px-5 py-4 text-[10px] uppercase tracking-[0.12em] text-[#4A3F35]/35 md:px-8">
               <span>0</span>
-
               <span>50</span>
-
               <span>100</span>
             </div>
           </div>
@@ -1189,11 +882,9 @@ export default function InsightsClient({ locale, userName }: Props) {
           )}
         </section>
 
-        {/*EMOTION + SENTIMENT */}
-
+        {/* EMOTION + SENTIMENT */}
         <section className="mb-12 grid gap-10 lg:grid-cols-[1fr_1.15fr]">
-          {/*DOMINANT EMOTION */}
-
+          {/* DOMINANT EMOTION */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Emosi utama" : "Main emotion"}
@@ -1240,7 +931,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                   <div className="h-2 overflow-hidden rounded-full bg-[#C1D5C0]/35">
                     <div
                       className="h-full rounded-full bg-[#E2725B]"
-
                       style={{
                         width: `${Math.min(100, Math.max(0, summary.dominantEmotion.averageIntensity * 10))}%`,
                       }}
@@ -1259,8 +949,7 @@ export default function InsightsClient({ locale, userName }: Props) {
             )}
           </div>
 
-          {/*SENTIMENT */}
-
+          {/* SENTIMENT */}
           <div className="rounded-[2rem] bg-[#C1D5C0]/25 p-6 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Gambaran sentimen" : "Sentiment picture"}
@@ -1284,12 +973,10 @@ export default function InsightsClient({ locale, userName }: Props) {
                   className="bg-[#5C6B9C]"
                   style={{ width: `${sentimentPercentages.positive}%` }}
                 />
-
                 <div
                   className="bg-[#C1D5C0]"
                   style={{ width: `${sentimentPercentages.neutral}%` }}
                 />
-
                 <div
                   className="bg-[#E2725B]"
                   style={{ width: `${sentimentPercentages.negative}%` }}
@@ -1300,12 +987,10 @@ export default function InsightsClient({ locale, userName }: Props) {
                 <div>
                   <div className="mb-2 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#5C6B9C]" />
-
                     <span className="text-xs text-[#4A3F35]/50">
                       {isId ? "Positif" : "Positive"}
                     </span>
                   </div>
-
                   <p className="text-2xl font-semibold text-[#4A3F35]">
                     {sentimentPercentages.positive}%
                   </p>
@@ -1314,12 +999,10 @@ export default function InsightsClient({ locale, userName }: Props) {
                 <div>
                   <div className="mb-2 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#C1D5C0]" />
-
                     <span className="text-xs text-[#4A3F35]/50">
                       {isId ? "Netral" : "Neutral"}
                     </span>
                   </div>
-
                   <p className="text-2xl font-semibold text-[#4A3F35]">
                     {sentimentPercentages.neutral}%
                   </p>
@@ -1328,12 +1011,10 @@ export default function InsightsClient({ locale, userName }: Props) {
                 <div>
                   <div className="mb-2 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#E2725B]" />
-
                     <span className="text-xs text-[#4A3F35]/50">
                       {isId ? "Negatif" : "Negative"}
                     </span>
                   </div>
-
                   <p className="text-2xl font-semibold text-[#4A3F35]">
                     {sentimentPercentages.negative}%
                   </p>
@@ -1343,8 +1024,7 @@ export default function InsightsClient({ locale, userName }: Props) {
           </div>
         </section>
 
-        {/*WELLBEING ACTIVITIES */}
-
+        {/* WELLBEING ACTIVITIES */}
         <section className="mb-12">
           <div className="mb-6 max-w-xl">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
@@ -1367,11 +1047,9 @@ export default function InsightsClient({ locale, userName }: Props) {
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Dimulai" : "Started"}
               </p>
-
               <p className="mt-2 text-3xl font-semibold text-[#4A3F35]">
                 {summary.activity.totalStarted}
               </p>
-
               <p className="mt-1 text-xs text-[#4A3F35]/40">
                 {isId ? "aktivitas" : "activities"}
               </p>
@@ -1381,11 +1059,9 @@ export default function InsightsClient({ locale, userName }: Props) {
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Selesai" : "Completed"}
               </p>
-
               <p className="mt-2 text-3xl font-semibold text-[#4A3F35]">
                 {summary.activity.totalCompleted}
               </p>
-
               <p className="mt-1 text-xs text-[#4A3F35]/40">
                 {isId ? "aktivitas" : "activities"}
               </p>
@@ -1395,15 +1071,12 @@ export default function InsightsClient({ locale, userName }: Props) {
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Tingkat penyelesaian" : "Completion rate"}
               </p>
-
               <p className="mt-2 text-3xl font-semibold text-[#4A3F35]">
                 {summary.activity.completionRate}%
               </p>
-
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#C1D5C0]/35">
                 <div
                   className="h-full rounded-full bg-[#5C6B9C]"
-
                   style={{
                     width: `${Math.min(100, Math.max(0, summary.activity.completionRate))}%`,
                   }}
@@ -1415,17 +1088,14 @@ export default function InsightsClient({ locale, userName }: Props) {
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Rata-rata rating" : "Average rating"}
               </p>
-
               <p className="mt-2 text-3xl font-semibold text-[#4A3F35]">
                 {summary.activity.averageRating ?? "—"}
-
                 {summary.activity.averageRating !== null && (
                   <span className="ml-1 text-sm font-normal text-[#4A3F35]/40">
                     / 5
                   </span>
                 )}
               </p>
-
               <p className="mt-1 text-xs text-[#4A3F35]/40">
                 {isId ? "dari aktivitas yang dinilai" : "from rated activities"}
               </p>
@@ -1441,8 +1111,6 @@ export default function InsightsClient({ locale, userName }: Props) {
                     : "Your most-used activity"}
                 </p>
 
-                {/*Cukup panggil fungsi langsung, tidak perlu .map() */}
-
                 <h3 className="mt-1 text-lg font-semibold text-[#4A3F35]">
                   {getWellbeingTitle(summary.activity.mostUsed.title, isId)}
                 </h3>
@@ -1456,8 +1124,7 @@ export default function InsightsClient({ locale, userName }: Props) {
           )}
         </section>
 
-        {/*CONTEXT + TRIGGERS */}
-
+        {/* CONTEXT + TRIGGERS */}
         <section className="mb-12">
           <div className="mb-7">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
@@ -1478,8 +1145,7 @@ export default function InsightsClient({ locale, userName }: Props) {
           </div>
 
           <div className="grid gap-10 md:grid-cols-2">
-            {/*CONTEXT */}
-
+            {/* CONTEXT */}
             <div>
               <h3 className="text-sm font-semibold text-[#4A3F35]">
                 {isId ? "Konteks yang sering dipilih" : "Common contexts"}
@@ -1515,8 +1181,7 @@ export default function InsightsClient({ locale, userName }: Props) {
               </div>
             </div>
 
-            {/*TRIGGERS */}
-
+            {/* TRIGGERS */}
             <div>
               <h3 className="text-sm font-semibold text-[#4A3F35]">
                 {isId ? "Kemungkinan pemicu" : "Possible triggers"}
@@ -1560,8 +1225,7 @@ export default function InsightsClient({ locale, userName }: Props) {
           </div>
         </section>
 
-        {/*ABOUT INSIGHTS */}
-
+        {/* ABOUT INSIGHTS */}
         <section className="border-t border-[#4A3F35]/10 pt-7">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">

@@ -1,20 +1,25 @@
 import { NextResponse } from "next/server";
-
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 function getDateRange() {
   const end = new Date();
-
   const start = new Date(end);
   start.setDate(start.getDate() - 6);
-
   start.setHours(0, 0, 0, 0);
 
   return {
     start,
     end,
   };
+}
+
+// Helper format tanggal lokal (YYYY-MM-DD) tanpa pengaruh UTC offset
+function formatDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export async function GET() {
@@ -40,21 +45,17 @@ export async function GET() {
               lte: end,
             },
           },
-
           orderBy: {
             checkinDate: "asc",
           },
-
           select: {
             id: true,
             checkinDate: true,
             overallIntensity: true,
-
             emotions: {
               select: {
                 intensity: true,
                 position: true,
-
                 emotion: {
                   select: {
                     name: true,
@@ -63,12 +64,10 @@ export async function GET() {
                   },
                 },
               },
-
               orderBy: {
                 position: "asc",
               },
             },
-
             contexts: {
               select: {
                 context: {
@@ -90,11 +89,9 @@ export async function GET() {
               lte: end,
             },
           },
-
           orderBy: {
             createdAt: "asc",
           },
-
           select: {
             id: true,
             content: true,
@@ -111,25 +108,20 @@ export async function GET() {
               lte: end,
             },
           },
-
           orderBy: {
             createdAt: "asc",
           },
-
           select: {
             id: true,
             checkinId: true,
             diaryEntryId: true,
-
             summary: true,
             stressScore: true,
             sentiment: true,
             emotionalState: true,
-
             possibleTriggers: true,
             thinkingPatterns: true,
             recommendations: true,
-
             riskLevel: true,
             createdAt: true,
           },
@@ -161,12 +153,7 @@ export async function GET() {
         }),
       ]);
 
-    /*
-     * ----------------------------------------
-     * EMOTION FREQUENCY
-     * ----------------------------------------
-     */
-
+    /* EMOTION FREQUENCY */
     const emotionMap = new Map<
       string,
       {
@@ -181,7 +168,6 @@ export async function GET() {
     for (const checkin of checkins) {
       for (const item of checkin.emotions) {
         const key = item.emotion.slug;
-
         const existing = emotionMap.get(key);
 
         if (existing) {
@@ -199,56 +185,34 @@ export async function GET() {
       }
     }
 
-    const emotions = Array.from(
-      emotionMap.values(),
-    )
+    const emotions = Array.from(emotionMap.values())
       .map((emotion) => ({
         ...emotion,
         averageIntensity:
           emotion.count > 0
-            ? Number(
-                (
-                  emotion.totalIntensity /
-                  emotion.count
-                ).toFixed(1),
-              )
+            ? Number((emotion.totalIntensity / emotion.count).toFixed(1))
             : 0,
       }))
       .sort((a, b) => b.count - a.count);
 
     const dominantEmotion = emotions[0] ?? null;
 
-    /*
-     * ----------------------------------------
-     * STRESS
-     * ----------------------------------------
-     */
-
+    /* STRESS */
     const stressValues = analyses
       .map((analysis) => analysis.stressScore)
-      .filter(
-        (score): score is number =>
-          typeof score === "number",
-      );
+      .filter((score): score is number => typeof score === "number");
 
     const averageStress =
       stressValues.length > 0
         ? Number(
             (
-              stressValues.reduce(
-                (sum, score) => sum + score,
-                0,
-              ) / stressValues.length
+              stressValues.reduce((sum, score) => sum + score, 0) /
+              stressValues.length
             ).toFixed(1),
           )
         : null;
 
-    /*
-     * ----------------------------------------
-     * SENTIMENT
-     * ----------------------------------------
-     */
-
+    /* SENTIMENT */
     const sentimentCounts = {
       POSITIVE: 0,
       NEUTRAL: 0,
@@ -261,12 +225,7 @@ export async function GET() {
       }
     }
 
-    /*
-     * ----------------------------------------
-     * CONTEXT / TRIGGER FREQUENCY
-     * ----------------------------------------
-     */
-
+    /* CONTEXT FREQUENCY */
     const contextMap = new Map<
       string,
       {
@@ -279,7 +238,6 @@ export async function GET() {
     for (const checkin of checkins) {
       for (const item of checkin.contexts) {
         const key = item.context.slug;
-
         const existing = contextMap.get(key);
 
         if (existing) {
@@ -294,42 +252,22 @@ export async function GET() {
       }
     }
 
-    const commonContexts = Array.from(
-      contextMap.values(),
-    )
+    const commonContexts = Array.from(contextMap.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    /*
-     * ----------------------------------------
-     * AI TRIGGERS
-     * ----------------------------------------
-     */
-
-    const triggerMap = new Map<
-      string,
-      number
-    >();
+    /* AI TRIGGERS */
+    const triggerMap = new Map<string, number>();
 
     for (const analysis of analyses) {
-      if (
-        !Array.isArray(
-          analysis.possibleTriggers,
-        )
-      ) {
+      if (!Array.isArray(analysis.possibleTriggers)) {
         continue;
       }
 
       for (const trigger of analysis.possibleTriggers) {
-        if (typeof trigger !== "string") {
-          continue;
-        }
-
+        if (typeof trigger !== "string") continue;
         const normalized = trigger.trim();
-
-        if (!normalized) {
-          continue;
-        }
+        if (!normalized) continue;
 
         triggerMap.set(
           normalized,
@@ -338,9 +276,7 @@ export async function GET() {
       }
     }
 
-    const possibleTriggers = Array.from(
-      triggerMap.entries(),
-    )
+    const possibleTriggers = Array.from(triggerMap.entries())
       .map(([name, count]) => ({
         name,
         count,
@@ -348,12 +284,7 @@ export async function GET() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    /*
-     * ----------------------------------------
-     * DAILY TREND
-     * ----------------------------------------
-     */
-
+    /* DAILY TREND - Perbaikan Penanganan Tanggal Lokal */
     const dailyTrend = [];
 
     for (let i = 0; i < 7; i++) {
@@ -365,60 +296,41 @@ export async function GET() {
 
       const dayCheckins = checkins.filter(
         (checkin) =>
-          checkin.checkinDate >= date &&
-          checkin.checkinDate < nextDate,
+          checkin.checkinDate >= date && checkin.checkinDate < nextDate,
       );
 
       const dayAnalyses = analyses.filter(
         (analysis) =>
-          analysis.createdAt >= date &&
-          analysis.createdAt < nextDate,
+          analysis.createdAt >= date && analysis.createdAt < nextDate,
       );
 
       const dayStress = dayAnalyses
         .map((analysis) => analysis.stressScore)
-        .filter(
-          (score): score is number =>
-            typeof score === "number",
-        );
+        .filter((score): score is number => typeof score === "number");
 
       const averageDayStress =
         dayStress.length > 0
           ? Number(
               (
-                dayStress.reduce(
-                  (sum, score) => sum + score,
-                  0,
-                ) / dayStress.length
+                dayStress.reduce((sum, score) => sum + score, 0) /
+                dayStress.length
               ).toFixed(1),
             )
           : null;
 
-      const emotionCounts = new Map<
-        string,
-        number
-      >();
+      const emotionCounts = new Map<string, number>();
 
       for (const checkin of dayCheckins) {
         for (const emotion of checkin.emotions) {
           const key = emotion.emotion.slug;
-
-          emotionCounts.set(
-            key,
-            (emotionCounts.get(key) ?? 0) + 1,
-          );
+          emotionCounts.set(key, (emotionCounts.get(key) ?? 0) + 1);
         }
       }
 
-      let dominantDayEmotion: string | null =
-        null;
-
+      let dominantDayEmotion: string | null = null;
       let highestCount = 0;
 
-      for (const [
-        emotion,
-        count,
-      ] of emotionCounts) {
+      for (const [emotion, count] of emotionCounts) {
         if (count > highestCount) {
           highestCount = count;
           dominantDayEmotion = emotion;
@@ -426,38 +338,26 @@ export async function GET() {
       }
 
       dailyTrend.push({
-        date: date.toISOString().split("T")[0],
+        date: formatDateKey(date), // Menggunakan helper formatDateKey lokal
         checkinCount: dayCheckins.length,
         diaryCount: diaries.filter(
           (diary) =>
-            diary.createdAt >= date &&
-            diary.createdAt < nextDate,
+            diary.createdAt >= date && diary.createdAt < nextDate,
         ).length,
         averageStress: averageDayStress,
         dominantEmotion: dominantDayEmotion,
       });
     }
 
-    /*
-     * ----------------------------------------
-     * ACTIVITY ANALYTICS
-     * ----------------------------------------
-     */
-
-    const completedActivities = activityLogs.filter(
-      (log) => log.completed,
-    );
-
+    /* ACTIVITY ANALYTICS */
+    const completedActivities = activityLogs.filter((log) => log.completed);
     const totalActivitiesStarted = activityLogs.length;
-    const totalActivitiesCompleted =
-      completedActivities.length;
+    const totalActivitiesCompleted = completedActivities.length;
 
     const activityCompletionRate =
       totalActivitiesStarted > 0
         ? Math.round(
-            (totalActivitiesCompleted /
-              totalActivitiesStarted) *
-              100,
+            (totalActivitiesCompleted / totalActivitiesStarted) * 100,
           )
         : 0;
 
@@ -465,19 +365,15 @@ export async function GET() {
       .map((log) => log.userRating)
       .filter(
         (rating): rating is number =>
-          typeof rating === "number" &&
-          rating >= 1 &&
-          rating <= 5,
+          typeof rating === "number" && rating >= 1 && rating <= 5,
       );
 
     const averageActivityRating =
       activityRatings.length > 0
         ? Number(
             (
-              activityRatings.reduce(
-                (sum, rating) => sum + rating,
-                0,
-              ) / activityRatings.length
+              activityRatings.reduce((sum, rating) => sum + rating, 0) /
+              activityRatings.length
             ).toFixed(1),
           )
         : null;
@@ -492,10 +388,7 @@ export async function GET() {
     >();
 
     for (const log of activityLogs) {
-      const existing = activityFrequency.get(
-        log.activity.id,
-      );
-
+      const existing = activityFrequency.get(log.activity.id);
       if (existing) {
         existing.count += 1;
       } else {
@@ -520,29 +413,17 @@ export async function GET() {
       mostUsed: mostUsedActivity,
     };
 
-    /*
-     * ----------------------------------------
-     * SUMMARY
-     * ----------------------------------------
-     */
-
+    /* SUMMARY RESPONSE */
     const summary = {
       totalCheckins: checkins.length,
       totalDiaries: diaries.length,
       totalAnalyses: analyses.length,
-
       dominantEmotion,
-
       averageStress,
-
       sentiment: sentimentCounts,
-
       commonContexts,
-
       possibleTriggers,
-
       dailyTrend,
-
       activity: activitySummary,
     };
 
@@ -551,27 +432,16 @@ export async function GET() {
         start: start.toISOString(),
         end: end.toISOString(),
       },
-
       summary,
-
       checkins,
-
       diaries,
-
       analyses,
-
       activityLogs,
     });
   } catch (error) {
-    console.error(
-      "[GET /api/insights/weekly]",
-      error,
-    );
-
+    console.error("[GET /api/insights/weekly]", error);
     return NextResponse.json(
-      {
-        error: "Failed to generate weekly insights",
-      },
+      { error: "Failed to generate weekly insights" },
       { status: 500 },
     );
   }

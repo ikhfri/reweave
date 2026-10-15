@@ -3,10 +3,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  generateGeminiContent,
-  GEMINI_MODEL,
-} from "@/lib/gemini";
+import { generateGeminiContent, GEMINI_MODEL } from "@/lib/gemini";
 
 const analyzeSchema = z.object({
   checkinId: z.string().min(1, "Check-in ID is required"),
@@ -32,8 +29,6 @@ const aiResponseSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-
-
     const user = await getCurrentUser();
 
     if (!user) {
@@ -45,7 +40,6 @@ export async function POST(request: Request) {
         { status: 401 },
       );
     }
-
 
     const body = await request.json();
     const parsed = analyzeSchema.safeParse(body);
@@ -62,8 +56,6 @@ export async function POST(request: Request) {
     }
 
     const { checkinId, language } = parsed.data;
-
-
 
     const checkin = await prisma.dailyCheckin.findFirst({
       where: {
@@ -103,8 +95,6 @@ export async function POST(request: Request) {
       );
     }
 
-
-
     const userPreference = await prisma.userPreference.findUnique({
       where: {
         userId: user.id,
@@ -133,8 +123,6 @@ export async function POST(request: Request) {
       ]),
     );
 
-
-
     const existingAnalysis = await prisma.aIAnalysis.findFirst({
       where: {
         userId: user.id,
@@ -153,8 +141,6 @@ export async function POST(request: Request) {
       });
     }
 
-
-
     const emotions = checkin.emotions.map((item) => ({
       name: item.emotion.name,
       slug: item.emotion.slug,
@@ -162,14 +148,10 @@ export async function POST(request: Request) {
       note: item.note ?? null,
     }));
 
-    const contexts = checkin.contexts.map(
-      (item) => item.context.name,
-    );
+    const contexts = checkin.contexts.map((item) => item.context.name);
 
     const diaryEntry = checkin.diaryEntries[0] ?? null;
     const diaryContent = diaryEntry?.content?.trim() ?? "";
-
-
 
     const languageInstruction =
       language === "id"
@@ -212,7 +194,6 @@ Technical enum values must remain exactly as specified:
 POSITIVE, NEUTRAL, NEGATIVE
 LOW, MODERATE, HIGH
 `;
-
 
     const personalizationContext = `
 USER PERSONALIZATION
@@ -482,21 +463,25 @@ Use this exact structure:
 }
 `;
 
- 
     const response = await generateGeminiContent(prompt, 3);
     const rawText = response.text;
 
     if (!rawText) {
-      throw new Error("Gemini returned an empty response.");
+      throw new Error("AI returned an empty response.");
     }
-
 
     let aiData: unknown;
 
     try {
-      aiData = JSON.parse(rawText);
+      // Membersihkan tag ```json ... ``` sebelum parse
+      const cleanedText = rawText
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+
+      aiData = JSON.parse(cleanedText);
     } catch {
-      console.error("Invalid Gemini JSON:", rawText);
+      console.error("Invalid AI JSON:", rawText);
 
       return NextResponse.json(
         {
@@ -535,29 +520,21 @@ Use this exact structure:
 
         summary: analysisData.summary,
 
-        validationMessage:
-          analysisData.validationMessage,
+        validationMessage: analysisData.validationMessage,
 
-        stressScore:
-          analysisData.stressScore,
+        stressScore: analysisData.stressScore,
 
-        sentiment:
-          analysisData.sentiment,
+        sentiment: analysisData.sentiment,
 
-        emotionalState:
-          analysisData.emotionalState,
+        emotionalState: analysisData.emotionalState,
 
-        possibleTriggers:
-          analysisData.possibleTriggers,
+        possibleTriggers: analysisData.possibleTriggers,
 
-        thinkingPatterns:
-          analysisData.thinkingPatterns,
+        thinkingPatterns: analysisData.thinkingPatterns,
 
-        recommendations:
-          analysisData.recommendations,
+        recommendations: analysisData.recommendations,
 
-        riskLevel:
-          analysisData.riskLevel,
+        riskLevel: analysisData.riskLevel,
 
         model: GEMINI_MODEL,
       },
@@ -572,7 +549,6 @@ Use this exact structure:
     });
 
     // --------------------------------------------------
- 
 
     return NextResponse.json(
       {
@@ -583,64 +559,60 @@ Use this exact structure:
       { status: 201 },
     );
   } catch (error: unknown) {
-  console.error("POST /api/ai/analyze error:", error);
+    console.error("POST /api/ai/analyze error:", error);
 
-  let status: number | undefined;
+    let status: number | undefined;
 
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "status" in error
-  ) {
-    const errorStatus = (error as { status: unknown }).status;
+    if (typeof error === "object" && error !== null && "status" in error) {
+      const errorStatus = (error as { status: unknown }).status;
 
-    if (typeof errorStatus === "number") {
-      status = errorStatus;
+      if (typeof errorStatus === "number") {
+        status = errorStatus;
+      }
     }
-  }
 
-  if (status === 503) {
+    if (status === 503) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_TEMPORARILY_UNAVAILABLE",
+          message:
+            "AI analysis is temporarily unavailable. Your check-in has been saved. Please try again.",
+        },
+        { status: 503 },
+      );
+    }
+
+    if (status === 429) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_RATE_LIMITED",
+          message:
+            "AI analysis is temporarily rate limited. Your check-in has been saved. Please try again shortly.",
+        },
+        { status: 429 },
+      );
+    }
+
+    if (status === 500 || status === 408) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_TEMPORARY_ERROR",
+          message:
+            "AI analysis is temporarily unavailable. Your check-in has been saved. Please try again.",
+        },
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,
-        code: "AI_TEMPORARILY_UNAVAILABLE",
-        message:
-          "AI analysis is temporarily unavailable. Your check-in has been saved. Please try again.",
+        message: "Failed to generate AI analysis.",
       },
-      { status: 503 },
+      { status: 500 },
     );
   }
-
-  if (status === 429) {
-    return NextResponse.json(
-      {
-        success: false,
-        code: "AI_RATE_LIMITED",
-        message:
-          "AI analysis is temporarily rate limited. Your check-in has been saved. Please try again shortly.",
-      },
-      { status: 429 },
-    );
-  }
-
-  if (status === 500 || status === 408) {
-    return NextResponse.json(
-      {
-        success: false,
-        code: "AI_TEMPORARY_ERROR",
-        message:
-          "AI analysis is temporarily unavailable. Your check-in has been saved. Please try again.",
-      },
-      { status: 503 },
-    );
-  }
-
-  return NextResponse.json(
-    {
-      success: false,
-      message: "Failed to generate AI analysis.",
-    },
-    { status: 500 },
-  );
-}
 }
