@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export const GEMINI_MODEL = process.env.YUPIAI_MODEL || "cheap-qwen3.7-flash";
 
 function cleanJsonString(raw: string): string {
