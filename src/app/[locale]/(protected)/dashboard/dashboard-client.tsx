@@ -576,7 +576,7 @@ export default function DashboardClient({
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href={`/${locale}/check-in`}
+                href={`/${locale}/moodlog`}
                 className="flex h-11 w-full sm:w-auto items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
               >
                 {data?.today.hasCheckin
