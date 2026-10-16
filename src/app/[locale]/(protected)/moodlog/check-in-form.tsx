@@ -320,7 +320,7 @@ export default function CheckInForm({ locale, userName, nickname }: Props) {
           const success = await analyzeCheckin(existingCheckinId);
 
           if (success) {
-            router.push(`/${locale}/check-in/result/${existingCheckinId}`);
+            router.push(`/${locale}/moodlog/result/${existingCheckinId}`);
             router.refresh();
           }
           return;

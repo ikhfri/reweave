@@ -319,7 +319,7 @@ export default function ActivitiesClient({
 
   if (loading) {
     return (
-      <main className="min-h-full bg-[#fdfbf7] px-4 py-8 sm:px-6 lg:px-8">
+      <main className="min-h-full bg-[#fdfbf7] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex min-h-[65vh] max-w-6xl items-center justify-center">
           <div className="flex flex-col items-center text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#fbc4ab]/35">

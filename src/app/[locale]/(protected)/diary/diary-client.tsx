@@ -188,34 +188,41 @@ function PenIcon({
   );
 }
 
-function SparkleIcon({
-  size = 15,
-  className = "",
-}: {
+import type { SVGProps } from "react";
+
+interface SparkleIconProps extends SVGProps<SVGSVGElement> {
   size?: number;
-  className?: string;
-}) {
+  filled?: boolean;
+}
+
+export function SparkleIcon({
+  size = 18,
+  filled = true,
+  className = "",
+  ...props
+}: SparkleIconProps) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={filled ? "0" : "1.75"}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
       aria-hidden="true"
+      {...props}
     >
-      <path
-        d="M12 3L13.3 8.7L19 10L13.3 11.3L12 17L10.7 11.3L5 10L10.7 8.7L12 3Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M18.5 15L19.1 17.9L22 18.5L19.1 19.1L18.5 22L17.9 19.1L15 18.5L17.9 17.9L18.5 15Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
+      {/* Bintang Utama (Khas AI) */}
+      <path d="M11.5 2C11.5 7.25 7.25 11.5 2 11.5C7.25 11.5 11.5 15.75 11.5 21C11.5 15.75 15.75 11.5 21 11.5C15.75 11.5 11.5 7.25 11.5 2Z" />
+      
+      {/* Kilau Sekunder (Kanan Atas) */}
+      <path d="M19 2C19 3.66 17.66 5 16 5C17.66 5 19 6.34 19 8C19 6.34 20.34 5 22 5C20.34 5 19 3.66 19 2Z" />
+      
+      {/* Kilau Mini (Kanan Bawah) */}
+      <path d="M19.5 16.5C19.5 17.6 18.6 18.5 17.5 18.5C18.6 18.5 19.5 19.4 19.5 20.5C19.5 19.4 20.4 18.5 21.5 18.5C20.4 18.5 19.5 17.6 19.5 16.5Z" />
     </svg>
   );
 }
@@ -544,8 +551,8 @@ export default function DiaryClient({ locale, userName, nickname }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-[#FDFBF7] px-5 pb-20 pt-6 text-[#4A3F35] sm:px-8 lg:px-10 lg:pt-8">
-      <div className="mx-auto max-w-[1120px]">
+    <main className="min-h-screen bg-[#FDFBF7] px-5 pb-20 text-[#4A3F35] sm:px-8 lg:px-10 ">
+      <div className="mx-auto max-w-280">
         {/* PAGE INTRO */}
         <section className="border-b border-[#C1D5C0]/40 pb-8">
           <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
@@ -559,11 +566,11 @@ export default function DiaryClient({ locale, userName, nickname }: Props) {
                 </span>
               </div>
 
-              <h1 className="mt-5 text-[32px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#4A3F35] sm:text-[40px]">
-                {isId
-                  ? `Cerita hari-hari ${displayName}.`
-                  : `${displayName}'s little corner.`}
-              </h1>
+        <h1 className="mt-5 text-[32px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#4A3F35] sm:text-[40px]">
+  {isId
+    ? `Ruang kecil ${displayName}.`
+    : `${displayName}'s little corner.`}
+</h1>
 
               <p className="mt-3 max-w-xl text-[14px] leading-6 text-[#4A3F35]/55">
                 {isId
@@ -598,11 +605,11 @@ export default function DiaryClient({ locale, userName, nickname }: Props) {
           <section className="mt-7 rounded-[22px] bg-[#FBC4AB]/22 p-5 sm:p-7">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/40">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#4A3F35]/40">
                   {isId ? "Catatan baru" : "New reflection"}
                 </p>
 
-                <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.025em] text-[#4A3F35]">
+                <h2 className="mt-2 text-[22px] font-semibold tracking-tight text-[#4A3F35]">
                   {isId ? "Apa yang ada di pikiranmu?" : "What's on your mind?"}
                 </h2>
 
@@ -672,7 +679,7 @@ export default function DiaryClient({ locale, userName, nickname }: Props) {
         {/* CONTENT */}
         <section className="mt-10">
           {loading ? (
-            <div className="flex min-h-[300px] items-center justify-center">
+            <div className="flex min-h-75 items-center justify-center">
               <div className="flex items-center gap-2 text-xs text-[#4A3F35]/45">
                 <LoadingSpinner size={16} />
                 {isId ? "Membuka diary..." : "Opening your diary..."}
@@ -690,7 +697,7 @@ export default function DiaryClient({ locale, userName, nickname }: Props) {
             <div>
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#4A3F35]/35">
                     {isId ? "Catatanmu" : "Your reflections"}
                   </p>
 
@@ -753,12 +760,12 @@ function DiaryEntry({
 
   return (
     <article className="group relative">
-      <div className="absolute bottom-0 left-[13px] top-10 hidden w-px bg-[#C1D5C0]/35 sm:block" />
+      <div className="absolute bottom-0 left-3.25 top-10 hidden w-px bg-[#C1D5C0]/35 sm:block" />
 
       <div className="relative grid gap-5 sm:grid-cols-[28px_1fr]">
         <div className="relative z-10 hidden sm:block">
           <span
-            className={`mt-2 block h-[9px] w-[9px] rounded-full border-2 border-[#FDFBF7] ${
+            className={`mt-2 block h-2.5 w-2.5 rounded-full border-2 border-[#FDFBF7] ${
               index === 0 ? "bg-[#E2725B]" : "bg-[#C1D5C0]"
             }`}
           />
@@ -910,11 +917,11 @@ function EmptyDiary({
           <BookIcon size={24} className="text-[#5C6B9C]" />
         </div>
 
-        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#4A3F35]/35">
+        <p className="mt-6 text-[10px] font-semibold uppercase tracking-widest text-[#4A3F35]/35">
           {isId ? "Halaman masih kosong" : "A blank page"}
         </p>
 
-        <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.025em] text-[#4A3F35]">
+        <h2 className="mt-2 text-[24px] font-semibold tracking-tight text-[#4A3F35]">
           {isId ? "Mulai dari satu cerita." : "Start with one little story."}
         </h2>
 

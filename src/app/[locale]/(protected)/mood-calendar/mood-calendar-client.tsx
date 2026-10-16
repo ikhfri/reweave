@@ -470,7 +470,7 @@ export default function MoodCalendarClient({
   }
 
   return (
-    <main className="min-h-screen bg-[#FDFBF7] px-4 py-6 text-[#4A3F35] md:px-8 md:py-10">
+    <main className="min-h-screen bg-[#FDFBF7] px-4  text-[#4A3F35] md:px-8 ">
       <div className="mx-auto max-w-6xl">
         {/* HEADER */}
         <header className="mb-6 md:mb-8">
@@ -603,7 +603,7 @@ export default function MoodCalendarClient({
                             "group relative flex aspect-square w-full flex-col items-center justify-center rounded-lg border text-center transition sm:rounded-xl",
                             selected
                               ? "border-[#5C6B9C]/50 bg-[#5C6B9C]/8"
-                              : "border-transparent hover:border-[#4A3F35]/10 hover:bg-[#4A3F35]/[0.03]",
+                              : "border-transparent hover:border-[#4A3F35]/10 hover:bg-[#4A3F35]/3",
                           ].join(" ")}
                         >
                           <span
@@ -677,7 +677,7 @@ export default function MoodCalendarClient({
             {/* DETAIL */}
             <aside className="border-t border-[#4A3F35]/8 pt-7 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
               {loading ? (
-                <div className="flex min-h-[320px] items-center justify-center">
+                <div className="flex min-h-80 items-center justify-center">
                   <div className="text-center">
                     <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#5C6B9C]/20 border-t-[#5C6B9C]" />
                     <p className="text-sm text-[#4A3F35]/50">
@@ -807,7 +807,7 @@ export default function MoodCalendarClient({
                       )}
                     </div>
                   ) : (
-                    <div className="flex min-h-[320px] items-center justify-center text-center">
+                    <div className="flex min-h-80 items-center justify-center text-center">
                       <div>
                         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#C1D5C0]/25">
                           <HeartIcon size={24} className="text-[#5C6B9C]" />
@@ -827,7 +827,7 @@ export default function MoodCalendarClient({
                   )}
                 </div>
               ) : (
-                <div className="flex min-h-[320px] items-center justify-center text-center">
+                <div className="flex min-h-80 items-center justify-center text-center">
                   <div>
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FBC4AB]/25">
                       <CalendarIcon size={24} className="text-[#5C6B9C]" />

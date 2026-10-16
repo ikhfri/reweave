@@ -22,10 +22,6 @@ import {
 
 import type { Locale } from "@/i18n/config";
 
-/* ============================================================
-   TYPES
-============================================================ */
-
 type Props = {
   locale: Locale;
 
@@ -45,32 +41,17 @@ type NavigationItem = {
   }>;
 };
 
-/* ============================================================
-   COMPONENT
-============================================================ */
-
-export default function DashboardShell({
-  locale,
-  user,
-  children,
-}: Props) {
+export default function DashboardShell({ locale, user, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [mobileOpen, setMobileOpen] =
-    useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const isEnglish = locale === "en";
 
-  /* ==========================================================
-     PRIMARY NAVIGATION
-  ========================================================== */
-
   const navigation: NavigationItem[] = [
     {
-      label: isEnglish
-        ? "Home"
-        : "Beranda",
+      label: isEnglish ? "Home" : "Beranda",
       href: `/${locale}/dashboard`,
       icon: HomeIcon,
     },
@@ -88,51 +69,35 @@ export default function DashboardShell({
     },
 
     {
-      label: isEnglish
-        ? "Emotions"
-        : "Kenali Emosi",
+      label: isEnglish ? "Emotions" : "Kenali Emosi",
       href: `/${locale}/emotions`,
       icon: WellbeingIcon,
     },
 
     {
-      label: isEnglish
-        ? "Insights"
-        : "Insight",
+      label: isEnglish ? "Insights" : "Insight",
       href: `/${locale}/insights`,
       icon: InsightIcon,
     },
 
     {
-      label: isEnglish
-        ? "Mood Calendar"
-        : "Kalender Mood",
+      label: isEnglish ? "Mood Calendar" : "Kalender Mood",
       href: `/${locale}/mood-calendar`,
       icon: CalendarMoodIcon,
     },
 
     {
-      label: isEnglish
-        ? "Activities"
-        : "Aktivitas",
+      label: isEnglish ? "Activities" : "Aktivitas",
       href: `/${locale}/activities`,
       icon: ActivityIcon,
     },
 
     {
-      label: isEnglish
-        ? "Support"
-        : "Dukungan",
+      label: isEnglish ? "Support" : "Dukungan",
       href: `/${locale}/support`,
       icon: SupportIcon,
     },
   ];
-
-  /* ==========================================================
-     MOBILE NAVIGATION
-
-     Keep the most important destinations visible.
-  ========================================================== */
 
   const mobileNavigation = [
     navigation[0], // Home
@@ -142,97 +107,50 @@ export default function DashboardShell({
     navigation[4], // Insights
   ];
 
-  /* ==========================================================
-     SECONDARY NAVIGATION
-  ========================================================== */
-
   const secondaryNavigation: NavigationItem[] = [
     {
-      label: isEnglish
-        ? "Settings"
-        : "Pengaturan",
+      label: isEnglish ? "Settings" : "Pengaturan",
       href: `/${locale}/settings`,
       icon: SettingsIcon,
     },
 
     {
-      label: isEnglish
-        ? "Privacy"
-        : "Privasi",
+      label: isEnglish ? "Privacy" : "Privasi",
       href: `/${locale}/privacy`,
       icon: PrivacyIcon,
     },
   ];
 
-  /* ==========================================================
-     LOGOUT
-  ========================================================== */
-
   async function handleLogout() {
     try {
-      await fetch(
-        "/api/auth/logout",
-        {
-          method: "POST",
-        },
-      );
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
     } finally {
-      router.push(
-        `/${locale}/login`,
-      );
+      router.push(`/${locale}/login`);
 
       router.refresh();
     }
   }
 
-  /* ==========================================================
-     ACTIVE STATE
-  ========================================================== */
-
-  function isActive(
-    href: string,
-  ) {
-    if (
-      href.endsWith("/dashboard")
-    ) {
+  function isActive(href: string) {
+    if (href.endsWith("/dashboard")) {
       return pathname === href;
     }
 
-    return (
-      pathname === href ||
-      pathname.startsWith(
-        `${href}/`,
-      )
-    );
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
-
-  /* ==========================================================
-     CLOSE MOBILE
-  ========================================================== */
 
   function closeMobile() {
     setMobileOpen(false);
   }
 
-  /* ==========================================================
-     RENDER
-  ========================================================== */
-
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#4A3F35]">
-
-      {/* ======================================================
-          MOBILE OVERLAY
-      ======================================================= */}
-
       {mobileOpen && (
         <button
           type="button"
-          aria-label={
-            isEnglish
-              ? "Close menu"
-              : "Tutup menu"
-          }
+          aria-label={isEnglish ? "Close menu" : "Tutup menu"}
           onClick={closeMobile}
           className="
             fixed
@@ -245,10 +163,6 @@ export default function DashboardShell({
         />
       )}
 
-      {/* ======================================================
-          SIDEBAR
-      ======================================================= */}
-
       <aside
         className={`
           fixed
@@ -256,7 +170,7 @@ export default function DashboardShell({
           left-0
           z-50
           flex
-          w-[246px]
+          w-61.5
           flex-col
           border-r
           border-[#E7DDD5]
@@ -264,19 +178,10 @@ export default function DashboardShell({
           transition-transform
           duration-300
           lg:translate-x-0
-          ${
-            mobileOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-
-        {/* ==================================================
-            BRAND
-        =================================================== */}
-
-        <div className="flex h-[82px] items-center px-6">
+        <div className="flex h-20.5 items-center px-6">
           <Link
             href={`/${locale}/dashboard`}
             onClick={closeMobile}
@@ -300,8 +205,6 @@ export default function DashboardShell({
             />
           </Link>
 
-          {/* MOBILE CLOSE */}
-
           <button
             type="button"
             onClick={closeMobile}
@@ -319,134 +222,79 @@ export default function DashboardShell({
               hover:text-[#4A3F35]
               lg:hidden
             "
-            aria-label={
-              isEnglish
-                ? "Close menu"
-                : "Tutup menu"
-            }
+            aria-label={isEnglish ? "Close menu" : "Tutup menu"}
           >
             <CloseIcon className="h-4 w-4" />
           </button>
         </div>
 
-        {/* ==================================================
-            NAVIGATION AREA
-        =================================================== */}
-
         <div className="flex flex-1 flex-col overflow-y-auto px-4 pb-5">
-
-          {/* PRIMARY LABEL */}
-
           <div className="mb-3 px-2">
             <span className="text-[10px] font-semibold tracking-[0.08em] text-[#4A3F35]/35">
-              {isEnglish
-                ? "EXPLORE"
-                : "JELAJAHI"}
+              {isEnglish ? "EXPLORE" : "JELAJAHI"}
             </span>
           </div>
-
-          {/* PRIMARY NAV */}
 
           <nav
             className="space-y-0.5"
-            aria-label={
-              isEnglish
-                ? "Main navigation"
-                : "Navigasi utama"
-            }
+            aria-label={isEnglish ? "Main navigation" : "Navigasi utama"}
           >
-            {navigation.map(
-              (item) => {
-                const Icon =
-                  item.icon;
+            {navigation.map((item) => {
+              const Icon = item.icon;
 
-                const active =
-                  isActive(
-                    item.href,
-                  );
+              const active = isActive(item.href);
 
-                return (
-                  <NavigationLink
-                    key={item.href}
-                    item={item}
-                    active={active}
-                    onClick={
-                      closeMobile
-                    }
-                  >
-                    <Icon
-                      className="
-                        h-[20px]
-                        w-[20px]
+              return (
+                <NavigationLink
+                  key={item.href}
+                  item={item}
+                  active={active}
+                  onClick={closeMobile}
+                >
+                  <Icon
+                    className="
+                        h-5
+                        w-5
                       "
-                    />
-                  </NavigationLink>
-                );
-              },
-            )}
+                  />
+                </NavigationLink>
+              );
+            })}
           </nav>
-
-          {/* ==================================================
-              DIVIDER
-          =================================================== */}
 
           <div className="my-6 h-px bg-[#C1D5C0]/35" />
 
-          {/* ==================================================
-              SECONDARY LABEL
-          =================================================== */}
-
           <div className="mb-3 px-2">
             <span className="text-[10px] font-semibold tracking-[0.08em] text-[#4A3F35]/35">
-              {isEnglish
-                ? "PERSONAL"
-                : "PRIBADI"}
+              {isEnglish ? "PERSONAL" : "PRIBADI"}
             </span>
           </div>
 
-          {/* SECONDARY NAV */}
-
           <nav
-            aria-label={
-              isEnglish
-                ? "Personal navigation"
-                : "Navigasi pribadi"
-            }
+            aria-label={isEnglish ? "Personal navigation" : "Navigasi pribadi"}
           >
-            {secondaryNavigation.map(
-              (item) => {
-                const Icon =
-                  item.icon;
+            {secondaryNavigation.map((item) => {
+              const Icon = item.icon;
 
-                const active =
-                  isActive(
-                    item.href,
-                  );
+              const active = isActive(item.href);
 
-                return (
-                  <NavigationLink
-                    key={item.href}
-                    item={item}
-                    active={active}
-                    onClick={
-                      closeMobile
-                    }
-                  >
-                    <Icon
-                      className="
-                        h-[20px]
-                        w-[20px]
+              return (
+                <NavigationLink
+                  key={item.href}
+                  item={item}
+                  active={active}
+                  onClick={closeMobile}
+                >
+                  <Icon
+                    className="
+                        h-5
+                        w-5
                       "
-                    />
-                  </NavigationLink>
-                );
-              },
-            )}
+                  />
+                </NavigationLink>
+              );
+            })}
           </nav>
-
-          {/* ==================================================
-              PERSONAL NOTE
-          =================================================== */}
 
           <div className="mt-auto pt-8">
             <div
@@ -461,8 +309,6 @@ export default function DashboardShell({
                 py-4
               "
             >
-              {/* Organic decoration */}
-
               <div
                 className="
                   absolute
@@ -476,7 +322,7 @@ export default function DashboardShell({
               />
 
               <div className="relative">
-                <div className="mb-3 h-[2px] w-7 rounded-full bg-[#E2725B]" />
+                <div className="mb-3 h-0.5 w-7 rounded-full bg-[#E2725B]" />
 
                 <p className="text-[12px] font-semibold leading-5 text-[#4A3F35]">
                   {isEnglish
@@ -494,13 +340,8 @@ export default function DashboardShell({
           </div>
         </div>
 
-        {/* ==================================================
-            USER AREA
-        =================================================== */}
-
         <div className="border-t border-[#E7DDD5] px-4 py-4">
           <div className="flex items-center gap-3">
-
             {/* Avatar */}
 
             <div
@@ -536,8 +377,6 @@ export default function DashboardShell({
               />
             </div>
 
-            {/* User information */}
-
             <div className="min-w-0 flex-1">
               <p className="truncate text-[12px] font-semibold text-[#4A3F35]">
                 {user.name}
@@ -548,16 +387,10 @@ export default function DashboardShell({
               </p>
             </div>
 
-            {/* Logout */}
-
             <button
               type="button"
               onClick={handleLogout}
-              aria-label={
-                isEnglish
-                  ? "Log out"
-                  : "Keluar"
-              }
+              aria-label={isEnglish ? "Log out" : "Keluar"}
               className="
                 flex
                 h-8
@@ -572,29 +405,20 @@ export default function DashboardShell({
                 hover:text-[#4A3F35]
               "
             >
-              <LogoutIcon className="h-[16px] w-[16px]" />
+              <LogoutIcon className="h-4 w-4" />
             </button>
           </div>
         </div>
       </aside>
 
-      {/* ======================================================
-          MAIN AREA
-      ======================================================= */}
-
-      <div className="lg:pl-[246px]">
-
-        {/* ====================================================
-            MOBILE HEADER
-        ===================================================== */}
-
+      <div className="lg:pl-61.5">
         <header
           className="
             sticky
             top-0
             z-30
             flex
-            h-[66px]
+            h-16.5
             items-center
             justify-between
             border-b
@@ -605,14 +429,11 @@ export default function DashboardShell({
             lg:hidden
           "
         >
-
           {/* MENU */}
 
           <button
             type="button"
-            onClick={() =>
-              setMobileOpen(true)
-            }
+            onClick={() => setMobileOpen(true)}
             className="
               flex
               h-9
@@ -625,16 +446,10 @@ export default function DashboardShell({
               hover:bg-[#C1D5C0]/25
               hover:text-[#4A3F35]
             "
-            aria-label={
-              isEnglish
-                ? "Open menu"
-                : "Buka menu"
-            }
+            aria-label={isEnglish ? "Open menu" : "Buka menu"}
           >
-            <MenuIcon className="h-[19px] w-[19px]" />
+            <MenuIcon className="h-4.75 w-4.75" />
           </button>
-
-          {/* MOBILE LOGO */}
 
           <Link
             href={`/${locale}/dashboard`}
@@ -650,8 +465,6 @@ export default function DashboardShell({
               className="h-8 w-auto object-contain"
             />
           </Link>
-
-          {/* MOBILE AVATAR */}
 
           <div
             className="
@@ -686,14 +499,10 @@ export default function DashboardShell({
           </div>
         </header>
 
-        {/* ====================================================
-            DESKTOP TOP BAR
-        ===================================================== */}
-
         <header
           className="
             hidden
-            h-[76px]
+            h-19
             items-center
             justify-between
             border-b
@@ -703,14 +512,9 @@ export default function DashboardShell({
             lg:flex
           "
         >
-
-          {/* Left */}
-
           <div>
-            <p className="text-[10px] font-semibold tracking-[0.1em] text-[#4A3F35]/35">
-              {isEnglish
-                ? "YOUR SPACE"
-                : "RUANGMU"}
+            <p className="text-[10px] font-semibold tracking-widest text-[#4A3F35]/35">
+              {isEnglish ? "YOUR SPACE" : "RUANGMU"}
             </p>
 
             <p className="mt-1 text-[13px] text-[#4A3F35]/55">
@@ -720,8 +524,6 @@ export default function DashboardShell({
             </p>
           </div>
 
-          {/* Right */}
-
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-[12px] font-semibold text-[#4A3F35]">
@@ -729,9 +531,7 @@ export default function DashboardShell({
               </p>
 
               <p className="mt-0.5 text-[10px] text-[#4A3F35]/40">
-                {isEnglish
-                  ? "Your wellbeing space"
-                  : "Ruang wellbeing-mu"}
+                {isEnglish ? "Your wellbeing space" : "Ruang wellbeing-mu"}
               </p>
             </div>
 
@@ -769,10 +569,6 @@ export default function DashboardShell({
           </div>
         </header>
 
-        {/* ====================================================
-            PAGE CONTENT
-        ===================================================== */}
-
         <main
           className="
             min-h-[calc(100vh-66px)]
@@ -788,22 +584,13 @@ export default function DashboardShell({
             xl:px-12
           "
         >
-          <div className="mx-auto w-full max-w-[1280px]">
-
-            {/* GLOBAL BACK */}
-
+          <div className="mx-auto w-full max-w-7xl">
             <BackButton locale={locale} />
 
-            <div className="mt-3">
-              {children}
-            </div>
+            <div className="mt-3">{children}</div>
           </div>
         </main>
       </div>
-
-      {/* ======================================================
-          MOBILE BOTTOM NAVIGATION
-      ======================================================= */}
 
       <nav
         className="
@@ -822,22 +609,17 @@ export default function DashboardShell({
         "
       >
         <div className="mx-auto grid max-w-lg grid-cols-5">
-          {mobileNavigation.map(
-            (item) => {
-              const Icon =
-                item.icon;
+          {mobileNavigation.map((item) => {
+            const Icon = item.icon;
 
-              const active =
-                isActive(
-                  item.href,
-                );
+            const active = isActive(item.href);
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMobile}
-                  className={`
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={closeMobile}
+                className={`
                     relative
                     flex
                     flex-col
@@ -853,12 +635,12 @@ export default function DashboardShell({
                         : "text-[#4A3F35]/40 hover:text-[#4A3F35]/70"
                     }
                   `}
-                >
-                  {/* Active indicator */}
+              >
+                {/* Active indicator */}
 
-                  {active && (
-                    <span
-                      className="
+                {active && (
+                  <span
+                    className="
                         absolute
                         -top-2
                         h-0.5
@@ -866,29 +648,20 @@ export default function DashboardShell({
                         rounded-full
                         bg-[#E2725B]
                       "
-                    />
-                  )}
-
-                  <Icon
-                    className="h-[18px] w-[18px]"
                   />
+                )}
 
-                  <span className="text-[9px] font-medium">
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            },
-          )}
+                <Icon className="h-4.5 w-4.5" />
+
+                <span className="text-[9px] font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </div>
   );
 }
-
-/* ============================================================
-   NAVIGATION LINK
-============================================================ */
 
 function NavigationLink({
   item,
@@ -909,7 +682,7 @@ function NavigationLink({
         group
         relative
         flex
-        h-[43px]
+        h-10.75
         items-center
         gap-3
         rounded-[11px]
@@ -925,8 +698,6 @@ function NavigationLink({
         }
       `}
     >
-      {/* Active line */}
-
       {active && (
         <span
           className="
@@ -934,15 +705,13 @@ function NavigationLink({
             left-0
             top-1/2
             h-5
-            w-[3px]
+            w-0.75
             -translate-y-1/2
             rounded-r-full
             bg-[#E2725B]
           "
         />
       )}
-
-      {/* Icon container */}
 
       <span
         className={`
@@ -971,33 +740,17 @@ function NavigationLink({
   );
 }
 
-/* ============================================================
-   INITIALS
-============================================================ */
-
-function getInitials(
-  name: string,
-) {
+function getInitials(name: string) {
   return name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map(
-      (word) => word[0],
-    )
+    .map((word) => word[0])
     .join("")
     .toUpperCase();
 }
 
-/* ============================================================
-   MENU ICON
-============================================================ */
-
-function MenuIcon({
-  className,
-}: {
-  className?: string;
-}) {
+function MenuIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 48 48"
@@ -1030,15 +783,7 @@ function MenuIcon({
   );
 }
 
-/* ============================================================
-   CLOSE ICON
-============================================================ */
-
-function CloseIcon({
-  className,
-}: {
-  className?: string;
-}) {
+function CloseIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 48 48"
@@ -1064,15 +809,7 @@ function CloseIcon({
   );
 }
 
-/* ============================================================
-   LOGOUT ICON
-============================================================ */
-
-function LogoutIcon({
-  className,
-}: {
-  className?: string;
-}) {
+function LogoutIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 48 48"

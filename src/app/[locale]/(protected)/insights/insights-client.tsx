@@ -1,8 +1,6 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import type { Locale } from "@/i18n/config";
-
 type EmotionSummary = {
   name: string;
   slug: string;
@@ -11,7 +9,6 @@ type EmotionSummary = {
   totalIntensity: number;
   averageIntensity: number;
 };
-
 type DailyTrend = {
   date: string;
   checkinCount: number;
@@ -19,7 +16,6 @@ type DailyTrend = {
   averageStress: number | null;
   dominantEmotion: string | null;
 };
-
 type WeeklySummary = {
   totalCheckins: number;
   totalDiaries: number;
@@ -31,20 +27,16 @@ type WeeklySummary = {
     NEUTRAL: number;
     NEGATIVE: number;
   };
-
   commonContexts: Array<{
     name: string;
     slug: string;
     count: number;
   }>;
-
   possibleTriggers: Array<{
     name: string;
     count: number;
   }>;
-
   dailyTrend: DailyTrend[];
-
   activity: {
     totalStarted: number;
     totalCompleted: number;
@@ -57,7 +49,6 @@ type WeeklySummary = {
     } | null;
   };
 };
-
 type WeeklyData = {
   period: {
     start: string;
@@ -69,25 +60,27 @@ type WeeklyData = {
     name?: string | null;
   };
 };
-
 type Props = {
   locale: Locale;
   userName: string;
   nickname?: string | null; // Tambahkan nickname prop
 };
+type WeeklyHighlight = {
+  type: string;
+  title: string;
+  description: string;
+};
 
 type WeeklyAI = {
   headline: string;
   summary: string;
-  highlights: string[];
+  highlights: Array<WeeklyHighlight | string>;
   reflectionPrompt: string;
   gentleSuggestion: string;
 };
-
-/* =========================================================
-   CUSTOM MOODIFY ICONS
-========================================================= */
-
+/* =========================================================*
+*   CUSTOM MOODIFY ICONS*
+*========================================================= */
 function ActivityIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
@@ -95,7 +88,6 @@ function ActivityIcon({ size = 16, className = "" }: { size?: number; className?
     </svg>
   );
 }
-
 function BookIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
@@ -104,7 +96,6 @@ function BookIcon({ size = 16, className = "" }: { size?: number; className?: st
     </svg>
   );
 }
-
 function CalendarIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
@@ -113,7 +104,6 @@ function CalendarIcon({ size = 16, className = "" }: { size?: number; className?
     </svg>
   );
 }
-
 function TrendUpIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
@@ -122,7 +112,6 @@ function TrendUpIcon({ size = 16, className = "" }: { size?: number; className?:
     </svg>
   );
 }
-
 function TrendDownIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
@@ -131,7 +120,6 @@ function TrendDownIcon({ size = 16, className = "" }: { size?: number; className
     </svg>
   );
 }
-
 function LoadingSpinner({ size = 18, className = "" }: { size?: number; className?: string }) {
   return (
     <span
@@ -141,11 +129,9 @@ function LoadingSpinner({ size = 18, className = "" }: { size?: number; classNam
     />
   );
 }
-
-/* =========================================================
-   TRANSLATIONS & HELPERS
-========================================================= */
-
+/* =========================================================*
+*   TRANSLATIONS & HELPERS*
+*========================================================= */
 const emotionTranslations: Record<string, { en: string; id: string }> = {
   happy: { en: "Happy", id: "Senang" },
   loved: { en: "Loved", id: "Dicintai" },
@@ -160,12 +146,10 @@ const emotionTranslations: Record<string, { en: string; id: string }> = {
   sad: { en: "Sad", id: "Sedih" },
   overwhelmed: { en: "Overwhelmed", id: "Kewalahan" },
 };
-
 function getEmotionLabel(slug: string, fallbackName: string, isId: boolean) {
   const translation = emotionTranslations[slug.toLowerCase()];
   return translation ? (isId ? translation.id : translation.en) : fallbackName;
 }
-
 const contextTranslations: Record<string, { en: string; id: string }> = {
   family: { en: "Family", id: "Keluarga" },
   financial: { en: "Financial", id: "Keuangan" },
@@ -180,16 +164,13 @@ const contextTranslations: Record<string, { en: string; id: string }> = {
   sleep: { en: "Sleep", id: "Tidur" },
   social: { en: "Social", id: "Sosial" },
 };
-
 function getContextLabel(slug: string, fallbackName: string, isId: boolean) {
   const translation = contextTranslations[slug.toLowerCase()];
   return translation ? (isId ? translation.id : translation.en) : fallbackName;
 }
-
 function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
-
 const wellbeingTranslations: Record<
   string,
   {
@@ -236,7 +217,6 @@ const wellbeingTranslations: Record<
     },
   },
 };
-
 function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
   if (!title) return "";
   const translation = wellbeingTranslations[title.toLowerCase().trim()];
@@ -246,7 +226,6 @@ function getWellbeingTitle(title: string | null | undefined, isId: boolean) {
       : translation.title.en
     : title;
 }
-
 function getDayLabel(date: string, locale: Locale) {
   const [year, month, day] = date.substring(0, 10).split("-").map(Number);
   const localDate = new Date(year, month - 1, day);
@@ -254,7 +233,6 @@ function getDayLabel(date: string, locale: Locale) {
     weekday: "short",
   }).format(localDate);
 }
-
 function getDateLabel(date: string, locale: Locale) {
   const [year, month, day] = date.substring(0, 10).split("-").map(Number);
   const localDate = new Date(year, month - 1, day);
@@ -263,32 +241,24 @@ function getDateLabel(date: string, locale: Locale) {
     month: "short",
   }).format(localDate);
 }
-
-/* =========================================================
-   MAIN COMPONENT
-========================================================= */
-
+/* =========================================================*
+*   MAIN COMPONENT*
+*========================================================= */
 export default function InsightsClient({ locale, userName, nickname }: Props) {
   const isId = locale === "id";
-
   const [data, setData] = useState<WeeklyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [weeklyAI, setWeeklyAI] = useState<WeeklyAI | null>(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [weeklyAIStale, setWeeklyAIStale] = useState(false);
   const [weeklyAIError, setWeeklyAIError] = useState("");
-
   const displayName = nickname?.trim() || userName.trim();
-
   async function handleRefreshWeeklyAI() {
     if (loadingAI) return;
-
     try {
       setLoadingAI(true);
       setWeeklyAIError("");
-
       const response = await fetch("/api/ai/weekly-summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -297,9 +267,7 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
           regenerate: true,
         }),
       });
-
       const result = await response.json();
-
       if (!response.ok || !result.summary) {
         throw new Error(
           result.error ||
@@ -308,7 +276,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               : "Failed to refresh insight."),
         );
       }
-
       setWeeklyAI(result.summary);
       setWeeklyAIStale(false);
     } catch (err) {
@@ -324,33 +291,26 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
       setLoadingAI(false);
     }
   }
-
   useEffect(() => {
     let cancelled = false;
-
     async function fetchInsights() {
       try {
         setLoading(true);
         setError("");
-
         const response = await fetch("/api/insights/weekly", {
           method: "GET",
           cache: "no-store",
         });
-
         const result = await response.json();
-
         if (!response.ok) {
           throw new Error(
             result.error ||
               (isId ? "Gagal memuat insights." : "Failed to load insights."),
           );
         }
-
         if (cancelled) return;
         setData(result);
         setLoadingAI(true);
-
         try {
           const aiResponse = await fetch("/api/ai/weekly-summary", {
             method: "POST",
@@ -359,9 +319,7 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               language: locale === "id" ? "id" : "en",
             }),
           });
-
           const aiResult = await aiResponse.json();
-
           if (!cancelled && aiResponse.ok && aiResult.summary) {
             setWeeklyAI(aiResult.summary);
             setWeeklyAIStale(Boolean(aiResult.stale));
@@ -386,43 +344,33 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
         if (!cancelled) setLoading(false);
       }
     }
-
     void fetchInsights();
-
     return () => {
       cancelled = true;
     };
   }, [isId, locale]);
-
   const weekLabel = useMemo(() => {
     if (!data) return "";
     const start = new Date(data.period.start);
     const end = new Date(data.period.end);
-
     const formatter = new Intl.DateTimeFormat(isId ? "id-ID" : "en-US", {
       day: "numeric",
       month: "short",
     });
-
     return `${formatter.format(start)} – ${formatter.format(end)}`;
   }, [data, isId]);
-
   const stressTrend = useMemo(() => {
     if (!data) return "stable";
     const values = data.summary.dailyTrend
       .map((item) => item.averageStress)
       .filter((value): value is number => typeof value === "number");
-
     if (values.length < 2) return "stable";
-
     const first = values[0];
     const last = values[values.length - 1];
-
     if (last > first + 8) return "up";
     if (last < first - 8) return "down";
     return "stable";
   }, [data]);
-
   const totalSentiment = useMemo(() => {
     if (!data) return 0;
     return (
@@ -431,12 +379,10 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
       data.summary.sentiment.NEGATIVE
     );
   }, [data]);
-
   const sentimentPercentages = useMemo(() => {
     if (!data || totalSentiment === 0) {
       return { positive: 0, neutral: 0, negative: 0 };
     }
-
     return {
       positive: Math.round(
         (data.summary.sentiment.POSITIVE / totalSentiment) * 100,
@@ -449,7 +395,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
       ),
     };
   }, [data, totalSentiment]);
-
   const highestStress = useMemo(() => {
     if (!data) return null;
     return data.summary.dailyTrend.reduce<DailyTrend | null>(
@@ -463,17 +408,15 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
       null,
     );
   }, [data]);
-
   const activeDays = useMemo(() => {
     if (!data) return 0;
     return data.summary.dailyTrend.filter(
       (day) => day.checkinCount > 0 || day.diaryCount > 0,
     ).length;
   }, [data]);
-
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FDFBF7] px-4 py-8 text-[#4A3F35] md:px-8">
+      <main className="min-h-screen bg-[#FDFBF7] px-4  text-[#4A3F35] ">
         <div className="mx-auto flex min-h-150 max-w-6xl items-center justify-center">
           <div className="flex flex-col items-center text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#FBC4AB]/35">
@@ -494,7 +437,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
       </main>
     );
   }
-
   if (error || !data) {
     return (
       <main className="min-h-screen bg-[#FDFBF7] px-4 py-8 text-[#4A3F35] md:px-8">
@@ -516,9 +458,7 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
       </main>
     );
   }
-
   const { summary } = data;
-
   return (
     <main className="min-h-screen bg-[#FDFBF7] px-4 py-6 text-[#4A3F35] md:px-8 md:py-10">
       <div className="mx-auto max-w-6xl">
@@ -529,27 +469,23 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
                 {isId ? "Perjalanan emosional" : "Emotional journey"}
               </p>
-
               <h1 className="text-3xl font-semibold tracking-[-0.03em] text-[#4A3F35] md:text-4xl">
                 {isId
                   ? `Minggumu bersama dirimu, ${displayName}`
                   : `A look back at your week, ${displayName}`}
               </h1>
-
               <p className="mt-3 max-w-xl text-sm leading-7 text-[#4A3F35]/60 md:text-[15px]">
                 {isId
                   ? "Bukan untuk menilai bagaimana perasaanmu, tapi untuk membantu kamu melihat apa yang mungkin sedang terjadi."
                   : "Not to judge how you felt, but to help you notice what may have been happening beneath the surface."}
               </p>
             </div>
-
             <div className="flex w-fit items-center gap-2 border-b border-[#4A3F35]/15 pb-2 text-sm text-[#4A3F35]/65">
               <CalendarIcon size={16} className="text-[#5C6B9C]" />
               <span>{weekLabel}</span>
             </div>
           </div>
         </header>
-
         {/* WEEK IN NUMBERS */}
         <section className="mb-12">
           <div className="mb-5 flex items-end justify-between gap-4">
@@ -557,17 +493,14 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
                 {isId ? "Sekilas" : "At a glance"}
               </p>
-
               <h2 className="mt-1 text-xl font-semibold text-[#4A3F35]">
                 {isId ? "Jejak minggu ini" : "Your week in a few numbers"}
               </h2>
             </div>
-
             <p className="hidden text-xs text-[#4A3F35]/45 sm:block">
               {activeDays} / 7 {isId ? "hari aktif" : "active days"}
             </p>
           </div>
-
           <div className="grid border-y border-[#4A3F35]/10 sm:grid-cols-2">
             <div className="border-b border-[#4A3F35]/10 py-5 md:border-b-0 md:border-r md:pr-8">
               <div className="flex items-center gap-3">
@@ -576,18 +509,15 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                   {isId ? "Check-in" : "Check-ins"}
                 </span>
               </div>
-
               <p className="mt-3 text-3xl font-semibold tracking-tight text-[#4A3F35]">
                 {formatNumber(summary.totalCheckins)}
               </p>
-
               <p className="mt-1 text-xs text-[#4A3F35]/45">
                 {isId
                   ? "momen kamu berhenti sejenak"
                   : "moments you paused for yourself"}
               </p>
             </div>
-
             <div className="border-b border-[#4A3F35]/10 py-5 md:border-b-0 md:border-r md:px-8">
               <div className="flex items-center gap-3">
                 <BookIcon size={16} className="text-[#5C6B9C]" />
@@ -595,18 +525,15 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                   Diary
                 </span>
               </div>
-
               <p className="mt-3 text-3xl font-semibold tracking-tight text-[#4A3F35]">
                 {formatNumber(summary.totalDiaries)}
               </p>
-
               <p className="mt-1 text-xs text-[#4A3F35]/45">
                 {isId ? "cerita yang kamu tulis" : "stories you put into words"}
               </p>
             </div>
           </div>
         </section>
-
         {/* AI REFLECTION */}
         <section className="mb-12">
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.6fr]">
@@ -614,24 +541,20 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
                 {isId ? "Teman refleksi" : "Reflection companion"}
               </p>
-
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4A3F35]">
                 {isId
                   ? "Apa yang terlihat dari minggu ini?"
                   : "What does this week seem to say?"}
               </h2>
-
               <p className="mt-3 text-sm leading-7 text-[#4A3F35]/55">
                 {isId
                   ? "Reweave membantu merangkum pola yang muncul dari check-in dan diary kamu."
                   : "Reweave looks across your check-ins and diary entries to help you notice patterns."}
               </p>
             </div>
-
             <div className="relative overflow-hidden rounded-[2rem] bg-[#FBC4AB]/35 p-6 md:p-8">
               <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#FDFBF7]/50" />
               <div className="absolute -bottom-20 right-16 h-36 w-36 rounded-full bg-[#C1D5C0]/30" />
-
               <div className="relative">
                 {loadingAI ? (
                   <div className="flex min-h-45 items-center">
@@ -642,7 +565,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                           {isId ? "Membaca pola" : "Reading your patterns"}
                         </span>
                       </div>
-
                       <p className="text-sm leading-7 text-[#4A3F35]/65">
                         {isId
                           ? "Reweave sedang menyusun refleksi dari aktivitasmu minggu ini."
@@ -659,7 +581,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                             ? "Ada data baru sejak insight ini dibuat. Perbarui jika kamu ingin memasukkannya."
                             : "New data is available since this insight was generated. Refresh to include it."}
                         </p>
-
                         <button
                           type="button"
                           onClick={handleRefreshWeeklyAI}
@@ -679,43 +600,46 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                         </button>
                       </div>
                     )}
-
                     {weeklyAIError && (
                       <p role="alert" className="mb-4 text-xs text-[#B54735]">
                         {weeklyAIError}
                       </p>
                     )}
-
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5C6B9C]">
                       {isId ? "Refleksi mingguan" : "Weekly reflection"}
                     </p>
-
                     <h3 className="mt-3 max-w-2xl text-2xl font-semibold leading-tight tracking-tight text-[#4A3F35] md:text-3xl">
                       {weeklyAI.headline}
                     </h3>
-
                     <p className="mt-4 max-w-2xl text-sm leading-7 text-[#4A3F35]/70">
                       {weeklyAI.summary}
                     </p>
-
                     {weeklyAI.highlights.length > 0 && (
                       <div className="mt-6 grid gap-3 md:grid-cols-2">
-                        {weeklyAI.highlights.map((highlight, index) => (
-                          <div
-                            key={`${index}-${highlight}`}
-                            className="rounded-xl bg-[#FDFBF7]/70 p-4"
-                          >
-                            <span className="mb-2 block text-xs font-semibold text-[#5C6B9C]">
-                              0{index + 1}
-                            </span>
-                            <p className="text-sm leading-6 text-[#4A3F35]/75">
-                              {highlight}
-                            </p>
-                          </div>
-                        ))}
+                        {weeklyAI.highlights.map((highlight, index) => {
+                          const title = typeof highlight === "string" ? highlight : highlight.title;
+                          const description = typeof highlight === "string" ? "" : highlight.description;
+                          return (
+                            <div
+                              key={`${typeof highlight === "string" ? "legacy" : highlight.type}-${index}`}
+                              className="rounded-xl bg-[#FDFBF7]/70 p-4"
+                            >
+                              <span className="mb-2 block text-xs font-semibold text-[#5C6B9C]">
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <p className="text-sm font-medium leading-6 text-[#4A3F35]">
+                                {title}
+                              </p>
+                              {description && (
+                                <p className="mt-1 text-sm leading-6 text-[#4A3F35]/70">
+                                  {description}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
-
                     <div className="mt-6 grid gap-3 md:grid-cols-2">
                       {weeklyAI.reflectionPrompt && (
                         <div className="rounded-xl bg-[#FDFBF7]/75 p-4">
@@ -729,7 +653,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                           </p>
                         </div>
                       )}
-
                       {weeklyAI.gentleSuggestion && (
                         <div className="rounded-xl bg-[#FDFBF7]/75 p-4">
                           <p className="text-xs font-semibold text-[#5C6B9C]">
@@ -772,7 +695,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
             </div>
           </div>
         </section>
-
         {/* EMOTIONAL RHYTHM */}
         <section className="mb-12">
           <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -780,32 +702,27 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
                 {isId ? "Ritme emosional" : "Emotional rhythm"}
               </p>
-
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4A3F35]">
                 {isId ? "Bagaimana minggu ini terasa" : "How the week moved"}
               </h2>
-
               <p className="mt-2 max-w-xl text-sm leading-6 text-[#4A3F35]/55">
                 {isId
                   ? "Grafik ini menunjukkan perubahan stress yang tercatat setiap hari."
                   : "This shows how your recorded stress changed across the week."}
               </p>
             </div>
-
             {stressTrend === "up" && (
               <div className="flex items-center gap-2 text-xs font-medium text-[#E2725B]">
                 <TrendUpIcon size={16} />
                 {isId ? "Stress cenderung meningkat" : "Stress tended upward"}
               </div>
             )}
-
             {stressTrend === "down" && (
               <div className="flex items-center gap-2 text-xs font-medium text-[#5C6B9C]">
                 <TrendDownIcon size={16} />
                 {isId ? "Stress cenderung menurun" : "Stress tended downward"}
               </div>
             )}
-
             {stressTrend === "stable" && (
               <div className="text-xs font-medium text-[#4A3F35]/45">
                 {isId
@@ -814,23 +731,20 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               </div>
             )}
           </div>
-
           <div className="overflow-hidden rounded-[2rem] border border-[#4A3F35]/10 bg-[#FDFBF7]">
-            <div className="grid min-h-[320px] grid-cols-7 gap-2 px-4 pb-5 pt-8 md:px-8">
+            <div className="grid min-h-80 grid-cols-7 gap-2 px-4 pb-5 pt-8 md:px-8">
               {summary.dailyTrend.map((day) => {
                 const stress = day.averageStress ?? 0;
                 const height =
                   stress > 0 ? Math.max(7, Math.min(100, stress)) : 4;
                 const hasActivity = day.checkinCount > 0 || day.diaryCount > 0;
-
                 return (
                   <div
                     key={day.date}
                     className="group flex min-w-0 flex-col items-center"
                   >
                     <div className="relative flex h-56 w-full items-end justify-center">
-                      <div className="absolute bottom-0 left-1/2 h-full w-px -translate-x-1/2 bg-[#4A3F35]/[0.06]" />
-
+                      <div className="absolute bottom-0 left-1/2 h-full w-px -translate-x-1/2 bg-[#4A3F35]/6" />
                       <div
                         className={[
                           "relative z-10 w-[70%] max-w-10 rounded-t-[1rem] transition-all duration-300",
@@ -853,11 +767,9 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                         )}
                       </div>
                     </div>
-
                     <span className="mt-4 text-[11px] font-semibold text-[#4A3F35]/50">
                       {getDayLabel(day.date, locale)}
                     </span>
-
                     <span className="mt-1 text-[10px] text-[#4A3F35]/35">
                       {day.checkinCount + day.diaryCount}
                     </span>
@@ -865,14 +777,12 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                 );
               })}
             </div>
-
             <div className="flex items-center justify-between border-t border-[#4A3F35]/8 px-5 py-4 text-[10px] uppercase tracking-[0.12em] text-[#4A3F35]/35 md:px-8">
               <span>0</span>
               <span>50</span>
               <span>100</span>
             </div>
           </div>
-
           {highestStress && (
             <p className="mt-3 text-xs leading-5 text-[#4A3F35]/45">
               {isId
@@ -881,7 +791,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
             </p>
           )}
         </section>
-
         {/* EMOTION + SENTIMENT */}
         <section className="mb-12 grid gap-10 lg:grid-cols-[1fr_1.15fr]">
           {/* DOMINANT EMOTION */}
@@ -889,17 +798,14 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Emosi utama" : "Main emotion"}
             </p>
-
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4A3F35]">
               {isId ? "Yang paling sering hadir" : "What showed up most"}
             </h2>
-
             <p className="mt-2 text-sm leading-6 text-[#4A3F35]/55">
               {isId
                 ? "Bukan berarti ini satu-satunya yang kamu rasakan. Ini hanya emosi yang paling sering muncul dalam check-in."
                 : "This does not mean it was the only thing you felt. It was simply the emotion that appeared most often in your check-ins."}
             </p>
-
             {summary.dominantEmotion ? (
               <div className="mt-7">
                 <div className="flex items-end gap-4">
@@ -911,23 +817,19 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                     )}
                   </span>
                 </div>
-
                 <p className="mt-2 text-sm text-[#4A3F35]/50">
                   {summary.dominantEmotion.count}{" "}
                   {isId ? "kali tercatat" : "times recorded"}
                 </p>
-
                 <div className="mt-7">
                   <div className="mb-2 flex items-center justify-between text-xs">
                     <span className="text-[#4A3F35]/50">
                       {isId ? "Intensitas rata-rata" : "Average intensity"}
                     </span>
-
                     <span className="font-semibold text-[#4A3F35]/75">
                       {summary.dominantEmotion.averageIntensity}/10
                     </span>
                   </div>
-
                   <div className="h-2 overflow-hidden rounded-full bg-[#C1D5C0]/35">
                     <div
                       className="h-full rounded-full bg-[#E2725B]"
@@ -948,25 +850,21 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               </div>
             )}
           </div>
-
           {/* SENTIMENT */}
           <div className="rounded-[2rem] bg-[#C1D5C0]/25 p-6 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Gambaran sentimen" : "Sentiment picture"}
             </p>
-
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4A3F35]">
               {isId
                 ? "Apa yang muncul dari analisis"
                 : "What appeared in your analyses"}
             </h2>
-
             <p className="mt-2 max-w-lg text-sm leading-6 text-[#4A3F35]/55">
               {isId
                 ? "Ringkasan ini berasal dari AI analysis yang tersedia selama periode ini."
                 : "This summary comes from the AI analyses available during this period."}
             </p>
-
             <div className="mt-8">
               <div className="flex h-5 overflow-hidden rounded-full bg-[#FDFBF7]">
                 <div
@@ -982,7 +880,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                   style={{ width: `${sentimentPercentages.negative}%` }}
                 />
               </div>
-
               <div className="mt-5 grid grid-cols-3 gap-4">
                 <div>
                   <div className="mb-2 flex items-center gap-2">
@@ -995,7 +892,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                     {sentimentPercentages.positive}%
                   </p>
                 </div>
-
                 <div>
                   <div className="mb-2 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#C1D5C0]" />
@@ -1007,7 +903,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                     {sentimentPercentages.neutral}%
                   </p>
                 </div>
-
                 <div>
                   <div className="mb-2 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#E2725B]" />
@@ -1023,25 +918,21 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
             </div>
           </div>
         </section>
-
         {/* WELLBEING ACTIVITIES */}
         <section className="mb-12">
           <div className="mb-6 max-w-xl">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Hal yang kamu lakukan" : "Things you practiced"}
             </p>
-
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4A3F35]">
               {isId ? "Aktivitas kesejahteraan" : "Wellbeing activities"}
             </h2>
-
             <p className="mt-2 text-sm leading-6 text-[#4A3F35]/55">
               {isId
                 ? "Bukan soal seberapa produktif kamu. Bagian ini hanya mencatat aktivitas yang kamu coba."
                 : "This is not about productivity. It simply keeps track of the activities you tried."}
             </p>
           </div>
-
           <div className="grid border-y border-[#4A3F35]/10 sm:grid-cols-2 lg:grid-cols-4">
             <div className="border-b border-[#4A3F35]/10 py-5 sm:border-r lg:border-b-0 lg:pr-6">
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
@@ -1054,7 +945,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                 {isId ? "aktivitas" : "activities"}
               </p>
             </div>
-
             <div className="border-b border-[#4A3F35]/10 py-5 sm:pl-6 lg:border-b-0 lg:border-r lg:px-6">
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Selesai" : "Completed"}
@@ -1066,7 +956,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                 {isId ? "aktivitas" : "activities"}
               </p>
             </div>
-
             <div className="border-b border-[#4A3F35]/10 py-5 sm:border-r sm:pl-0 sm:pr-6 lg:border-b-0 lg:border-r lg:px-6">
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Tingkat penyelesaian" : "Completion rate"}
@@ -1083,7 +972,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                 />
               </div>
             </div>
-
             <div className="py-5 sm:pl-6 lg:pl-6">
               <p className="text-xs uppercase tracking-[0.12em] text-[#4A3F35]/45">
                 {isId ? "Rata-rata rating" : "Average rating"}
@@ -1101,7 +989,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
               </p>
             </div>
           </div>
-
           {summary.activity.mostUsed && (
             <div className="mt-5 flex flex-col gap-3 border-l-2 border-[#FBC4AB] pl-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -1110,12 +997,10 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                     ? "Yang paling sering kamu pilih"
                     : "Your most-used activity"}
                 </p>
-
                 <h3 className="mt-1 text-lg font-semibold text-[#4A3F35]">
                   {getWellbeingTitle(summary.activity.mostUsed.title, isId)}
                 </h3>
               </div>
-
               <p className="text-sm text-[#4A3F35]/50">
                 {summary.activity.mostUsed.count}{" "}
                 {isId ? "kali digunakan" : "times used"}
@@ -1123,34 +1008,29 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
             </div>
           )}
         </section>
-
         {/* CONTEXT + TRIGGERS */}
         <section className="mb-12">
           <div className="mb-7">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Pola yang muncul" : "Patterns"}
             </p>
-
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#4A3F35]">
               {isId
                 ? "Hal-hal yang sering hadir bersamaan"
                 : "Things that tended to show up together"}
             </h2>
-
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[#4A3F35]/55">
               {isId
                 ? "Gunakan bagian ini sebagai petunjuk untuk mengenali kebiasaan atau konteks yang mungkin berhubungan dengan perasaanmu."
                 : "Use these as clues for noticing contexts or patterns that may be connected to how you felt."}
             </p>
           </div>
-
           <div className="grid gap-10 md:grid-cols-2">
             {/* CONTEXT */}
             <div>
               <h3 className="text-sm font-semibold text-[#4A3F35]">
                 {isId ? "Konteks yang sering dipilih" : "Common contexts"}
               </h3>
-
               <div className="mt-4">
                 {summary.commonContexts.length > 0 ? (
                   <div className="divide-y divide-[#4A3F35]/8">
@@ -1162,7 +1042,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                         <span className="text-sm text-[#4A3F35]/75">
                           {getContextLabel(context.slug, context.name, isId)}
                         </span>
-
                         <span className="rounded-full bg-[#C1D5C0]/30 px-2.5 py-1 text-[11px] font-medium text-[#4A3F35]/55">
                           {context.count}x
                         </span>
@@ -1180,19 +1059,16 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                 )}
               </div>
             </div>
-
             {/* TRIGGERS */}
             <div>
               <h3 className="text-sm font-semibold text-[#4A3F35]">
                 {isId ? "Kemungkinan pemicu" : "Possible triggers"}
               </h3>
-
               <p className="mt-1 text-xs text-[#4A3F35]/45">
                 {isId
                   ? "Pola yang terdeteksi dari AI, bukan diagnosis."
                   : "Patterns identified by AI, not a diagnosis."}
               </p>
-
               <div className="mt-4">
                 {summary.possibleTriggers.length > 0 ? (
                   <div className="divide-y divide-[#4A3F35]/8">
@@ -1204,7 +1080,6 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
                         <span className="text-sm text-[#4A3F35]/75">
                           {trigger.name}
                         </span>
-
                         <span className="rounded-full bg-[#FBC4AB]/35 px-2.5 py-1 text-[11px] font-medium text-[#4A3F35]/55">
                           {trigger.count}x
                         </span>
@@ -1224,18 +1099,15 @@ export default function InsightsClient({ locale, userName, nickname }: Props) {
             </div>
           </div>
         </section>
-
         {/* ABOUT INSIGHTS */}
         <section className="border-t border-[#4A3F35]/10 pt-7">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#5C6B9C]">
               {isId ? "Catatan kecil" : "A small note"}
             </p>
-
             <h2 className="mt-2 text-lg font-semibold text-[#4A3F35]">
               {isId ? "Tentang Insights Reweave" : "About Reweave Insights"}
             </h2>
-
             <p className="mt-2 text-xs leading-6 text-[#4A3F35]/55">
               {isId
                 ? "Insights Reweave adalah ringkasan pola dari data check-in, diary, aktivitas, dan analisis AI kamu. Hasil ini dimaksudkan untuk membantu refleksi pribadi dan bukan merupakan diagnosis medis atau psikologis."

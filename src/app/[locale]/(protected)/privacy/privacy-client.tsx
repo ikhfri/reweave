@@ -239,7 +239,7 @@ export default function PrivacyClient({
           <div className="flex items-start gap-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#c1d5c0]/30">
               <ShieldCheck
-                className="h-[18px] w-[18px] text-[#5c6b9c]"
+                className="h-4.5 w-4.5 text-[#5c6b9c]"
                 strokeWidth={1.8}
               />
             </div>
@@ -316,7 +316,7 @@ export default function PrivacyClient({
           <div className="flex items-start gap-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fbc4ab]/25">
               <LockKeyhole
-                className="h-[18px] w-[18px] text-[#e2725b]"
+                className="h-4.5 w-4.5 text-[#e2725b]"
                 strokeWidth={1.8}
               />
             </div>
@@ -367,7 +367,7 @@ export default function PrivacyClient({
 
             <DataAction
               icon={
-                <Download className="h-[18px] w-[18px]" />
+                <Download className="h-4.5 w-4.5" />
               }
               title={
                 isEnglish
@@ -397,7 +397,7 @@ export default function PrivacyClient({
             <DataAction
               danger
               icon={
-                <Trash2 className="h-[18px] w-[18px]" />
+                <Trash2 className="h-4.5 w-4.5" />
               }
               title={
                 isEnglish
@@ -429,7 +429,7 @@ export default function PrivacyClient({
             <DataAction
               danger
               icon={
-                <AlertTriangle className="h-[18px] w-[18px]" />
+                <AlertTriangle className="h-4.5 w-4.5" />
               }
               title={
                 isEnglish

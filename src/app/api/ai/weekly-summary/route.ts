@@ -1,155 +1,376 @@
-import { NextResponse } from "next/server";
+
+import { createHash } from "node:crypto";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateGeminiContent } from "@/lib/gemini";
+import { generateGeminiContent, GEMINI_MODEL } from "@/lib/gemini";
 
-function getSevenDaysRange() {
-  const end = new Date();
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const requestSchema = z.object({
+  language: z.enum(["id", "en"]).default("id"),
+  regenerate: z.boolean().optional().default(false),
+});
+
+type LanguageCode = "id" | "en";
+
+type WeeklySummary = {
+  headline: string;
+  summary: string;
+  highlights: unknown[];
+  reflectionPrompt: string;
+  gentleSuggestion: string;
+};
+
+function getWeekRange(now = new Date()) {
+  // Minggu berjalan: Senin 00:00 sampai Senin berikutnya 00:00.
+  // Gunakan UTC agar key cache stabil dan tidak berubah setiap hari.
+  const end = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+    ),
+  );
+
+  const day = end.getUTCDay();
+  const daysSinceMonday = (day + 6) % 7;
+
   const start = new Date(end);
-  start.setDate(start.getDate() - 6);
-  start.setHours(0, 0, 0, 0);
-  return { start, end };
+  start.setUTCDate(start.getUTCDate() - daysSinceMonday);
+
+  const nextWeek = new Date(start);
+  nextWeek.setUTCDate(nextWeek.getUTCDate() + 7);
+
+  return { start, end: nextWeek };
 }
 
-export async function POST(request: Request) {
-  // Deklarasikan variabel isId di luar try agar dapat diakses di catch block
-  let isId = true;
+function createFingerprint(data: unknown) {
+  return createHash("sha256")
+    .update(JSON.stringify(data))
+    .digest("hex");
+}
 
-  try {
-    const user = await getCurrentUser();
+function extractJson<T>(content: string): T {
+  const cleaned = content
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "");
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+
+  if (firstBrace === -1 || lastBrace <= firstBrace) {
+    throw new Error("AI returned an invalid JSON response.");
+  }
+
+  return JSON.parse(
+    cleaned.slice(firstBrace, lastBrace + 1),
+  ) as T;
+}
+
+function normalizeSummary(value: unknown): WeeklySummary {
+  if (!value || typeof value !== "object") {
+    throw new Error("AI summary is empty.");
+  }
+
+  const data = value as Record<string, unknown>;
+
+  const requiredString = (key: string) => {
+    const result = data[key];
+
+    if (typeof result !== "string" || !result.trim()) {
+      throw new Error(`AI summary field "${key}" is invalid.`);
     }
 
-    const body = await request.json().catch(() => ({}));
-    const language = body.language === "id" ? "id" : "en";
-    isId = language === "id";
+    return result.trim();
+  };
 
-    const { start, end } = getSevenDaysRange();
+  return {
+    headline: requiredString("headline"),
+    summary: requiredString("summary"),
+    highlights: Array.isArray(data.highlights)
+      ? data.highlights
+      : [],
+    reflectionPrompt: requiredString("reflectionPrompt"),
+    gentleSuggestion: requiredString("gentleSuggestion"),
+  };
+}
 
-    // 1. Ambil data Check-in dan Diary 7 hari terakhir
+export async function POST(request: NextRequest) {
+  try {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    const body = requestSchema.safeParse(await request.json());
+
+    if (!body.success) {
+      return NextResponse.json(
+        { error: "Invalid request body." },
+        { status: 400 },
+      );
+    }
+
+    const userId = currentUser.id;
+    const language: LanguageCode = body.data.language;
+    const forceRegenerate = body.data.regenerate;
+
+    const languageKey = language === "id" ? "ID" : "EN";
+    const { start, end } = getWeekRange();
+
+    // Data yang sama dengan yang digunakan untuk membuat prompt
+    // menghasilkan fingerprint yang sama.
     const [checkins, diaries] = await Promise.all([
       prisma.dailyCheckin.findMany({
         where: {
-          userId: user.id,
-          checkinDate: { gte: start, lte: end },
-        },
-        include: {
-          emotions: { include: { emotion: true } },
-          contexts: { include: { context: true } },
+          userId,
+          checkinDate: {
+            gte: start,
+            lt: end,
+          },
         },
         orderBy: { checkinDate: "asc" },
+        include: {
+          emotions: {
+            include: { emotion: true },
+            orderBy: { position: "asc" },
+          },
+          contexts: {
+            include: { context: true },
+          },
+        },
       }),
+
       prisma.diaryEntry.findMany({
         where: {
-          userId: user.id,
-          createdAt: { gte: start, lte: end },
+          userId,
+          createdAt: {
+            gte: start,
+            lt: end,
+          },
         },
         orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          content: true,
+          entryType: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       }),
     ]);
 
-    // 2. Tangani jika belum ada data sama sekali
     if (checkins.length === 0 && diaries.length === 0) {
       return NextResponse.json({
         summary: null,
-        message: isId
-          ? "Belum ada cukup data untuk membuat refleksi."
-          : "Not enough data to generate a reflection.",
+        stale: false,
+        cached: false,
+        message:
+          language === "id"
+            ? "Belum ada catatan untuk minggu ini."
+            : "There are no entries for this week yet.",
       });
     }
 
-    // 3. Susun ringkasan data aktivitas
-    const activityData = {
-      totalCheckins: checkins.length,
-      totalDiaries: diaries.length,
-      emotionsLogged: checkins.flatMap((c) =>
-        c.emotions.map((e) => e.emotion.name),
-      ),
-      contextsLogged: checkins.flatMap((c) =>
-        c.contexts.map((ct) => ct.context.name),
-      ),
-      diaryExcerpts: diaries
-        .map((d) => d.content)
-        .filter(Boolean)
-        .slice(0, 5),
+    const sourceData = {
+      checkins: checkins.map((checkin) => ({
+        id: checkin.id,
+        date: checkin.checkinDate.toISOString(),
+        intensity: checkin.overallIntensity,
+        note: checkin.note,
+        updatedAt: checkin.updatedAt.toISOString(),
+        emotions: checkin.emotions.map((item) => ({
+          name: item.emotion.name,
+          intensity: item.intensity,
+          note: item.note,
+          position: item.position,
+        })),
+        contexts: checkin.contexts.map((item) => ({
+          name: item.context.name,
+          slug: item.context.slug,
+        })),
+      })),
+      diaries: diaries.map((diary) => ({
+        id: diary.id,
+        content: diary.content,
+        entryType: diary.entryType,
+        createdAt: diary.createdAt.toISOString(),
+        updatedAt: diary.updatedAt.toISOString(),
+      })),
     };
 
-    // 4. Buat prompt terstruktur
-    const prompt = `
-You are an empathetic, gentle wellness reflection assistant for an app called Reweave.
-Analyze the following user's 7-day emotional log data and produce a JSON response.
+    const sourceFingerprint = createFingerprint(sourceData);
 
-STRICT INSTRUCTIONS:
-- You MUST respond ONLY with a valid JSON object.
-- Do NOT output any explanation, prelude, or Markdown codeblock syntax.
-- Language: ${isId ? "Indonesian (Bahasa Indonesia)" : "English"}.
+    const existing = await prisma.weeklyAIInsight.findUnique({
+      where: {
+        userId_weekStart_language: {
+          userId,
+          weekStart: start,
+          language: languageKey,
+        },
+      },
+    });
 
-REQUIRED JSON SCHEMA:
+    // Cache hit: data belum berubah, jadi tidak perlu memanggil AI.
+    if (
+      existing &&
+      existing.sourceFingerprint === sourceFingerprint &&
+      !forceRegenerate
+    ) {
+      return NextResponse.json({
+        summary: {
+          headline: existing.headline,
+          summary: existing.summary,
+          highlights: existing.highlights,
+          reflectionPrompt: existing.reflectionPrompt,
+          gentleSuggestion: existing.gentleSuggestion,
+        },
+        stale: false,
+        cached: true,
+        generatedAt: existing.generatedAt,
+      });
+    }
+
+    const prompt =
+      language === "id"
+        ? `
+Kamu adalah pendamping refleksi emosional untuk aplikasi Reweave.
+Gunakan bahasa Indonesia yang natural, hangat, tenang, tidak menghakimi,
+dan tidak memberikan diagnosis medis.
+
+Analisis data refleksi pengguna selama satu minggu berikut.
+Gunakan hanya informasi yang tersedia. Jangan mengarang penyebab,
+gejala, atau kejadian yang tidak disebutkan pengguna.
+
+Data minggu ini:
+${JSON.stringify(sourceData, null, 2)}
+
+Buat refleksi yang personal dan spesifik. Hindari kalimat generik,
+klaim klinis, atau kesimpulan berlebihan dari data yang terbatas.
+
+Balas HANYA dengan JSON valid menggunakan struktur:
 {
-  "headline": "A short, warm headline capturing the essence of their week",
-  "summary": "A 2-3 sentence empathetic summary reflecting on their feelings and journey",
-  "highlights": ["Key pattern or observation 1", "Key pattern or observation 2"],
-  "reflectionPrompt": "A gentle, open question for the user to contemplate",
-  "gentleSuggestion": "A low-pressure, actionable small step for next week"
+  "headline": "Judul refleksi singkat",
+  "summary": "Ringkasan pola emosi dan konteks minggu ini",
+  "highlights": [
+    {
+      "title": "Temuan singkat",
+      "description": "Penjelasan berdasarkan data",
+      "type": "emotion"
+    }
+  ],
+  "reflectionPrompt": "Satu pertanyaan refleksi yang lembut",
+  "gentleSuggestion": "Satu saran sederhana dan realistis"
 }
 
-USER LOG DATA:
-${JSON.stringify(activityData, null, 2)}
+Highlights harus berupa array. Jika data terbatas, sampaikan
+ketidakpastian secara wajar. Jangan membuat diagnosis kesehatan mental.
+`
+        : `
+You are an emotional reflection companion for Reweave.
+Use natural, warm, calm, non-judgmental language. Do not provide
+medical diagnoses.
+
+Analyze the user's emotional reflections for this week using only
+the information provided. Do not invent causes, symptoms, or events.
+
+Weekly data:
+${JSON.stringify(sourceData, null, 2)}
+
+Make the reflection personal and specific. Avoid generic advice,
+clinical claims, or conclusions that go beyond the available data.
+
+Return ONLY valid JSON with this structure:
+{
+  "headline": "A short reflection headline",
+  "summary": "A summary of this week's emotional patterns and context",
+  "highlights": [
+    {
+      "title": "A concise observation",
+      "description": "An explanation grounded in the data",
+      "type": "emotion"
+    }
+  ],
+  "reflectionPrompt": "One gentle reflection question",
+  "gentleSuggestion": "One simple, realistic suggestion"
+}
+
+Highlights must be an array. If the data is limited, acknowledge
+uncertainty. Do not make mental health diagnoses.
 `;
 
-    // 5. Panggil AI via centralized helper
-    const response = await generateGeminiContent(prompt, 3);
-    const rawText = response.text?.trim();
+   const response = await generateGeminiContent(prompt, 3);
 
-    if (!rawText) {
-      return NextResponse.json(
-        { error: isId ? "Respon AI kosong." : "AI returned empty response." },
-        { status: 502 },
-      );
-    }
+const summary = normalizeSummary(
+  extractJson<unknown>(response.text),
+);
 
-    // 6. Parse JSON
-    let parsedSummary;
-    try {
-      parsedSummary = JSON.parse(rawText);
-    } catch (parseErr) {
-      console.error("[Weekly AI Error] Gagal parsing JSON:", rawText, parseErr);
-      return NextResponse.json(
-        { error: isId ? "Gagal memproses format data AI." : "Failed to parse AI output format." },
-        { status: 502 },
-      );
-    }
+    // Simpan hasil terbaru. Unique key mencegah satu baris per
+    // pengguna, minggu, dan bahasa.
+    const saved = await prisma.weeklyAIInsight.upsert({
+      where: {
+        userId_weekStart_language: {
+          userId,
+          weekStart: start,
+          language: languageKey,
+        },
+      },
+      create: {
+        userId,
+        weekStart: start,
+        weekEnd: end,
+        periodStart: start,
+        periodEnd: end,
+        language: languageKey,
+        headline: summary.headline,
+        summary: summary.summary,
+        highlights: summary.highlights as never,
+        reflectionPrompt: summary.reflectionPrompt,
+        gentleSuggestion: summary.gentleSuggestion,
+        sourceFingerprint,
+        model: GEMINI_MODEL,
+      },
+      update: {
+        weekEnd: end,
+        periodStart: start,
+        periodEnd: end,
+        headline: summary.headline,
+        summary: summary.summary,
+        highlights: summary.highlights as never,
+        reflectionPrompt: summary.reflectionPrompt,
+        gentleSuggestion: summary.gentleSuggestion,
+        sourceFingerprint,
+        model: GEMINI_MODEL,
+        generatedAt: new Date(),
+      },
+    });
 
     return NextResponse.json({
-      summary: parsedSummary,
+      summary: {
+        headline: saved.headline,
+        summary: saved.summary,
+        highlights: saved.highlights,
+        reflectionPrompt: saved.reflectionPrompt,
+        gentleSuggestion: saved.gentleSuggestion,
+      },
       stale: false,
+      cached: false,
+      generatedAt: saved.generatedAt,
     });
   } catch (error: unknown) {
-    console.error("[POST /api/ai/weekly-summary Error]:", error);
-
-    const status =
-      typeof error === "object" && error !== null && "status" in error
-        ? Number((error as { status?: unknown }).status)
-        : undefined;
-
-    if (status === 429) {
-      return NextResponse.json(
-        { error: isId ? "Batas pemanggilan AI tercapai." : "AI request limit reached." },
-        { status: 429 },
-      );
-    }
-
-    if (status === 503 || status === 500) {
-      return NextResponse.json(
-        { error: isId ? "Layanan AI sedang tidak tersedia." : "AI service temporarily unavailable." },
-        { status: 503 },
-      );
-    }
+    console.error("[Weekly Summary] Failed:", error);
 
     return NextResponse.json(
-      { error: isId ? "Gagal membuat refleksi mingguan." : "Failed to generate weekly reflection." },
+      { error: "Failed to generate weekly summary." },
       { status: 500 },
     );
   }

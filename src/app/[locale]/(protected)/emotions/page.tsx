@@ -274,7 +274,7 @@ export default function EmotionsPage() {
 
   return (
     <main className="min-h-full bg-[#FDFBF7] pb-20 text-[#4A3F35]">
-      <div className="mx-auto max-w-6xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto max-w-6xl">
         {/* =================================================
             HERO
         ================================================== */}
@@ -291,7 +291,7 @@ export default function EmotionsPage() {
           <div className="relative max-w-3xl">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FDFBF7]/70 text-[#5C6B9C]">
-                <WellbeingIcon className="h-[19px] w-[19px]" />
+                <WellbeingIcon className="h-4.5 w-4.5" />
               </div>
 
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5C6B9C]">
@@ -539,7 +539,7 @@ export default function EmotionsPage() {
             >
               {isEnglish ? "Start a check-in" : "Mulai check-in"}
 
-              <ArrowRightIcon className="h-[19px] w-[19px]" />
+              <ArrowRightIcon className="h-4.5 w-4.5" />
             </Link>
           </div>
         </section>
@@ -548,9 +548,7 @@ export default function EmotionsPage() {
   );
 }
 
-/* =========================================================
-   CATEGORY LABEL
-========================================================= */
+
 
 function getCategoryLabel(
   category: EmotionItem["category"],

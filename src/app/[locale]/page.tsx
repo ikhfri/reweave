@@ -141,7 +141,7 @@ export default async function LandingPage({ params }: PageProps) {
   return (
     <main className="min-h-screen overflow-x-clip bg-[#FDFBF7] text-[#4A3F35]">
       <header className="sticky top-0 z-50 border-b border-[#4A3F35]/10 bg-[#FDFBF7]/95 backdrop-blur-md">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <Link href={`/${typedLocale}`} aria-label="Reweave home" className="shrink-0">
             <Image src="/reweave-logo.webp" alt="Reweave" width={150} height={45} priority className="h-11 w-auto object-contain" />
           </Link>
@@ -167,11 +167,11 @@ export default async function LandingPage({ params }: PageProps) {
       </header>
 
       <section className="relative isolate overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[28rem] w-[28rem] rounded-full bg-[#FBC4AB]/25 blur-[100px]" />
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:min-h-[calc(100svh-72px)] lg:grid-cols-[0.88fr_1.12fr] lg:gap-6 lg:px-10 lg:py-10">
-          <div className="relative z-10 max-w-[600px]">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-70 w-70 rounded-full bg-[#FBC4AB]/25 blur-[100px]" />
+        <div className="mx-auto grid max-w-7xl -translate-y-5 items-center gap-10 px-5 pb-16 pt-6 sm:-translate-y-7 sm:px-8 sm:pb-20 sm:pt-8 lg:min-h-[calc(100svh-72px)] lg:-translate-y-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-6 lg:px-10 lg:py-10">
+          <div className="relative z-10 max-w-150">
             
-            <h1 className="max-w-[640px] text-[clamp(2.8rem,5.2vw,5rem)] font-medium leading-[0.99] tracking-[-0.065em]">
+            <h1 className="max-w-160 text-[clamp(2.8rem,5.2vw,5rem)] font-medium leading-[0.99] tracking-[-0.065em]">
               {copy.hero.title}
             </h1>
             <p className="mt-7 max-w-lg text-[15px] leading-7 text-[#4A3F35]/70 sm:text-base sm:leading-8">
@@ -192,7 +192,7 @@ export default async function LandingPage({ params }: PageProps) {
             </p>
           </div>
 
-          <div className="relative mx-auto flex w-full max-w-[760px] items-center justify-center lg:-mr-8 xl:-mr-12">
+          <div className="relative mx-auto flex w-full max-w-190 items-center justify-center lg:-mr-8 xl:-mr-12">
             <div aria-hidden="true" className="pointer-events-none absolute inset-[12%] rounded-full bg-[#C1D5C0]/30 blur-[75px]" />
             <Image
               src="/hero-visual2.png"
@@ -201,7 +201,7 @@ export default async function LandingPage({ params }: PageProps) {
               height={1200}
               priority
               sizes="(max-width: 1023px) 100vw, (max-width: 1279px) 55vw, 60vw"
-              className="relative z-10 block h-auto w-full max-w-[760px] object-contain drop-shadow-[0_24px_40px_rgba(74,63,53,0.10)] lg:-translate-y-3"
+              className="relative z-10 block h-auto w-full max-w-190 object-contain drop-shadow-[0_24px_40px_rgba(74,63,53,0.10)] lg:-translate-y-3"
             />
           </div>
         </div>
@@ -253,7 +253,7 @@ export default async function LandingPage({ params }: PageProps) {
           </div>
 
           <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <article className="relative min-h-[300px] overflow-hidden rounded-2xl bg-[#5C6B9C] p-7 text-[#FDFBF7] sm:p-10">
+            <article className="relative min-h-75 overflow-hidden rounded-2xl bg-[#5C6B9C] p-7 text-[#FDFBF7] sm:p-10">
               <div aria-hidden="true" className="absolute -right-20 -top-24 h-64 w-64 rounded-full border border-white/15" />
               <div aria-hidden="true" className="absolute -right-4 -top-8 h-40 w-40 rounded-full border border-[#FBC4AB]/35" />
               <div className="relative max-w-lg">
