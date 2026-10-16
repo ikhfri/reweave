@@ -504,7 +504,7 @@ export default function DashboardClient({
 
   return (
     <main className="min-h-full bg-[#FDFBF7] pb-16 text-[#4A3F35]">
-      <div className="mx-auto max-w-6xl space-y-16 px-4  sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl space-y-16 px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
         <section>
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
@@ -576,7 +576,7 @@ export default function DashboardClient({
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href={`/${locale}/check-in`}
+                href={`/${locale}/moodlog`}
                 className="flex h-11 w-full sm:w-auto items-center justify-center bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
               >
                 {data?.today.hasCheckin
@@ -904,7 +904,7 @@ export default function DashboardClient({
                     : "Refleksi harianmu akan muncul di sini setelah kamu menyelesaikan check-in."}
                 </p>
                 <Link
-                  href={`/${locale}/check-in`}
+                  href={`/${locale}/moodlog`}
                   className="mt-5 inline-block text-xs font-semibold text-[#5C6B9C]"
                 >
                   {isEnglish ? "Start a check-in" : "Mulai check-in"} →

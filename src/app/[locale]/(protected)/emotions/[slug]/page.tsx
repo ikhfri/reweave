@@ -1452,7 +1452,7 @@ export default async function EmotionDetailPage({
             </div>
 
             <Link
-              href={`/${locale}/check-in`}
+              href={`/${locale}/moodlog`}
               className="inline-flex h-11 items-center justify-center gap-3 bg-[#E2725B] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#4A3F35]"
             >
               {isEnglish

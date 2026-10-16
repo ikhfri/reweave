@@ -27,7 +27,7 @@ export function createDailyCheckinReminderEmail({
     process.env.NEXT_PUBLIC_APP_URL ??
     "http://localhost:3000";
 
-  const checkinUrl = `${url}/${locale}/check-in`;
+  const checkinUrl = `${url}/${locale}/moodlog`;
 
   if (locale === "en") {
     return {
