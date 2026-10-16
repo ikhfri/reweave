@@ -96,7 +96,7 @@ export default async function CheckInResultPage({ params }: Props) {
   // Check-in not found / doesn't belong to user
   // --------------------------------------------------
   if (!checkin) {
-    redirect(`/${locale}/check-in`);
+    redirect(`/${locale}/moodlog`);
   }
 
   // --------------------------------------------------
@@ -146,7 +146,7 @@ export default async function CheckInResultPage({ params }: Props) {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href={`/${locale}/check-in`}
+                href={`/${locale}/moodlog`}
                 className="inline-flex items-center rounded-full bg-[#4A3F35] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#5C6B9C]"
               >
                 {isEnglish ? "Back to check-in" : "Kembali ke check-in"}
