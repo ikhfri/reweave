@@ -795,7 +795,7 @@ export default function MoodCalendarClient({
 
                       {selectedDay.checkin && (
                         <Link
-                          href={`/${locale}/check-in/result/${selectedDay.checkin.id}`}
+                          href={`/${locale}/moodlog/result/${selectedDay.checkin.id}`}
                           className="mt-6 flex items-center justify-between rounded-xl border border-[#4A3F35]/10 px-4 py-3 text-sm font-medium text-[#4A3F35]/70 transition hover:border-[#5C6B9C]/30 hover:text-[#5C6B9C]"
                         >
                           <span>

@@ -929,7 +929,7 @@ export default function CheckInForm({ locale, userName, nickname }: Props) {
 
                 const success = await analyzeCheckin(savedCheckinId);
                 if (success) {
-                  router.push(`/${locale}/check-in/result/${savedCheckinId}`);
+                  router.push(`/${locale}/moodlog/result/${savedCheckinId}`);
                   router.refresh();
                 }
               }}
