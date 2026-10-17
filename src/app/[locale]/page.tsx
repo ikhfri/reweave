@@ -168,16 +168,16 @@ export default async function LandingPage({ params }: PageProps) {
 
       <section className="relative isolate overflow-hidden">
         <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-70 w-70 rounded-full bg-[#FBC4AB]/25 blur-[100px]" />
-        <div className="mx-auto grid max-w-7xl -translate-y-5 items-center gap-10 px-5 pb-16 pt-6 sm:-translate-y-7 sm:px-8 sm:pb-20 sm:pt-8 lg:min-h-[calc(100svh-72px)] lg:-translate-y-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-6 lg:px-10 lg:py-10">
+        <div className="mx-auto grid min-h-[calc(100svh-72px)] max-w-7xl items-center gap-8 px-5 py-10 sm:gap-10 sm:px-8 sm:py-12 lg:min-h-[calc(100svh-72px)] lg:grid-cols-[0.88fr_1.12fr] lg:gap-6 lg:px-10 lg:py-10">
           <div className="relative z-10 max-w-150">
-            
+        
             <h1 className="max-w-160 text-[clamp(2.8rem,5.2vw,5rem)] font-medium leading-[0.99] tracking-[-0.065em]">
               {copy.hero.title}
             </h1>
-            <p className="mt-7 max-w-lg text-[15px] leading-7 text-[#4A3F35]/70 sm:text-base sm:leading-8">
+            <p className="mt-6 max-w-lg text-[15px] leading-7 text-[#4A3F35]/70 sm:mt-7 sm:text-base sm:leading-8">
               {copy.hero.description}
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
               <Link href={`/${typedLocale}/register`} className="group inline-flex h-12 items-center justify-center gap-3 rounded-lg bg-[#E2725B] px-5 text-sm font-medium text-white transition-colors hover:bg-[#c9614c]">
                 {copy.hero.signup}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -186,7 +186,7 @@ export default async function LandingPage({ params }: PageProps) {
                 {copy.hero.login}
               </Link>
             </div>
-            <p className="mt-6 flex items-center gap-2 text-xs text-[#4A3F35]/55">
+            <p className="mt-5 flex items-center gap-2 text-xs text-[#4A3F35]/55 sm:mt-6">
               <LockKeyhole className="h-3.5 w-3.5" strokeWidth={1.7} />
               {copy.hero.privacyNote}
             </p>
@@ -195,7 +195,7 @@ export default async function LandingPage({ params }: PageProps) {
           <div className="relative mx-auto flex w-full max-w-190 items-center justify-center lg:-mr-8 xl:-mr-12">
             <div aria-hidden="true" className="pointer-events-none absolute inset-[12%] rounded-full bg-[#C1D5C0]/30 blur-[75px]" />
             <Image
-              src="/hero-visual2.png"
+              src="/hero-visual.png"
               alt={isEnglish ? "A preview of the Reweave journaling experience" : "Pratinjau pengalaman menulis diary di Reweave"}
               width={1200}
               height={1200}
@@ -367,7 +367,11 @@ export default async function LandingPage({ params }: PageProps) {
             <div>
               <h2 className="text-xs font-semibold">{copy.footer.explore}</h2>
               <ul className="mt-4 space-y-3">
-                {footerLinks.map((item) => <li key={item.href}><a href={item.href} className="text-sm text-[#4A3F35]/60 transition-colors hover:text-[#5C6B9C]">{item.label}</a></li>)}
+                {footerLinks.map((item) => (
+                  <li key={item.href}>
+                    <a href={item.href} className="text-sm text-[#4A3F35]/60 transition-colors hover:text-[#5C6B9C]">{item.label}</a>
+                  </li>
+                ))}
               </ul>
             </div>
 
